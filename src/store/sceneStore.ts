@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import { Matrix4, Vector3, Quaternion, Euler } from "three";
 import type {
   SceneObject,
   SelectionState,
@@ -58,6 +59,48 @@ const defaultMaterial: MaterialProps = {
 };
 
 let objectCounter = 0;
+
+// Helper: compute world matrix by walking up parent chain
+function getWorldMatrix(
+  objectId: string,
+  objects: Record<string, SceneObject>,
+): Matrix4 {
+  const obj = objects[objectId];
+  if (!obj) return new Matrix4();
+
+  const localMatrix = new Matrix4();
+  localMatrix.compose(
+    new Vector3(...obj.position),
+    new Quaternion().setFromEuler(new Euler(...obj.rotation)),
+    new Vector3(...obj.scale),
+  );
+
+  if (obj.parentId) {
+    const parentWorld = getWorldMatrix(obj.parentId, objects);
+    return parentWorld.clone().multiply(localMatrix);
+  }
+
+  return localMatrix;
+}
+
+// Helper: decompose matrix to position, rotation, scale
+function decomposeMatrix(matrix: Matrix4): {
+  position: [number, number, number];
+  rotation: [number, number, number];
+  scale: [number, number, number];
+} {
+  const pos = new Vector3();
+  const quat = new Quaternion();
+  const scl = new Vector3();
+  matrix.decompose(pos, quat, scl);
+  const euler = new Euler().setFromQuaternion(quat);
+
+  return {
+    position: [pos.x, pos.y, pos.z],
+    rotation: [euler.x, euler.y, euler.z],
+    scale: [scl.x, scl.y, scl.z],
+  };
+}
 
 // Debounced save to file
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -216,9 +259,11 @@ export const useSceneStore = create<SceneState>()(
     },
 
     reparentObject: (id, newParentId) => {
-      const existing = get().objects[id];
+      const objects = get().objects;
+      const existing = objects[id];
       if (!existing) return;
 
+      // Prevent circular references
       const descendants = get().getDescendants(id);
       if (newParentId && descendants.some((d) => d.id === newParentId)) {
         return;
@@ -227,10 +272,43 @@ export const useSceneStore = create<SceneState>()(
         return;
       }
 
+      // Skip if parent isn't changing
+      if (existing.parentId === newParentId) {
+        return;
+      }
+
+      // Get current world transform
+      const worldMatrix = getWorldMatrix(id, objects);
+
+      // Compute new local transform relative to new parent
+      let newLocalTransform: {
+        position: [number, number, number];
+        rotation: [number, number, number];
+        scale: [number, number, number];
+      };
+
+      if (newParentId) {
+        // Get new parent's world matrix and invert it
+        const parentWorldMatrix = getWorldMatrix(newParentId, objects);
+        const parentWorldInverse = parentWorldMatrix.clone().invert();
+        // Local = ParentInverse * World
+        const localMatrix = parentWorldInverse.multiply(worldMatrix);
+        newLocalTransform = decomposeMatrix(localMatrix);
+      } else {
+        // No parent, world transform becomes local transform
+        newLocalTransform = decomposeMatrix(worldMatrix);
+      }
+
       set((state) => ({
         objects: {
           ...state.objects,
-          [id]: { ...existing, parentId: newParentId },
+          [id]: {
+            ...existing,
+            parentId: newParentId,
+            position: newLocalTransform.position,
+            rotation: newLocalTransform.rotation,
+            scale: newLocalTransform.scale,
+          },
         },
       }));
     },
