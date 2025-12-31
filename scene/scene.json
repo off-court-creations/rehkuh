@@ -1,0 +1,412 @@
+[
+  {
+    "name": "rocket_body",
+    "type": "cylinder",
+    "position": [
+      0,
+      2,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.6,
+      1.5,
+      0.6
+    ],
+    "material": {
+      "color": "#e8e8e8",
+      "metalness": 0.4,
+      "roughness": 0.3
+    }
+  },
+  {
+    "name": "nose_cone",
+    "type": "cone",
+    "position": [
+      0,
+      3.145,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.6,
+      0.8,
+      0.6
+    ],
+    "material": {
+      "color": "#cc2222",
+      "metalness": 0.3,
+      "roughness": 0.4
+    }
+  },
+  {
+    "name": "window_front",
+    "type": "sphere",
+    "position": [
+      0,
+      2.454,
+      2.468
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.2,
+      0.2,
+      0.05
+    ],
+    "material": {
+      "color": "#4488dd",
+      "metalness": 0.6,
+      "roughness": 0.2
+    }
+  },
+  {
+    "name": "window_right",
+    "type": "sphere",
+    "parent": "window_front",
+    "position": [
+      0.6,
+      2.454,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.2,
+      0.2,
+      0.05
+    ],
+    "material": {
+      "color": "#4488dd",
+      "metalness": 0.6,
+      "roughness": 0.2
+    }
+  },
+  {
+    "name": "window_back",
+    "type": "sphere",
+    "parent": "window_front",
+    "position": [
+      0,
+      2.5,
+      -0.6
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.2,
+      0.2,
+      0.05
+    ],
+    "material": {
+      "color": "#4488dd",
+      "metalness": 0.6,
+      "roughness": 0.2
+    }
+  },
+  {
+    "name": "window_left",
+    "type": "sphere",
+    "position": [
+      -0.6,
+      2.454,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.2,
+      0.2,
+      0.05
+    ],
+    "material": {
+      "color": "#4488dd",
+      "metalness": 0.6,
+      "roughness": 0.2
+    }
+  },
+  {
+    "name": "window_lower_front",
+    "type": "sphere",
+    "position": [
+      0,
+      1.8,
+      0.6
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.15,
+      0.15,
+      0.05
+    ],
+    "material": {
+      "color": "#4488dd",
+      "metalness": 0.6,
+      "roughness": 0.2
+    }
+  },
+  {
+    "name": "window_lower_right",
+    "type": "sphere",
+    "position": [
+      0.6,
+      1.8,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.15,
+      0.15,
+      0.05
+    ],
+    "material": {
+      "color": "#4488dd",
+      "metalness": 0.6,
+      "roughness": 0.2
+    }
+  },
+  {
+    "name": "window_lower_back",
+    "type": "sphere",
+    "position": [
+      0,
+      1.8,
+      -0.6
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.15,
+      0.15,
+      0.05
+    ],
+    "material": {
+      "color": "#4488dd",
+      "metalness": 0.6,
+      "roughness": 0.2
+    }
+  },
+  {
+    "name": "window_lower_left",
+    "type": "sphere",
+    "position": [
+      -0.6,
+      1.8,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.15,
+      0.15,
+      0.05
+    ],
+    "material": {
+      "color": "#4488dd",
+      "metalness": 0.6,
+      "roughness": 0.2
+    }
+  },
+  {
+    "name": "fin1",
+    "type": "box",
+    "position": [
+      0.5,
+      0.966,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      -0.4
+    ],
+    "scale": [
+      0.4,
+      0.6,
+      0.08
+    ],
+    "material": {
+      "color": "#cc2222",
+      "metalness": 0.3,
+      "roughness": 0.4
+    }
+  },
+  {
+    "name": "fin2",
+    "type": "box",
+    "position": [
+      -0.5,
+      1,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0.4
+    ],
+    "scale": [
+      0.4,
+      0.6,
+      0.08
+    ],
+    "material": {
+      "color": "#cc2222",
+      "metalness": 0.3,
+      "roughness": 0.4
+    }
+  },
+  {
+    "name": "fin3",
+    "type": "box",
+    "position": [
+      0,
+      0.5,
+      0.5
+    ],
+    "rotation": [
+      0.4,
+      0,
+      0
+    ],
+    "scale": [
+      0.08,
+      0.6,
+      0.4
+    ],
+    "material": {
+      "color": "#cc2222",
+      "metalness": 0.3,
+      "roughness": 0.4
+    }
+  },
+  {
+    "name": "fin4",
+    "type": "box",
+    "position": [
+      0,
+      0.5,
+      -0.5
+    ],
+    "rotation": [
+      -0.4,
+      0,
+      0
+    ],
+    "scale": [
+      0.08,
+      0.6,
+      0.4
+    ],
+    "material": {
+      "color": "#cc2222",
+      "metalness": 0.3,
+      "roughness": 0.4
+    }
+  },
+  {
+    "name": "engine",
+    "type": "cylinder",
+    "position": [
+      0,
+      0.3,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.35,
+      0.3,
+      0.35
+    ],
+    "material": {
+      "color": "#444444",
+      "metalness": 0.7,
+      "roughness": 0.3
+    }
+  },
+  {
+    "name": "flame_inner",
+    "type": "cone",
+    "position": [
+      0,
+      -0.4,
+      0
+    ],
+    "rotation": [
+      3.142,
+      0,
+      0
+    ],
+    "scale": [
+      0.25,
+      0.6,
+      0.25
+    ],
+    "material": {
+      "color": "#ffcc00",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "flame_outer",
+    "type": "cone",
+    "position": [
+      0,
+      -0.5,
+      0
+    ],
+    "rotation": [
+      3.142,
+      0,
+      0
+    ],
+    "scale": [
+      0.35,
+      0.8,
+      0.35
+    ],
+    "material": {
+      "color": "#ff6600",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  }
+]
