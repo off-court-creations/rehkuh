@@ -8,6 +8,8 @@ import type {
   PrimitiveType,
   MaterialProps,
 } from "@/types";
+import { validateSceneFile, validateParentReferences } from "@/schemas/scene";
+import { showError } from "@/store/notificationStore";
 
 type TransformModeState = TransformMode | null;
 
@@ -155,9 +157,27 @@ export const useSceneStore = create<SceneState>()(
     loadScene: async () => {
       try {
         const res = await fetch("/__scene");
-        const fileObjects: SceneFileObject[] = await res.json();
+        const rawData = await res.json();
 
-        if (!Array.isArray(fileObjects) || fileObjects.length === 0) {
+        // Validate JSON structure
+        const validation = validateSceneFile(rawData);
+        if (!validation.success) {
+          showError(`Scene validation failed: ${validation.error}`);
+          set({ isLoaded: true });
+          return;
+        }
+
+        const fileObjects = validation.data;
+
+        if (fileObjects.length === 0) {
+          set({ isLoaded: true });
+          return;
+        }
+
+        // Validate parent references
+        const parentValidation = validateParentReferences(fileObjects);
+        if (!parentValidation.success) {
+          showError(`Scene validation failed: ${parentValidation.error}`);
           set({ isLoaded: true });
           return;
         }
@@ -195,7 +215,10 @@ export const useSceneStore = create<SceneState>()(
         }
 
         set({ objects: newObjects, isLoaded: true });
-      } catch {
+      } catch (err) {
+        showError(
+          `Failed to load scene: ${err instanceof Error ? err.message : String(err)}`,
+        );
         set({ isLoaded: true });
       }
     },

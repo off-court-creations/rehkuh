@@ -3,6 +3,7 @@ import { Surface, Box } from "@archway/valet";
 import { Viewport } from "@/components/editor/Viewport";
 import { Outliner } from "@/components/editor/Outliner";
 import { PropertyPanel } from "@/components/editor/PropertyPanel";
+import { GlobalSnackbar } from "@/components/GlobalSnackbar";
 import { useSceneStore } from "@/store/sceneStore";
 
 export default function Editor() {
@@ -57,6 +58,7 @@ export default function Editor() {
           <Viewport />
         </div>
       </div>
+      <GlobalSnackbar />
     </Surface>
   );
 }

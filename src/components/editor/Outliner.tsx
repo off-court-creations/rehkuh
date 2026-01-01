@@ -3,6 +3,8 @@ import { Panel, Stack, Typography, Button, Box } from "@archway/valet";
 import { useSceneStore } from "@/store/sceneStore";
 import { OutlinerNode } from "./OutlinerNode";
 import type { PrimitiveType } from "@/types";
+import { validateSceneFile, validateParentReferences } from "@/schemas/scene";
+import { showError } from "@/store/notificationStore";
 
 export function Outliner() {
   const rootObjects = useSceneStore((state) =>
@@ -29,6 +31,27 @@ export function Outliner() {
 
   const handleExportScene = async () => {
     const json = serializeScene();
+
+    // Validate before export
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(json);
+    } catch {
+      showError("Cannot export: Invalid JSON");
+      return;
+    }
+
+    const validation = validateSceneFile(parsed);
+    if (!validation.success) {
+      showError(`Cannot export: ${validation.error}`);
+      return;
+    }
+
+    const parentValidation = validateParentReferences(validation.data);
+    if (!parentValidation.success) {
+      showError(`Cannot export: ${parentValidation.error}`);
+      return;
+    }
 
     try {
       const picker = (

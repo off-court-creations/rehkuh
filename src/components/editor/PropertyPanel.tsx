@@ -1,6 +1,7 @@
 import { Panel, Stack, Typography, Button, Box } from "@archway/valet";
 import { useSceneStore } from "@/store/sceneStore";
 import type { TransformMode } from "@/types";
+import { HexColorSchema } from "@/schemas/scene";
 
 export function PropertyPanel() {
   const primaryId = useSceneStore((state) => state.selection.primaryId);
@@ -100,11 +101,13 @@ export function PropertyPanel() {
                 <input
                   type="color"
                   value={obj.material.color}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const result = HexColorSchema.safeParse(e.target.value);
+                    if (!result.success) return;
                     updateObject(primaryId, {
-                      material: { ...obj.material, color: e.target.value },
-                    })
-                  }
+                      material: { ...obj.material, color: result.data },
+                    });
+                  }}
                   style={{
                     width: "16px",
                     height: "16px",
