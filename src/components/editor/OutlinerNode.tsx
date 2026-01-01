@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Stack, Typography, Icon } from "@archway/valet";
+import { Box, Typography, Icon } from "@archway/valet";
 import { useSceneStore } from "@/store/sceneStore";
 
 interface OutlinerNodeProps {
@@ -64,7 +64,7 @@ export function OutlinerNode({ id, depth }: OutlinerNodeProps) {
   const isGroup = obj.type === "group";
 
   return (
-    <Box>
+    <Box sx={{ margin: 0, padding: 0 }}>
       <Box
         draggable
         onDragStart={handleDragStart}
@@ -73,58 +73,109 @@ export function OutlinerNode({ id, depth }: OutlinerNodeProps) {
         onDragLeave={handleDragLeave}
         onClick={handleClick}
         sx={{
-          paddingLeft: `${depth * 16 + 4}px`,
-          paddingRight: "4px",
-          paddingTop: "4px",
-          paddingBottom: "4px",
+          paddingLeft: `${depth * 12 + 2}px`,
+          paddingRight: "14px",
+          paddingTop: 0,
+          paddingBottom: 0,
+          height: "16px",
+          width: "100%",
           cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          position: "relative",
           backgroundColor: isDragOver
             ? "rgba(75, 208, 210, 0.3)"
             : isSelected
               ? "rgba(75, 208, 210, 0.2)"
               : "transparent",
-          borderRadius: "4px",
+          borderRadius: 0,
         }}
       >
-        <Stack direction="row" gap={1} sx={{ alignItems: "center" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            width: "100%",
+            gap: 0,
+            margin: 0,
+            padding: 0,
+          }}
+        >
           {hasChildren ? (
             <Box
               onClick={(e: React.MouseEvent) => {
                 e.stopPropagation();
                 setExpanded(!expanded);
               }}
-              sx={{ cursor: "pointer", display: "flex", alignItems: "center" }}
+              sx={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                width: "14px",
+              }}
             >
               <Icon
                 icon={expanded ? "mdi:chevron-down" : "mdi:chevron-right"}
-                size="sm"
+                size={14}
               />
             </Box>
           ) : (
-            <Box sx={{ width: "20px" }} />
+            <Box sx={{ width: "14px" }} />
           )}
           <Icon
             icon={isGroup ? "mdi:folder-outline" : "mdi:cube-outline"}
-            size="sm"
+            size={14}
+            sx={{ marginRight: "2px" }}
           />
           <Typography
             variant="body"
-            sx={{ flex: 1, fontSize: "13px", userSelect: "none" }}
+            sx={{
+              flex: 1,
+              fontSize: "12px",
+              lineHeight: "16px",
+              userSelect: "none",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
           >
             {obj.name}
           </Typography>
           {isSelected && (
             <Box
               onClick={handleDelete}
+              role="button"
+              aria-label="Delete object"
               sx={{
                 cursor: "pointer",
-                opacity: 0.7,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "14px",
+                height: "16px",
+                position: "absolute",
+                right: 0,
+                top: 0,
+                opacity: 0.9,
+                zIndex: 1,
+                backgroundColor: "rgba(0,0,0,0.25)",
               }}
             >
-              <Icon icon="mdi:close" size="sm" />
+              <span
+                aria-hidden="true"
+                style={{
+                  color: "rgba(255,255,255,0.9)",
+                  fontSize: 13,
+                  lineHeight: "16px",
+                  fontWeight: 700,
+                  userSelect: "none",
+                }}
+              >
+                ×
+              </span>
             </Box>
           )}
-        </Stack>
+        </Box>
       </Box>
 
       {expanded &&

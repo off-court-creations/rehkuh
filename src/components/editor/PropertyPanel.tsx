@@ -20,8 +20,17 @@ export function PropertyPanel() {
 
   if (!obj || !primaryId) {
     return (
-      <Panel sx={{ height: "200px", padding: "12px" }}>
-        <Typography variant="body" sx={{ opacity: 0.5, fontStyle: "italic" }}>
+      <Panel sx={{ padding: 0, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        <Typography
+          variant="body"
+          sx={{
+            opacity: 0.5,
+            fontStyle: "italic",
+            fontSize: "11px",
+            lineHeight: 1.2,
+            padding: "2px 4px",
+          }}
+        >
           No object selected
         </Typography>
       </Panel>
@@ -32,21 +41,39 @@ export function PropertyPanel() {
 
   return (
     <Panel
-      sx={{ padding: "12px", borderTop: "1px solid rgba(255,255,255,0.1)" }}
+      sx={{
+        padding: 0,
+        borderTop: "1px solid rgba(255,255,255,0.1)",
+      }}
     >
-      <Stack gap={3}>
-        <Typography variant="subtitle">Properties</Typography>
+      <Stack gap={0} sx={{ padding: 0 }}>
+        <Typography
+          variant="subtitle"
+          sx={{
+            padding: "2px 4px",
+            fontSize: "11px",
+            lineHeight: 1.2,
+            opacity: 0.8,
+            userSelect: "none",
+          }}
+        >
+          Properties
+        </Typography>
 
-        <Stack gap={1}>
+        <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
           <Typography variant="body" sx={{ fontSize: "12px", opacity: 0.7 }}>
             Transform Mode
           </Typography>
-          <Stack direction="row" gap={1}>
+          <Stack direction="row" gap={0} sx={{ padding: 0 }}>
             {modes.map((mode) => (
               <Button
                 key={mode}
                 size="sm"
                 sx={{
+                  padding: "0 4px",
+                  minHeight: "16px",
+                  fontSize: "11px",
+                  lineHeight: "16px",
                   backgroundColor:
                     transformMode === mode
                       ? "rgba(75, 208, 210, 0.3)"
@@ -62,14 +89,14 @@ export function PropertyPanel() {
 
         {!isGroup && (
           <>
-            <Stack gap={1}>
+            <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
               <Typography
                 variant="body"
-                sx={{ fontSize: "12px", opacity: 0.7 }}
+                sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
               >
                 Color
               </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
                 <input
                   type="color"
                   value={obj.material.color}
@@ -79,24 +106,26 @@ export function PropertyPanel() {
                     })
                   }
                   style={{
-                    width: "40px",
-                    height: "30px",
+                    width: "16px",
+                    height: "16px",
+                    padding: 0,
+                    margin: 0,
                     border: "none",
-                    borderRadius: "4px",
+                    borderRadius: "2px",
                     cursor: "pointer",
                     backgroundColor: "transparent",
                   }}
                 />
-                <Typography variant="body" sx={{ fontSize: "13px" }}>
+                <Typography variant="body" sx={{ fontSize: "11px" }}>
                   {obj.material.color}
                 </Typography>
               </Box>
             </Stack>
 
-            <Stack gap={1}>
+            <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
               <Typography
                 variant="body"
-                sx={{ fontSize: "12px", opacity: 0.7 }}
+                sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
               >
                 Metalness: {obj.material.metalness.toFixed(2)}
               </Typography>
@@ -114,14 +143,14 @@ export function PropertyPanel() {
                     },
                   })
                 }
-                style={{ width: "100%" }}
+                style={{ width: "100%", height: "12px", margin: 0, padding: 0 }}
               />
             </Stack>
 
-            <Stack gap={1}>
+            <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
               <Typography
                 variant="body"
-                sx={{ fontSize: "12px", opacity: 0.7 }}
+                sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
               >
                 Roughness: {obj.material.roughness.toFixed(2)}
               </Typography>
@@ -139,7 +168,7 @@ export function PropertyPanel() {
                     },
                   })
                 }
-                style={{ width: "100%" }}
+                style={{ width: "100%", height: "12px", margin: 0, padding: 0 }}
               />
             </Stack>
           </>

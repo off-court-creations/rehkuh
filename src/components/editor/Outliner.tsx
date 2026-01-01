@@ -36,76 +36,107 @@ export function Outliner() {
   };
 
   return (
-    <Panel sx={{ flex: 1, overflow: "auto", padding: "12px", minHeight: 0 }}>
-      <Stack gap={2}>
-        <Typography variant="subtitle">Scene</Typography>
+    <Panel
+      onDrop={handleDropToRoot}
+      onDragOver={handleDragOverRoot}
+      onDragLeave={handleDragLeaveRoot}
+      sx={{
+        flex: 1,
+        overflow: "auto",
+        padding: 0,
+        minHeight: 0,
+        backgroundColor: isDragOverRoot
+          ? "rgba(75, 208, 210, 0.06)"
+          : undefined,
+      }}
+    >
+      <Stack gap={0} sx={{ padding: 0 }}>
+        <Typography
+          variant="subtitle"
+          sx={{
+            padding: 0,
+            margin: 0,
+            fontSize: "11px",
+            lineHeight: 1.2,
+            opacity: 0.8,
+            userSelect: "none",
+          }}
+        >
+          Scene
+        </Typography>
 
-        <Stack direction="row" gap={1} sx={{ flexWrap: "wrap" }}>
-          <Button size="sm" onClick={() => handleAddPrimitive("box")}>
+        <Stack direction="row" gap={0} sx={{ flexWrap: "wrap", padding: 0 }}>
+          <Button
+            size="sm"
+            sx={{ padding: 0, minHeight: "16px", fontSize: "11px" }}
+            onClick={() => handleAddPrimitive("box")}
+          >
             Box
           </Button>
-          <Button size="sm" onClick={() => handleAddPrimitive("sphere")}>
+          <Button
+            size="sm"
+            sx={{ padding: 0, minHeight: "16px", fontSize: "11px" }}
+            onClick={() => handleAddPrimitive("sphere")}
+          >
             Sphere
           </Button>
-          <Button size="sm" onClick={() => handleAddPrimitive("cylinder")}>
+          <Button
+            size="sm"
+            sx={{ padding: 0, minHeight: "16px", fontSize: "11px" }}
+            onClick={() => handleAddPrimitive("cylinder")}
+          >
             Cylinder
           </Button>
-          <Button size="sm" onClick={() => handleAddPrimitive("cone")}>
+          <Button
+            size="sm"
+            sx={{ padding: 0, minHeight: "16px", fontSize: "11px" }}
+            onClick={() => handleAddPrimitive("cone")}
+          >
             Cone
           </Button>
-          <Button size="sm" onClick={() => handleAddPrimitive("torus")}>
+          <Button
+            size="sm"
+            sx={{ padding: 0, minHeight: "16px", fontSize: "11px" }}
+            onClick={() => handleAddPrimitive("torus")}
+          >
             Torus
           </Button>
-          <Button size="sm" onClick={() => handleAddPrimitive("plane")}>
+          <Button
+            size="sm"
+            sx={{ padding: 0, minHeight: "16px", fontSize: "11px" }}
+            onClick={() => handleAddPrimitive("plane")}
+          >
             Plane
           </Button>
-          <Button size="sm" onClick={() => handleAddPrimitive("group")}>
+          <Button
+            size="sm"
+            sx={{ padding: 0, minHeight: "16px", fontSize: "11px" }}
+            onClick={() => handleAddPrimitive("group")}
+          >
             Group
           </Button>
         </Stack>
 
-        <Box sx={{ marginTop: "8px" }}>
+        <Box sx={{ padding: 0 }}>
           {rootObjects.length === 0 ? (
             <Typography
               variant="body"
-              sx={{ opacity: 0.5, fontStyle: "italic" }}
+              sx={{
+                opacity: 0.5,
+                fontStyle: "italic",
+                fontSize: "11px",
+                padding: "2px 4px",
+              }}
             >
               No objects in scene
             </Typography>
           ) : (
-            <Stack gap={0}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0 }}>
               {rootObjects.map((obj) => (
                 <OutlinerNode key={obj.id} id={obj.id} depth={0} />
               ))}
-            </Stack>
+            </Box>
           )}
-
-          {/* Drop zone to make items root-level */}
-          <Box
-            onDrop={handleDropToRoot}
-            onDragOver={handleDragOverRoot}
-            onDragLeave={handleDragLeaveRoot}
-            sx={{
-              marginTop: "8px",
-              padding: "8px",
-              borderRadius: "4px",
-              border: "1px dashed",
-              borderColor: isDragOverRoot
-                ? "rgba(75, 208, 210, 0.6)"
-                : "rgba(255,255,255,0.2)",
-              backgroundColor: isDragOverRoot
-                ? "rgba(75, 208, 210, 0.1)"
-                : "transparent",
-              textAlign: "center",
-            }}
-          >
-            <Typography
-              variant="body"
-              sx={{ fontSize: "11px", opacity: 0.5, userSelect: "none" }}
-            >
-              Drop here for root level
-            </Typography>
-          </Box>
         </Box>
       </Stack>
     </Panel>
