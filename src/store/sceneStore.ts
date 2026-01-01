@@ -30,6 +30,8 @@ interface SceneState {
 
   // Lifecycle
   loadScene: () => Promise<void>;
+  serializeScene: () => string;
+  clearScene: () => void;
 
   // Object actions
   addObject: (
@@ -59,6 +61,32 @@ const defaultMaterial: MaterialProps = {
 };
 
 let objectCounter = 0;
+
+function toSceneFileObjects(
+  objects: Record<string, SceneObject>,
+): SceneFileObject[] {
+  return Object.values(objects).map((obj) => ({
+    name: obj.name,
+    type: obj.type,
+    parent: obj.parentId ? objects[obj.parentId]?.name : undefined,
+    position: obj.position.map((n) => Math.round(n * 1000) / 1000) as [
+      number,
+      number,
+      number,
+    ],
+    rotation: obj.rotation.map((n) => Math.round(n * 1000) / 1000) as [
+      number,
+      number,
+      number,
+    ],
+    scale: obj.scale.map((n) => Math.round(n * 1000) / 1000) as [
+      number,
+      number,
+      number,
+    ],
+    material: obj.type !== "group" ? obj.material : undefined,
+  }));
+}
 
 // Helper: compute world matrix by walking up parent chain
 function getWorldMatrix(
@@ -107,30 +135,7 @@ let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 const saveToFile = (objects: Record<string, SceneObject>) => {
   if (saveTimeout) clearTimeout(saveTimeout);
   saveTimeout = setTimeout(() => {
-    // Convert to file format (use names for parent references)
-    const fileObjects: SceneFileObject[] = Object.values(objects).map(
-      (obj) => ({
-        name: obj.name,
-        type: obj.type,
-        parent: obj.parentId ? objects[obj.parentId]?.name : undefined,
-        position: obj.position.map((n) => Math.round(n * 1000) / 1000) as [
-          number,
-          number,
-          number,
-        ],
-        rotation: obj.rotation.map((n) => Math.round(n * 1000) / 1000) as [
-          number,
-          number,
-          number,
-        ],
-        scale: obj.scale.map((n) => Math.round(n * 1000) / 1000) as [
-          number,
-          number,
-          number,
-        ],
-        material: obj.type !== "group" ? obj.material : undefined,
-      }),
-    );
+    const fileObjects = toSceneFileObjects(objects);
 
     fetch("/__scene", {
       method: "POST",
@@ -193,6 +198,20 @@ export const useSceneStore = create<SceneState>()(
       } catch {
         set({ isLoaded: true });
       }
+    },
+
+    serializeScene: () => {
+      const fileObjects = toSceneFileObjects(get().objects);
+      return JSON.stringify(fileObjects, null, 2);
+    },
+
+    clearScene: () => {
+      set((state) => ({
+        ...state,
+        objects: {},
+        selection: { selectedIds: [], primaryId: null },
+        transformMode: null,
+      }));
     },
 
     addObject: (objData) => {

@@ -1,4 +1,5 @@
 import { useMemo, useRef } from "react";
+import * as THREE from "three";
 import { useSceneStore } from "@/store/sceneStore";
 
 export function SceneObject({ id }) {
@@ -18,9 +19,9 @@ export function SceneObject({ id }) {
     select(id, e.shiftKey);
   };
 
-  const geometry = useMemo(() => {
-    if (!obj) return null;
-    switch (obj.type) {
+  const geometryType = useMemo(() => obj?.type ?? null, [obj?.type]);
+  const renderGeometry = () => {
+    switch (geometryType) {
       case "box":
         return <boxGeometry args={[1, 1, 1]} />;
       case "sphere":
@@ -36,28 +37,45 @@ export function SceneObject({ id }) {
       default:
         return null;
     }
-  }, [obj?.type]);
+  };
 
   if (!obj || !obj.visible) return null;
 
   return (
     <group position={obj.position} rotation={obj.rotation} scale={obj.scale}>
       {obj.type !== "group" && (
-        <mesh
-          ref={meshRef}
-          onClick={handleClick}
-          userData={{ objectId: id }}
-          castShadow
-          receiveShadow
-        >
-          {geometry}
-          <meshStandardMaterial
-            color={isSelected ? "#ffaa00" : obj.material.color}
-            metalness={obj.material.metalness}
-            roughness={obj.material.roughness}
-            emissive={isSelected ? "#331100" : "#000000"}
-          />
-        </mesh>
+        <>
+          <mesh
+            ref={meshRef}
+            onClick={handleClick}
+            userData={{ objectId: id }}
+            castShadow
+            receiveShadow
+          >
+            {renderGeometry()}
+            <meshStandardMaterial
+              color={obj.material.color}
+              metalness={obj.material.metalness}
+              roughness={obj.material.roughness}
+            />
+          </mesh>
+
+          {isSelected && (
+            <mesh
+              scale={[1.03, 1.03, 1.03]}
+              raycast={() => null}
+              renderOrder={999}
+            >
+              {renderGeometry()}
+              <meshBasicMaterial
+                color="#ffaa00"
+                side={THREE.BackSide}
+                toneMapped={false}
+                depthWrite={false}
+              />
+            </mesh>
+          )}
+        </>
       )}
 
       {children.map((child) => (

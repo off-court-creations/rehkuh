@@ -9,7 +9,6 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
   const objects = useSceneStore((state) => Object.values(state.objects));
   const selectedIds = useSceneStore((state) => state.selection.selectedIds);
   const transformMode = useSceneStore((state) => state.transformMode);
-  const clearSelection = useSceneStore((state) => state.clearSelection);
 
   const rootObjects = objects.filter((o) => o.parentId === null);
 
@@ -77,12 +76,6 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -0.02, 0]}
         receiveShadow
-        onClick={(e) => {
-          if (isDraggingRef.current) return;
-          if (e.object.userData?.objectId === undefined) {
-            clearSelection();
-          }
-        }}
       >
         <planeGeometry args={[100, 100]} />
         <meshStandardMaterial color="#1a2a3a" transparent opacity={0.5} />
@@ -93,13 +86,7 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
 
 export function Viewport() {
   const [orbitEnabled, setOrbitEnabled] = useState(true);
-  const clearSelection = useSceneStore((state) => state.clearSelection);
   const isDraggingRef = useRef(false);
-
-  const handlePointerMissed = () => {
-    if (isDraggingRef.current) return;
-    clearSelection();
-  };
 
   return (
     <Canvas
@@ -112,7 +99,6 @@ export function Viewport() {
         width: "100%",
         height: "100%",
       }}
-      onPointerMissed={handlePointerMissed}
     >
       <Scene
         orbitEnabled={orbitEnabled}
