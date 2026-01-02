@@ -14,6 +14,10 @@ export function Outliner() {
   const reparent = useSceneStore((state) => state.reparentObject);
   const clearScene = useSceneStore((state) => state.clearScene);
   const serializeScene = useSceneStore((state) => state.serializeScene);
+  const undo = useSceneStore((state) => state.undo);
+  const redo = useSceneStore((state) => state.redo);
+  const canUndo = useSceneStore((state) => state.history.past.length > 0);
+  const canRedo = useSceneStore((state) => state.history.future.length > 0);
 
   const [isDragOverRoot, setIsDragOverRoot] = useState(false);
 
@@ -153,6 +157,36 @@ export function Outliner() {
             Scene
           </Typography>
           <Stack direction="row" gap={0} sx={{ padding: 0 }}>
+            <Button
+              size="sm"
+              sx={{
+                padding: "0 4px",
+                minHeight: "16px",
+                fontSize: "11px",
+                lineHeight: "16px",
+                opacity: canUndo ? 1 : 0.4,
+              }}
+              onClick={undo}
+              disabled={!canUndo}
+              title="Undo (Ctrl+Z)"
+            >
+              Undo
+            </Button>
+            <Button
+              size="sm"
+              sx={{
+                padding: "0 4px",
+                minHeight: "16px",
+                fontSize: "11px",
+                lineHeight: "16px",
+                opacity: canRedo ? 1 : 0.4,
+              }}
+              onClick={redo}
+              disabled={!canRedo}
+              title="Redo (Ctrl+Shift+Z)"
+            >
+              Redo
+            </Button>
             <Button
               size="sm"
               sx={{

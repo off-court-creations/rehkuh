@@ -9,12 +9,15 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
   const objects = useSceneStore((state) => Object.values(state.objects));
   const selectedIds = useSceneStore((state) => state.selection.selectedIds);
   const transformMode = useSceneStore((state) => state.transformMode);
+  const beginTransaction = useSceneStore((state) => state.beginTransaction);
+  const commitTransaction = useSceneStore((state) => state.commitTransaction);
 
   const rootObjects = objects.filter((o) => o.parentId === null);
 
   const handleDragStart = () => {
     isDraggingRef.current = true;
     setOrbitEnabled(false);
+    beginTransaction();
   };
 
   const handleDragEnd = () => {
@@ -23,6 +26,7 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
       isDraggingRef.current = false;
     }, 100);
     setOrbitEnabled(true);
+    commitTransaction();
   };
 
   return (

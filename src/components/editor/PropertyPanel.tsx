@@ -11,6 +11,8 @@ export function PropertyPanel() {
   const updateObject = useSceneStore((state) => state.updateObject);
   const transformMode = useSceneStore((state) => state.transformMode);
   const setTransformMode = useSceneStore((state) => state.setTransformMode);
+  const beginTransaction = useSceneStore((state) => state.beginTransaction);
+  const commitTransaction = useSceneStore((state) => state.commitTransaction);
 
   const modes: TransformMode[] = ["translate", "rotate", "scale"];
 
@@ -138,6 +140,8 @@ export function PropertyPanel() {
                 max="1"
                 step="0.01"
                 value={obj.material.metalness}
+                onMouseDown={beginTransaction}
+                onMouseUp={commitTransaction}
                 onChange={(e) =>
                   updateObject(primaryId, {
                     material: {
@@ -163,6 +167,8 @@ export function PropertyPanel() {
                 max="1"
                 step="0.01"
                 value={obj.material.roughness}
+                onMouseDown={beginTransaction}
+                onMouseUp={commitTransaction}
                 onChange={(e) =>
                   updateObject(primaryId, {
                     material: {

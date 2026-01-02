@@ -5,10 +5,13 @@ import { Outliner } from "@/components/editor/Outliner";
 import { PropertyPanel } from "@/components/editor/PropertyPanel";
 import { GlobalSnackbar } from "@/components/GlobalSnackbar";
 import { useSceneStore } from "@/store/sceneStore";
+import { useUndoRedoKeyboard } from "@/hooks/useUndoRedoKeyboard";
 
 export default function Editor() {
   const loadScene = useSceneStore((s) => s.loadScene);
   const isLoaded = useSceneStore((s) => s.isLoaded);
+
+  useUndoRedoKeyboard();
 
   // Reload scene from file
   const reloadScene = useCallback(async () => {

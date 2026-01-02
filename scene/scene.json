@@ -373,7 +373,7 @@
     "type": "cylinder",
     "parent": "car",
     "position": [
-      0.78,
+      3.167,
       0.34,
       -0.98
     ],

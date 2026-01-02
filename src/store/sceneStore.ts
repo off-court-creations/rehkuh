@@ -24,11 +24,20 @@ interface SceneFileObject {
   material?: MaterialProps | undefined;
 }
 
+interface HistoryState {
+  past: Record<string, SceneObject>[];
+  future: Record<string, SceneObject>[];
+}
+
 interface SceneState {
   objects: Record<string, SceneObject>;
   selection: SelectionState;
   transformMode: TransformModeState;
   isLoaded: boolean;
+
+  // History
+  history: HistoryState;
+  transactionSnapshot: Record<string, SceneObject> | null;
 
   // Lifecycle
   loadScene: () => Promise<void>;
@@ -54,6 +63,13 @@ interface SceneState {
 
   // Transform mode
   setTransformMode: (mode: TransformModeState) => void;
+
+  // History actions
+  undo: () => void;
+  redo: () => void;
+  beginTransaction: () => void;
+  commitTransaction: () => void;
+  cancelTransaction: () => void;
 }
 
 const defaultMaterial: MaterialProps = {
@@ -61,6 +77,8 @@ const defaultMaterial: MaterialProps = {
   metalness: 0.2,
   roughness: 0.4,
 };
+
+const HISTORY_LIMIT = 50;
 
 let objectCounter = 0;
 
@@ -153,6 +171,8 @@ export const useSceneStore = create<SceneState>()(
     selection: { selectedIds: [], primaryId: null },
     transformMode: null,
     isLoaded: false,
+    history: { past: [], future: [] },
+    transactionSnapshot: null,
 
     loadScene: async () => {
       try {
@@ -214,7 +234,12 @@ export const useSceneStore = create<SceneState>()(
           }
         }
 
-        set({ objects: newObjects, isLoaded: true });
+        set({
+          objects: newObjects,
+          isLoaded: true,
+          history: { past: [], future: [] },
+          transactionSnapshot: null,
+        });
       } catch (err) {
         showError(
           `Failed to load scene: ${err instanceof Error ? err.message : String(err)}`,
@@ -229,12 +254,25 @@ export const useSceneStore = create<SceneState>()(
     },
 
     clearScene: () => {
-      set((state) => ({
-        ...state,
-        objects: {},
-        selection: { selectedIds: [], primaryId: null },
-        transformMode: null,
-      }));
+      const state = get();
+      // Push to history if not in a transaction
+      if (!state.transactionSnapshot) {
+        const newPast = [...state.history.past, state.objects].slice(
+          -HISTORY_LIMIT,
+        );
+        set({
+          objects: {},
+          selection: { selectedIds: [], primaryId: null },
+          transformMode: null,
+          history: { past: newPast, future: [] },
+        });
+      } else {
+        set({
+          objects: {},
+          selection: { selectedIds: [], primaryId: null },
+          transformMode: null,
+        });
+      }
     },
 
     addObject: (objData) => {
@@ -257,56 +295,84 @@ export const useSceneStore = create<SceneState>()(
           }
         : { ...(objData as Omit<SceneObject, "id">), id };
 
-      set((state) => ({
-        objects: { ...state.objects, [id]: obj },
-      }));
+      const state = get();
+      if (!state.transactionSnapshot) {
+        const newPast = [...state.history.past, state.objects].slice(
+          -HISTORY_LIMIT,
+        );
+        set({
+          objects: { ...state.objects, [id]: obj },
+          history: { past: newPast, future: [] },
+        });
+      } else {
+        set({ objects: { ...state.objects, [id]: obj } });
+      }
       return id;
     },
 
     removeObject: (id) => {
-      const descendants = get().getDescendants(id);
+      const state = get();
+      const descendants = state.getDescendants(id);
       const idsToRemove = [id, ...descendants.map((d) => d.id)];
 
-      set((state) => {
-        const newObjects = { ...state.objects };
-        idsToRemove.forEach((rid) => delete newObjects[rid]);
+      const newObjects = { ...state.objects };
+      idsToRemove.forEach((rid) => delete newObjects[rid]);
 
-        const newSelectedIds = state.selection.selectedIds.filter(
-          (sid) => !idsToRemove.includes(sid),
+      const newSelectedIds = state.selection.selectedIds.filter(
+        (sid) => !idsToRemove.includes(sid),
+      );
+      const newPrimaryId = idsToRemove.includes(state.selection.primaryId ?? "")
+        ? (newSelectedIds[0] ?? null)
+        : state.selection.primaryId;
+
+      if (!state.transactionSnapshot) {
+        const newPast = [...state.history.past, state.objects].slice(
+          -HISTORY_LIMIT,
         );
-        const newPrimaryId = idsToRemove.includes(
-          state.selection.primaryId ?? "",
-        )
-          ? (newSelectedIds[0] ?? null)
-          : state.selection.primaryId;
-
-        return {
+        set({
           objects: newObjects,
           selection: { selectedIds: newSelectedIds, primaryId: newPrimaryId },
-        };
-      });
+          history: { past: newPast, future: [] },
+        });
+      } else {
+        set({
+          objects: newObjects,
+          selection: { selectedIds: newSelectedIds, primaryId: newPrimaryId },
+        });
+      }
     },
 
     updateObject: (id, partial) => {
-      set((state) => {
-        const existing = state.objects[id];
-        if (!existing) return state;
-        return {
-          objects: {
-            ...state.objects,
-            [id]: { ...existing, ...partial },
-          },
-        };
-      });
+      const state = get();
+      const existing = state.objects[id];
+      if (!existing) return;
+
+      const newObjects = {
+        ...state.objects,
+        [id]: { ...existing, ...partial },
+      };
+
+      if (!state.transactionSnapshot) {
+        const newPast = [...state.history.past, state.objects].slice(
+          -HISTORY_LIMIT,
+        );
+        set({
+          objects: newObjects,
+          history: { past: newPast, future: [] },
+        });
+      } else {
+        set({ objects: newObjects });
+      }
     },
 
     reparentObject: (id, newParentId) => {
-      const objects = get().objects;
+      const state = get();
+      const objects = state.objects;
       const existing = objects[id];
       if (!existing) return;
 
       // Prevent circular references
-      const descendants = get().getDescendants(id);
+      const descendants = state.getDescendants(id);
       if (newParentId && descendants.some((d) => d.id === newParentId)) {
         return;
       }
@@ -341,18 +407,26 @@ export const useSceneStore = create<SceneState>()(
         newLocalTransform = decomposeMatrix(worldMatrix);
       }
 
-      set((state) => ({
-        objects: {
-          ...state.objects,
-          [id]: {
-            ...existing,
-            parentId: newParentId,
-            position: newLocalTransform.position,
-            rotation: newLocalTransform.rotation,
-            scale: newLocalTransform.scale,
-          },
+      const newObjects = {
+        ...objects,
+        [id]: {
+          ...existing,
+          parentId: newParentId,
+          position: newLocalTransform.position,
+          rotation: newLocalTransform.rotation,
+          scale: newLocalTransform.scale,
         },
-      }));
+      };
+
+      if (!state.transactionSnapshot) {
+        const newPast = [...state.history.past, objects].slice(-HISTORY_LIMIT);
+        set({
+          objects: newObjects,
+          history: { past: newPast, future: [] },
+        });
+      } else {
+        set({ objects: newObjects });
+      }
     },
 
     getChildren: (parentId) => {
@@ -418,6 +492,80 @@ export const useSceneStore = create<SceneState>()(
 
     setTransformMode: (mode) => {
       set({ transformMode: mode });
+    },
+
+    undo: () => {
+      const state = get();
+      if (state.history.past.length === 0) return;
+
+      const newPast = [...state.history.past];
+      const previousObjects = newPast.pop()!;
+      const newFuture = [state.objects, ...state.history.future];
+
+      // Clean up selection if objects no longer exist
+      const validSelectedIds = state.selection.selectedIds.filter(
+        (id) => previousObjects[id],
+      );
+      const validPrimaryId =
+        state.selection.primaryId && previousObjects[state.selection.primaryId]
+          ? state.selection.primaryId
+          : (validSelectedIds[0] ?? null);
+
+      set({
+        objects: previousObjects,
+        history: { past: newPast, future: newFuture },
+        selection: { selectedIds: validSelectedIds, primaryId: validPrimaryId },
+      });
+    },
+
+    redo: () => {
+      const state = get();
+      if (state.history.future.length === 0) return;
+
+      const newFuture = [...state.history.future];
+      const nextObjects = newFuture.shift()!;
+      const newPast = [...state.history.past, state.objects];
+
+      // Clean up selection if objects no longer exist
+      const validSelectedIds = state.selection.selectedIds.filter(
+        (id) => nextObjects[id],
+      );
+      const validPrimaryId =
+        state.selection.primaryId && nextObjects[state.selection.primaryId]
+          ? state.selection.primaryId
+          : (validSelectedIds[0] ?? null);
+
+      set({
+        objects: nextObjects,
+        history: { past: newPast, future: newFuture },
+        selection: { selectedIds: validSelectedIds, primaryId: validPrimaryId },
+      });
+    },
+
+    beginTransaction: () => {
+      const state = get();
+      // Only start a new transaction if one isn't already active
+      if (!state.transactionSnapshot) {
+        set({ transactionSnapshot: state.objects });
+      }
+    },
+
+    commitTransaction: () => {
+      const state = get();
+      if (!state.transactionSnapshot) return;
+
+      // Push the snapshot (pre-transaction state) to history
+      const newPast = [...state.history.past, state.transactionSnapshot].slice(
+        -HISTORY_LIMIT,
+      );
+      set({
+        transactionSnapshot: null,
+        history: { past: newPast, future: [] },
+      });
+    },
+
+    cancelTransaction: () => {
+      set({ transactionSnapshot: null });
     },
   })),
 );
