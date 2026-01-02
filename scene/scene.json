@@ -1,6 +1,6 @@
 [
   {
-    "name": "car",
+    "name": "rocket",
     "type": "group",
     "position": [
       0,
@@ -19,528 +19,503 @@
     ]
   },
   {
-    "name": "car_body",
-    "type": "box",
-    "parent": "car",
+    "name": "rocket_body",
+    "type": "cylinder",
+    "parent": "rocket",
     "position": [
       0,
+      1.5,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.58,
+      3,
+      0.58
+    ],
+    "material": {
+      "color": "#e9eef5",
+      "metalness": 0.25,
+      "roughness": 0.35
+    }
+  },
+  {
+    "name": "rocket_shoulder",
+    "type": "cylinder",
+    "parent": "rocket",
+    "position": [
+      0,
+      2.95,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
       0.62,
-      -0.358
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      1.55,
-      0.65,
-      2.9
-    ],
-    "material": {
-      "color": "#e53935",
-      "metalness": 0.22,
-      "roughness": 0.38
-    }
-  },
-  {
-    "name": "car_bumper_front",
-    "type": "box",
-    "parent": "car",
-    "position": [
-      0,
-      0.48,
-      1.47
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      1.4,
       0.25,
-      0.2
-    ],
-    "material": {
-      "color": "#f5f5f5",
-      "metalness": 0.25,
-      "roughness": 0.55
-    }
-  },
-  {
-    "name": "car_bumper_back",
-    "type": "box",
-    "parent": "car",
-    "position": [
-      0,
-      0.48,
-      -1.47
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      1.4,
-      0.25,
-      0.2
-    ],
-    "material": {
-      "color": "#f5f5f5",
-      "metalness": 0.25,
-      "roughness": 0.55
-    }
-  },
-  {
-    "name": "car_cabin",
-    "type": "box",
-    "parent": "car",
-    "position": [
-      0,
-      1.08,
-      -0.25
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      1.25,
-      0.75,
-      1.55
-    ],
-    "material": {
-      "color": "#ff6b6b",
-      "metalness": 0.12,
-      "roughness": 0.48
-    }
-  },
-  {
-    "name": "car_windshield",
-    "type": "box",
-    "parent": "car",
-    "position": [
-      0,
-      1.08,
       0.62
     ],
-    "rotation": [
-      -0.55,
-      0,
-      0
-    ],
-    "scale": [
-      1,
-      0.5,
-      0.06
-    ],
     "material": {
-      "color": "#5aa7ff",
-      "metalness": 0.75,
-      "roughness": 0.15
-    }
-  },
-  {
-    "name": "car_rear_window",
-    "type": "box",
-    "parent": "car",
-    "position": [
-      0,
-      1.12,
-      -1.02
-    ],
-    "rotation": [
-      0.35,
-      0,
-      0
-    ],
-    "scale": [
-      0.85,
-      0.4,
-      0.06
-    ],
-    "material": {
-      "color": "#5aa7ff",
-      "metalness": 0.75,
-      "roughness": 0.15
-    }
-  },
-  {
-    "name": "car_grille",
-    "type": "box",
-    "parent": "car",
-    "position": [
-      0,
-      0.6,
-      1.52
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.6,
-      0.35,
-      0.06
-    ],
-    "material": {
-      "color": "#2c2c2c",
-      "metalness": 0.35,
-      "roughness": 0.6
-    }
-  },
-  {
-    "name": "car_headlight_left",
-    "type": "sphere",
-    "parent": "car",
-    "position": [
-      -0.5,
-      0.66,
-      1.52
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.14,
-      0.14,
-      0.14
-    ],
-    "material": {
-      "color": "#ffe7a6",
-      "metalness": 0.1,
-      "roughness": 0.3
-    }
-  },
-  {
-    "name": "car_headlight_right",
-    "type": "sphere",
-    "parent": "car",
-    "position": [
-      0.5,
-      0.66,
-      1.52
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.14,
-      0.14,
-      0.14
-    ],
-    "material": {
-      "color": "#ffe7a6",
-      "metalness": 0.1,
-      "roughness": 0.3
-    }
-  },
-  {
-    "name": "car_taillight_left",
-    "type": "sphere",
-    "parent": "car",
-    "position": [
-      -0.54,
-      0.62,
-      -1.52
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.11,
-      0.11,
-      0.11
-    ],
-    "material": {
-      "color": "#ff4a4a",
-      "metalness": 0.05,
-      "roughness": 0.45
-    }
-  },
-  {
-    "name": "car_taillight_right",
-    "type": "sphere",
-    "parent": "car",
-    "position": [
-      0.54,
-      0.62,
-      -1.52
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.11,
-      0.11,
-      0.11
-    ],
-    "material": {
-      "color": "#ff4a4a",
-      "metalness": 0.05,
-      "roughness": 0.45
-    }
-  },
-  {
-    "name": "car_wheel_fl",
-    "type": "cylinder",
-    "parent": "car",
-    "position": [
-      -0.78,
-      0.34,
-      0.549
-    ],
-    "rotation": [
-      0,
-      0,
-      1.571
-    ],
-    "scale": [
-      0.36,
-      0.26,
-      0.36
-    ],
-    "material": {
-      "color": "#2b2b2b",
-      "metalness": 0.2,
-      "roughness": 0.85
-    }
-  },
-  {
-    "name": "car_wheel_fr",
-    "type": "cylinder",
-    "parent": "car",
-    "position": [
-      0.78,
-      0.34,
-      0.549
-    ],
-    "rotation": [
-      0,
-      0,
-      1.571
-    ],
-    "scale": [
-      0.36,
-      0.26,
-      0.36
-    ],
-    "material": {
-      "color": "#2b2b2b",
-      "metalness": 0.2,
-      "roughness": 0.85
-    }
-  },
-  {
-    "name": "car_wheel_bl",
-    "type": "cylinder",
-    "parent": "car",
-    "position": [
-      -0.78,
-      0.34,
-      -0.98
-    ],
-    "rotation": [
-      0,
-      0,
-      1.571
-    ],
-    "scale": [
-      0.36,
-      0.26,
-      0.36
-    ],
-    "material": {
-      "color": "#2b2b2b",
-      "metalness": 0.2,
-      "roughness": 0.85
-    }
-  },
-  {
-    "name": "car_wheel_br",
-    "type": "cylinder",
-    "parent": "car",
-    "position": [
-      3.167,
-      0.34,
-      -0.98
-    ],
-    "rotation": [
-      0,
-      0,
-      1.571
-    ],
-    "scale": [
-      0.36,
-      0.26,
-      0.36
-    ],
-    "material": {
-      "color": "#2b2b2b",
-      "metalness": 0.2,
-      "roughness": 0.85
-    }
-  },
-  {
-    "name": "car_hub_fl",
-    "type": "cylinder",
-    "parent": "car_wheel_fl",
-    "position": [
-      0,
-      0,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.18,
-      0.28,
-      0.18
-    ],
-    "material": {
-      "color": "#d9d9d9",
-      "metalness": 0.7,
-      "roughness": 0.25
-    }
-  },
-  {
-    "name": "car_hub_fr",
-    "type": "cylinder",
-    "parent": "car_wheel_fr",
-    "position": [
-      0,
-      0,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.18,
-      0.28,
-      0.18
-    ],
-    "material": {
-      "color": "#d9d9d9",
-      "metalness": 0.7,
-      "roughness": 0.25
-    }
-  },
-  {
-    "name": "car_hub_bl",
-    "type": "cylinder",
-    "parent": "car_wheel_bl",
-    "position": [
-      0,
-      0,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.18,
-      0.28,
-      0.18
-    ],
-    "material": {
-      "color": "#d9d9d9",
-      "metalness": 0.7,
-      "roughness": 0.25
-    }
-  },
-  {
-    "name": "car_hub_br",
-    "type": "cylinder",
-    "parent": "car_wheel_br",
-    "position": [
-      0,
-      0,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.18,
-      0.28,
-      0.18
-    ],
-    "material": {
-      "color": "#d9d9d9",
-      "metalness": 0.7,
-      "roughness": 0.25
-    }
-  },
-  {
-    "name": "car_antenna",
-    "type": "cylinder",
-    "parent": "car",
-    "position": [
-      -0.44,
-      1.55,
-      -0.65
-    ],
-    "rotation": [
-      0,
-      0,
-      0.2
-    ],
-    "scale": [
-      0.03,
-      0.35,
-      0.03
-    ],
-    "material": {
-      "color": "#2c2c2c",
-      "metalness": 0.4,
-      "roughness": 0.6
-    }
-  },
-  {
-    "name": "car_antenna_tip",
-    "type": "sphere",
-    "parent": "car_antenna",
-    "position": [
-      0,
-      0.45,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.08,
-      0.08,
-      0.08
-    ],
-    "material": {
-      "color": "#ff7ac8",
-      "metalness": 0.1,
+      "color": "#d9e1ef",
+      "metalness": 0.3,
       "roughness": 0.35
+    }
+  },
+  {
+    "name": "rocket_stripe",
+    "type": "cylinder",
+    "parent": "rocket",
+    "position": [
+      0,
+      1.2,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.61,
+      0.22,
+      0.61
+    ],
+    "material": {
+      "color": "#ff3b3b",
+      "metalness": 0.15,
+      "roughness": 0.45
+    }
+  },
+  {
+    "name": "rocket_mid_band",
+    "type": "cylinder",
+    "parent": "rocket",
+    "position": [
+      0,
+      1.95,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.595,
+      0.08,
+      0.595
+    ],
+    "material": {
+      "color": "#c4ccda",
+      "metalness": 0.3,
+      "roughness": 0.45
+    }
+  },
+  {
+    "name": "rocket_nose",
+    "type": "cone",
+    "parent": "rocket",
+    "position": [
+      0,
+      3.38,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.62,
+      1.25,
+      0.62
+    ],
+    "material": {
+      "color": "#cfd6e3",
+      "metalness": 0.25,
+      "roughness": 0.3
+    }
+  },
+  {
+    "name": "nose_tip",
+    "type": "sphere",
+    "parent": "rocket",
+    "position": [
+      0,
+      4.18,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.12,
+      0.12,
+      0.12
+    ],
+    "material": {
+      "color": "#b7c0d2",
+      "metalness": 0.35,
+      "roughness": 0.25
+    }
+  },
+  {
+    "name": "nose_band",
+    "type": "torus",
+    "parent": "rocket",
+    "position": [
+      0,
+      3.05,
+      0
+    ],
+    "rotation": [
+      1.571,
+      0,
+      0
+    ],
+    "scale": [
+      0.36,
+      0.36,
+      0.07
+    ],
+    "material": {
+      "color": "#ff3b3b",
+      "metalness": 0.2,
+      "roughness": 0.45
+    }
+  },
+  {
+    "name": "rocket_window",
+    "type": "sphere",
+    "parent": "rocket",
+    "position": [
+      0,
+      2.25,
+      0.329
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.23,
+      0.23,
+      0.09
+    ],
+    "material": {
+      "color": "#67c9ff",
+      "metalness": 0.8,
+      "roughness": 0.15
+    }
+  },
+  {
+    "name": "window_frame",
+    "type": "torus",
+    "parent": "rocket_window",
+    "position": [
+      0,
+      0,
+      -0.333
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      1.043,
+      1.043,
+      0.778
+    ],
+    "material": {
+      "color": "#c4ccda",
+      "metalness": 0.55,
+      "roughness": 0.3
+    }
+  },
+  {
+    "name": "window_rim",
+    "type": "torus",
+    "parent": "rocket_window",
+    "position": [
+      0,
+      0,
+      0.167
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.891,
+      0.891,
+      0.556
+    ],
+    "material": {
+      "color": "#e9eef5",
+      "metalness": 0.35,
+      "roughness": 0.3
+    }
+  },
+  {
+    "name": "base_skirt",
+    "type": "cylinder",
+    "parent": "rocket",
+    "position": [
+      0,
+      0.62,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.68,
+      0.32,
+      0.68
+    ],
+    "material": {
+      "color": "#d9e1ef",
+      "metalness": 0.3,
+      "roughness": 0.45
+    }
+  },
+  {
+    "name": "base_band",
+    "type": "cylinder",
+    "parent": "rocket",
+    "position": [
+      0,
+      0.88,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.69,
+      0.06,
+      0.69
+    ],
+    "material": {
+      "color": "#ff3b3b",
+      "metalness": 0.2,
+      "roughness": 0.5
+    }
+  },
+  {
+    "name": "fin_1",
+    "type": "box",
+    "parent": "rocket",
+    "position": [
+      0.63,
+      0.62,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0.52
+    ],
+    "scale": [
+      0.08,
+      0.58,
+      0.38
+    ],
+    "material": {
+      "color": "#ff3b3b",
+      "metalness": 0.15,
+      "roughness": 0.5
+    }
+  },
+  {
+    "name": "fin_2",
+    "type": "box",
+    "parent": "rocket",
+    "position": [
+      -0.63,
+      0.62,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      -0.52
+    ],
+    "scale": [
+      0.08,
+      0.58,
+      0.38
+    ],
+    "material": {
+      "color": "#ff3b3b",
+      "metalness": 0.15,
+      "roughness": 0.5
+    }
+  },
+  {
+    "name": "fin_3",
+    "type": "box",
+    "parent": "rocket",
+    "position": [
+      0,
+      0.62,
+      0.63
+    ],
+    "rotation": [
+      -0.52,
+      1.571,
+      0
+    ],
+    "scale": [
+      0.08,
+      0.58,
+      0.38
+    ],
+    "material": {
+      "color": "#ff3b3b",
+      "metalness": 0.15,
+      "roughness": 0.5
+    }
+  },
+  {
+    "name": "fin_4",
+    "type": "box",
+    "parent": "rocket",
+    "position": [
+      0,
+      0.62,
+      -0.63
+    ],
+    "rotation": [
+      0.52,
+      1.571,
+      0
+    ],
+    "scale": [
+      0.08,
+      0.58,
+      0.38
+    ],
+    "material": {
+      "color": "#ff3b3b",
+      "metalness": 0.15,
+      "roughness": 0.5
+    }
+  },
+  {
+    "name": "engine_mount",
+    "type": "cylinder",
+    "parent": "rocket",
+    "position": [
+      0,
+      0.28,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.52,
+      0.16,
+      0.52
+    ],
+    "material": {
+      "color": "#b8c0d0",
+      "metalness": 0.35,
+      "roughness": 0.55
+    }
+  },
+  {
+    "name": "engine_bell",
+    "type": "cone",
+    "parent": "rocket",
+    "position": [
+      0,
+      0.067,
+      0
+    ],
+    "rotation": [
+      0.002,
+      0,
+      0
+    ],
+    "scale": [
+      0.46,
+      0.52,
+      0.46
+    ],
+    "material": {
+      "color": "#2b2f3a",
+      "metalness": 0.7,
+      "roughness": 0.35
+    }
+  },
+  {
+    "name": "flame",
+    "type": "cone",
+    "parent": "rocket",
+    "position": [
+      0,
+      -0.34,
+      0
+    ],
+    "rotation": [
+      3.142,
+      0,
+      0
+    ],
+    "scale": [
+      0.32,
+      0.95,
+      0.32
+    ],
+    "material": {
+      "color": "#ffb000",
+      "metalness": 0.05,
+      "roughness": 0.2
+    }
+  },
+  {
+    "name": "flame_core",
+    "type": "cone",
+    "parent": "rocket",
+    "position": [
+      0,
+      -0.22,
+      0
+    ],
+    "rotation": [
+      3.142,
+      0,
+      0
+    ],
+    "scale": [
+      0.18,
+      0.6,
+      0.18
+    ],
+    "material": {
+      "color": "#fff1c1",
+      "metalness": 0.05,
+      "roughness": 0.15
     }
   }
 ]

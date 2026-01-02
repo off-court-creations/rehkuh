@@ -1,9 +1,42 @@
-import { useState, useRef, Suspense } from "react";
-import { Canvas } from "@react-three/fiber";
+import { useState, useRef, Suspense, useEffect } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Grid, Environment } from "@react-three/drei";
+import * as THREE from "three";
 import { useSceneStore } from "@/store/sceneStore";
 import { SceneObject } from "./SceneObject";
 import { MultiTransformGizmo } from "./MultiTransformGizmo";
+
+function DeselectOnEmptyDoubleClick({ isDraggingRef }) {
+  const clearSelection = useSceneStore((state) => state.clearSelection);
+  const { gl, raycaster, camera, scene } = useThree();
+
+  useEffect(() => {
+    const domElement = gl.domElement;
+    const handleDoubleClick = (e) => {
+      if (isDraggingRef.current) return;
+
+      const rect = domElement.getBoundingClientRect();
+      const ndc = new THREE.Vector2(
+        ((e.clientX - rect.left) / rect.width) * 2 - 1,
+        -(((e.clientY - rect.top) / rect.height) * 2 - 1),
+      );
+
+      raycaster.setFromCamera(ndc, camera);
+      const hits = raycaster
+        .intersectObjects(scene.children, true)
+        .filter((hit) => hit.object?.userData?.objectId);
+
+      if (hits.length === 0) clearSelection();
+    };
+
+    domElement.addEventListener("dblclick", handleDoubleClick);
+    return () => {
+      domElement.removeEventListener("dblclick", handleDoubleClick);
+    };
+  }, [camera, clearSelection, gl, isDraggingRef, raycaster, scene]);
+
+  return null;
+}
 
 function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
   const objects = useSceneStore((state) => Object.values(state.objects));
@@ -50,6 +83,8 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
 
       <OrbitControls enabled={orbitEnabled} makeDefault />
 
+      <DeselectOnEmptyDoubleClick isDraggingRef={isDraggingRef} />
+
       {rootObjects.map((obj) => (
         <SceneObject key={obj.id} id={obj.id} />
       ))}
@@ -91,6 +126,45 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
 export function Viewport() {
   const [orbitEnabled, setOrbitEnabled] = useState(true);
   const isDraggingRef = useRef(false);
+  const transformMode = useSceneStore((state) => state.transformMode);
+  const setTransformMode = useSceneStore((state) => state.setTransformMode);
+
+  useEffect(() => {
+    const shouldIgnoreKeyEvent = (e) => {
+      const target = e.target;
+      if (!(target instanceof HTMLElement)) return false;
+      if (target.isContentEditable) return true;
+      return (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "SELECT"
+      );
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      if (shouldIgnoreKeyEvent(e)) return;
+
+      const key = e.key.toLowerCase();
+      if (key === "q") {
+        setTransformMode(null);
+        return;
+      }
+
+      const keyToMode = {
+        w: "translate",
+        e: "rotate",
+        r: "scale",
+      };
+      const nextMode = keyToMode[key];
+      if (!nextMode) return;
+
+      setTransformMode(transformMode === nextMode ? null : nextMode);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [setTransformMode, transformMode]);
 
   return (
     <Canvas

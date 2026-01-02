@@ -14,6 +14,45 @@ export function SceneObject({ id }) {
 
   const meshRef = useRef();
 
+  const outlineMaterial = useMemo(() => {
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        colorA: { value: new THREE.Color("#00ffd5") }, // teal
+        colorB: { value: new THREE.Color("#ff00ff") }, // magenta
+        stripeDensity: { value: 18.0 },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 colorA;
+        uniform vec3 colorB;
+        uniform float stripeDensity;
+        varying vec2 vUv;
+
+        void main() {
+          float t = fract((vUv.x + vUv.y) * stripeDensity);
+          float stripe = step(0.5, t);
+          vec3 color = mix(colorA, colorB, stripe);
+          gl_FragColor = vec4(color, 1.0);
+        }
+      `,
+      side: THREE.BackSide,
+      toneMapped: false,
+      depthWrite: false,
+    });
+
+    material.polygonOffset = true;
+    material.polygonOffsetFactor = 1;
+    material.polygonOffsetUnits = 1;
+
+    return material;
+  }, []);
+
   const handleClick = (e) => {
     e.stopPropagation();
     select(id, e.shiftKey);
@@ -62,17 +101,12 @@ export function SceneObject({ id }) {
 
           {isSelected && (
             <mesh
-              scale={[1.03, 1.03, 1.03]}
+              scale={[1.1, 1.1, 1.1]}
               raycast={() => null}
               renderOrder={999}
             >
               {renderGeometry()}
-              <meshBasicMaterial
-                color="#ffaa00"
-                side={THREE.BackSide}
-                toneMapped={false}
-                depthWrite={false}
-              />
+              <primitive object={outlineMaterial} attach="material" />
             </mesh>
           )}
         </>
