@@ -92,7 +92,12 @@ export function SceneObject({ id }) {
   if (!obj || !obj.visible) return null;
 
   return (
-    <group position={obj.position} rotation={obj.rotation} scale={obj.scale}>
+    <group
+      position={obj.position}
+      rotation={obj.rotation}
+      scale={obj.scale}
+      userData={{ objectId: id }}
+    >
       {obj.type !== "group" && (
         <>
           <mesh
