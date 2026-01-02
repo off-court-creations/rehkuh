@@ -1,4 +1,5 @@
 import { useMemo, useRef } from "react";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useSceneStore } from "@/store/sceneStore";
 
@@ -20,6 +21,8 @@ export function SceneObject({ id }) {
         colorA: { value: new THREE.Color("#00ffd5") }, // teal
         colorB: { value: new THREE.Color("#ff00ff") }, // magenta
         stripeDensity: { value: 18.0 },
+        time: { value: 0.0 },
+        speed: { value: 0.35 },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -32,10 +35,13 @@ export function SceneObject({ id }) {
         uniform vec3 colorA;
         uniform vec3 colorB;
         uniform float stripeDensity;
+        uniform float time;
+        uniform float speed;
         varying vec2 vUv;
 
         void main() {
-          float t = fract((vUv.x + vUv.y) * stripeDensity);
+          float drift = time * speed;
+          float t = fract((vUv.x + vUv.y + drift) * stripeDensity);
           float stripe = step(0.5, t);
           vec3 color = mix(colorA, colorB, stripe);
           gl_FragColor = vec4(color, 1.0);
@@ -52,6 +58,11 @@ export function SceneObject({ id }) {
 
     return material;
   }, []);
+
+  useFrame(({ clock }) => {
+    if (!isSelected) return;
+    outlineMaterial.uniforms.time.value = clock.getElapsedTime();
+  });
 
   const handleClick = (e) => {
     e.stopPropagation();
@@ -101,7 +112,7 @@ export function SceneObject({ id }) {
 
           {isSelected && (
             <mesh
-              scale={[1.1, 1.1, 1.1]}
+              scale={[1.15, 1.15, 1.15]}
               raycast={() => null}
               renderOrder={999}
             >
