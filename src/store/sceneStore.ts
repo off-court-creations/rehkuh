@@ -10,6 +10,7 @@ import type {
 } from "@/types";
 import { validateSceneFile, validateParentReferences } from "@/schemas/scene";
 import { showError } from "@/store/notificationStore";
+import { exportToTPJ, serializeTPJ } from "@/export/tpjExporter";
 
 type TransformModeState = TransformMode | null;
 
@@ -42,6 +43,7 @@ interface SceneState {
   // Lifecycle
   loadScene: () => Promise<void>;
   serializeScene: () => string;
+  serializeSceneAsTPJ: () => string;
   clearScene: () => void;
 
   // Object actions
@@ -251,6 +253,11 @@ export const useSceneStore = create<SceneState>()(
     serializeScene: () => {
       const fileObjects = toSceneFileObjects(get().objects);
       return JSON.stringify(fileObjects, null, 2);
+    },
+
+    serializeSceneAsTPJ: () => {
+      const tpjData = exportToTPJ(get().objects);
+      return serializeTPJ(tpjData);
     },
 
     clearScene: () => {

@@ -3,7 +3,7 @@ import { Panel, Stack, Typography, Button, Box } from "@archway/valet";
 import { useSceneStore } from "@/store/sceneStore";
 import { OutlinerNode } from "./OutlinerNode";
 import type { PrimitiveType } from "@/types";
-import { validateSceneFile, validateParentReferences } from "@/schemas/scene";
+import { validateTPJFile } from "@/schemas/tpj";
 import { showError } from "@/store/notificationStore";
 
 export function Outliner() {
@@ -13,7 +13,7 @@ export function Outliner() {
   const addObject = useSceneStore((state) => state.addObject);
   const reparent = useSceneStore((state) => state.reparentObject);
   const clearScene = useSceneStore((state) => state.clearScene);
-  const serializeScene = useSceneStore((state) => state.serializeScene);
+  const serializeSceneAsTPJ = useSceneStore((state) => state.serializeSceneAsTPJ);
   const undo = useSceneStore((state) => state.undo);
   const redo = useSceneStore((state) => state.redo);
   const canUndo = useSceneStore((state) => state.history.past.length > 0);
@@ -34,28 +34,25 @@ export function Outliner() {
   };
 
   const handleExportScene = async () => {
-    const json = serializeScene();
+    const tpj = serializeSceneAsTPJ();
 
     // Validate before export
     let parsed: unknown;
     try {
-      parsed = JSON.parse(json);
+      parsed = JSON.parse(tpj);
     } catch {
       showError("Cannot export: Invalid JSON");
       return;
     }
 
-    const validation = validateSceneFile(parsed);
+    const validation = validateTPJFile(parsed);
     if (!validation.success) {
       showError(`Cannot export: ${validation.error}`);
       return;
     }
 
-    const parentValidation = validateParentReferences(validation.data);
-    if (!parentValidation.success) {
-      showError(`Cannot export: ${parentValidation.error}`);
-      return;
-    }
+    // Get scene name from metadata for filename
+    const sceneName = validation.data.metadata.name || "scene";
 
     try {
       const picker = (
@@ -66,11 +63,11 @@ export function Outliner() {
 
       if (typeof picker === "function") {
         const handle = (await picker({
-          suggestedName: "scene.json",
+          suggestedName: `${sceneName}.tpj`,
           types: [
             {
-              description: "JSON",
-              accept: { "application/json": [".json"] },
+              description: "Three Primitive JSON",
+              accept: { "application/json": [".tpj"] },
             },
           ],
         })) as {
@@ -81,7 +78,7 @@ export function Outliner() {
         };
 
         const writable = await handle.createWritable();
-        await writable.write(json);
+        await writable.write(tpj);
         await writable.close();
         return;
       }
@@ -89,11 +86,11 @@ export function Outliner() {
       if (err instanceof DOMException && err.name === "AbortError") return;
     }
 
-    const blob = new Blob([json], { type: "application/json" });
+    const blob = new Blob([tpj], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "scene.json";
+    link.download = `${sceneName}.tpj`;
     document.body.appendChild(link);
     link.click();
     link.remove();
