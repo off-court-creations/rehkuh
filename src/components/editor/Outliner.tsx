@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Panel, Stack, Typography, Button, Box } from "@archway/valet";
 import { useSceneStore } from "@/store/sceneStore";
 import { OutlinerNode } from "./OutlinerNode";
-import type { PrimitiveType } from "@/types";
+import type { PrimitiveType, TPJFile } from "@/types";
 import { validateTPJFile } from "@/schemas/tpj";
 import { showError } from "@/store/notificationStore";
 
@@ -13,7 +13,10 @@ export function Outliner() {
   const addObject = useSceneStore((state) => state.addObject);
   const reparent = useSceneStore((state) => state.reparentObject);
   const clearScene = useSceneStore((state) => state.clearScene);
-  const serializeSceneAsTPJ = useSceneStore((state) => state.serializeSceneAsTPJ);
+  const serializeSceneAsTPJ = useSceneStore(
+    (state) => state.serializeSceneAsTPJ,
+  );
+  const loadFromTPJ = useSceneStore((state) => state.loadFromTPJ);
   const undo = useSceneStore((state) => state.undo);
   const redo = useSceneStore((state) => state.redo);
   const canUndo = useSceneStore((state) => state.history.past.length > 0);
@@ -95,6 +98,74 @@ export function Outliner() {
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
+  };
+
+  const handleImportTPJ = async () => {
+    try {
+      const picker = (
+        window as unknown as {
+          showOpenFilePicker?: (options?: unknown) => Promise<unknown[]>;
+        }
+      ).showOpenFilePicker;
+
+      let fileContent: string;
+
+      if (typeof picker === "function") {
+        const handles = (await picker({
+          types: [
+            {
+              description: "Three Primitive JSON",
+              accept: { "application/json": [".tpj"] },
+            },
+          ],
+          multiple: false,
+        })) as Array<{ getFile: () => Promise<File> }>;
+
+        const handle = handles[0];
+        if (!handle) {
+          return;
+        }
+        const file = await handle.getFile();
+        fileContent = await file.text();
+      } else {
+        // Fallback for browsers without File System Access API
+        fileContent = await new Promise<string>((resolve, reject) => {
+          const input = document.createElement("input");
+          input.type = "file";
+          input.accept = ".tpj,application/json";
+          input.onchange = async () => {
+            const file = input.files?.[0];
+            if (!file) {
+              reject(new Error("No file selected"));
+              return;
+            }
+            resolve(await file.text());
+          };
+          input.click();
+        });
+      }
+
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(fileContent);
+      } catch {
+        showError("Import failed: Invalid JSON");
+        return;
+      }
+
+      const validation = validateTPJFile(parsed);
+      if (!validation.success) {
+        showError(`Import failed: ${validation.error}`);
+        return;
+      }
+
+      loadFromTPJ(validation.data as TPJFile);
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      showError(
+        `Import failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
   };
 
   const handleDropToRoot = (e: React.DragEvent) => {
@@ -195,6 +266,18 @@ export function Outliner() {
               onClick={handleClearScene}
             >
               Clear
+            </Button>
+            <Button
+              size="sm"
+              sx={{
+                padding: "0 4px",
+                minHeight: "16px",
+                fontSize: "11px",
+                lineHeight: "16px",
+              }}
+              onClick={handleImportTPJ}
+            >
+              Import
             </Button>
             <Button
               size="sm"

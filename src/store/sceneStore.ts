@@ -11,6 +11,8 @@ import type {
 import { validateSceneFile, validateParentReferences } from "@/schemas/scene";
 import { showError } from "@/store/notificationStore";
 import { exportToTPJ, serializeTPJ } from "@/export/tpjExporter";
+import { importFromTPJ } from "@/export/tpjImporter";
+import type { TPJFile } from "@/types";
 
 type TransformModeState = TransformMode | null;
 
@@ -42,6 +44,7 @@ interface SceneState {
 
   // Lifecycle
   loadScene: () => Promise<void>;
+  loadFromTPJ: (tpjData: TPJFile) => void;
   serializeScene: () => string;
   serializeSceneAsTPJ: () => string;
   clearScene: () => void;
@@ -248,6 +251,24 @@ export const useSceneStore = create<SceneState>()(
         );
         set({ isLoaded: true });
       }
+    },
+
+    loadFromTPJ: (tpjData: TPJFile) => {
+      const state = get();
+      const newObjects = importFromTPJ(tpjData);
+
+      // Push current state to history
+      const newPast = [...state.history.past, state.objects].slice(
+        -HISTORY_LIMIT,
+      );
+
+      set({
+        objects: newObjects,
+        selection: { selectedIds: [], primaryId: null },
+        transformMode: null,
+        history: { past: newPast, future: [] },
+        transactionSnapshot: null,
+      });
     },
 
     serializeScene: () => {
