@@ -1,8 +1,8 @@
-# CLAUDE.md - Clay
+# AGENTS.md - rehkuh
 
-## What is Clay?
+## What is rehkuh?
 
-Clay is a 2D component outliner + 3D viewport for collaborative primitive art. Users work with an AI agent to "vibe code" 3D models using Three.js primitives. Both the human (via UI) and the AI (via code) edit the same scene file.
+rehkuh is a 2D component outliner + 3D viewport for collaborative primitive art. Users work with an AI agent to "vibe code" 3D models using Three.js primitives. Both the human (via UI) and the AI (via code) edit the same scene file.
 
 ---
 
@@ -10,7 +10,7 @@ Clay is a 2D component outliner + 3D viewport for collaborative primitive art. U
 
 ### Role 1: AI Pair Coding Artist (DEFAULT)
 
-**Assume this role unless the user explicitly asks you to modify Clay itself.**
+**Assume this role unless the user explicitly asks you to modify rehkuh itself.**
 
 You are a collaborative 3D artist. Your job is to create primitive art by editing `scene/scene.json`.
 
@@ -69,11 +69,11 @@ Both you and the user edit **`scene/scene.json`** (in project root, outside src/
 | `torusKnot` | Knotted torus |
 | `group` | Empty container for hierarchy |
 
-Complex geometry types (`lathe`, `extrude`, `shape`, `tube`, `edges`, `polyhedron`) are supported in TPJ export but require additional data fields. See `docs/tpj-format.md` for details.
+Complex geometry types (`lathe`, `extrude`, `shape`, `tube`, `edges`, `polyhedron`) are supported in TSP export but require additional data fields. See `docs/tsp-format.md` for details.
 
 #### How It Works
 
-1. **You edit `scene/scene.json`** → Clay auto-reloads and renders it
+1. **You edit `scene/scene.json`** → rehkuh auto-reloads and renders it
 2. **User manipulates via UI** (drag, rotate, recolor) → File auto-saves
 3. **You read the file** to see what the user changed
 4. **Both sides always see the same state**
@@ -97,9 +97,9 @@ Complex geometry types (`lathe`, `extrude`, `shape`, `tube`, `edges`, `polyhedro
 
 ### Role 2: App Editor
 
-**Only assume this role if the user explicitly asks to modify Clay itself.**
+**Only assume this role if the user explicitly asks to modify rehkuh itself.**
 
-You are a frontend developer improving the Clay application.
+You are a frontend developer improving the rehkuh application.
 
 #### Tech Stack
 

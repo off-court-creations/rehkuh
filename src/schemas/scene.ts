@@ -1,11 +1,11 @@
 import { z } from "zod";
 import {
-  TPJShapePathSchema,
-  TPJCurve3DSchema,
-  TPJExtrudeOptionsSchema,
-  TPJUniformSchema,
-  TPJMaterialSideSchema,
-} from "./tpj";
+  TSPShapePathSchema,
+  TSPCurve3DSchema,
+  TSPExtrudeOptionsSchema,
+  TSPUniformSchema,
+  TSPMaterialSideSchema,
+} from "./tsp";
 import { HexColorSchema, ObjectTypeSchema, Vector3Schema } from "./base";
 
 // Re-export from base to maintain backwards compatibility
@@ -30,9 +30,9 @@ export const ShaderMaterialPropsSchema = z.object({
   shaderName: z.string(),
   vertex: z.string().optional(), // Cached from file
   fragment: z.string().optional(), // Cached from file
-  uniforms: z.record(z.string(), TPJUniformSchema),
+  uniforms: z.record(z.string(), TSPUniformSchema),
   transparent: z.boolean().optional(),
-  side: TPJMaterialSideSchema.optional(),
+  side: TSPMaterialSideSchema.optional(),
   depthWrite: z.boolean().optional(),
   depthTest: z.boolean().optional(),
 });
@@ -53,9 +53,9 @@ export const SceneFileObjectSchema = z.object({
   material: MaterialPropsSchema.optional(),
   // Complex geometry data (optional)
   points: z.array(z.tuple([z.number(), z.number()])).optional(),
-  shape: TPJShapePathSchema.optional(),
-  extrudeOptions: TPJExtrudeOptionsSchema.optional(),
-  path: TPJCurve3DSchema.optional(),
+  shape: TSPShapePathSchema.optional(),
+  extrudeOptions: TSPExtrudeOptionsSchema.optional(),
+  path: TSPCurve3DSchema.optional(),
   sourceGeometry: z.string().optional(),
   vertices: z.array(z.number()).optional(),
   indices: z.array(z.number()).optional(),

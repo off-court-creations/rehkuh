@@ -1,6 +1,6 @@
-# TPJ File Format Specification
+# TSP File Format Specification
 
-TPJ (Three Primitive JSON) is Clay's export format for 3D primitive scenes. It uses JSON structure with a `.tpj` extension, designed for loading into Three.js/React Three Fiber applications.
+TSP (Three Shaded Primitive) is rehkuh's export format for 3D primitive scenes. It uses JSON structure with a `.tsp` extension, designed for loading into Three.js/React Three Fiber applications.
 
 ## Exporting
 
@@ -14,7 +14,7 @@ Click the **Export** button in the Outliner panel. The file picker will suggest 
   "metadata": {
     "name": "scene_name",
     "created": "2026-01-09T12:00:00Z",
-    "generator": "rekuh"
+    "generator": "rehkuh"
   },
   "materials": {
     "mat_ff0000_50_30": {
@@ -57,7 +57,7 @@ Format version string. Currently `"1.0"`.
 |-------|------|-------------|
 | `name` | string | Scene name (from first root group or "scene") |
 | `created` | string | ISO 8601 timestamp |
-| `generator` | string | Always `"rekuh"` for Clay exports |
+| `generator` | string | Always `"rehkuh"` for rehkuh exports |
 
 ### `materials`
 
@@ -101,7 +101,7 @@ Dictionary of geometry definitions. All geometries use unit scale; actual size c
 
 #### Complex Geometries
 
-These require additional fields and can be hand-authored in TPJ files.
+These require additional fields and can be hand-authored in TSP files.
 
 ##### LatheGeometry
 
@@ -253,5 +253,5 @@ Array of root object IDs (those with no parent).
 ## Related Files
 
 - `src/types.ts` - TypeScript interfaces
-- `src/schemas/tpj.ts` - Zod validation schemas
-- `src/export/tpjExporter.ts` - Export logic
+- `src/schemas/tsp.ts` - Zod validation schemas
+- `src/export/tspExporter.ts` - Export logic

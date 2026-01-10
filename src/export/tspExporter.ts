@@ -2,10 +2,10 @@ import type {
   SceneObject,
   PrimitiveType,
   MaterialProps,
-  TPJFile,
-  TPJMaterial,
-  TPJGeometry,
-  TPJObject,
+  TSPFile,
+  TSPMaterial,
+  TSPGeometry,
+  TSPObject,
 } from "../types";
 import { isShaderMaterial } from "../types";
 
@@ -58,11 +58,11 @@ function generateMaterialKey(material: MaterialProps): string {
   return `mat_${colorPart}_${metalPart}_${roughPart}`;
 }
 
-function convertToTPJMaterial(material: MaterialProps): TPJMaterial {
+function convertToTSPMaterial(material: MaterialProps): TSPMaterial {
   if (isShaderMaterial(material)) {
     // For shader materials, we need to read the shader files and inline them
     // For now, we'll use the cached vertex/fragment if available
-    const tpjMat: TPJMaterial = {
+    const tspMat: TSPMaterial = {
       type: "shader",
       vertex: material.vertex || "",
       fragment: material.fragment || "",
@@ -70,13 +70,13 @@ function convertToTPJMaterial(material: MaterialProps): TPJMaterial {
     };
 
     if (material.transparent !== undefined)
-      tpjMat.transparent = material.transparent;
-    if (material.side) tpjMat.side = material.side;
+      tspMat.transparent = material.transparent;
+    if (material.side) tspMat.side = material.side;
     if (material.depthWrite !== undefined)
-      tpjMat.depthWrite = material.depthWrite;
-    if (material.depthTest !== undefined) tpjMat.depthTest = material.depthTest;
+      tspMat.depthWrite = material.depthWrite;
+    if (material.depthTest !== undefined) tspMat.depthTest = material.depthTest;
 
-    return tpjMat;
+    return tspMat;
   }
 
   // Standard material
@@ -87,11 +87,11 @@ function convertToTPJMaterial(material: MaterialProps): TPJMaterial {
   };
 }
 
-export function exportToTPJ(objects: Record<string, SceneObject>): TPJFile {
+export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
   const objectList = Object.values(objects);
 
   // Build deduplicated materials dictionary
-  const materials: Record<string, TPJMaterial> = {};
+  const materials: Record<string, TSPMaterial> = {};
   const materialKeyMap = new Map<string, string>(); // object id -> material key
 
   for (const obj of objectList) {
@@ -99,7 +99,7 @@ export function exportToTPJ(objects: Record<string, SceneObject>): TPJFile {
 
     const key = generateMaterialKey(obj.material);
     if (!materials[key]) {
-      materials[key] = convertToTPJMaterial(obj.material);
+      materials[key] = convertToTSPMaterial(obj.material);
     }
     materialKeyMap.set(obj.id, key);
   }
@@ -107,7 +107,7 @@ export function exportToTPJ(objects: Record<string, SceneObject>): TPJFile {
   // Build geometries dictionary
   // Simple geometries: one per type (shared)
   // Complex geometries: one per object (unique data per instance)
-  const geometries: Record<string, TPJGeometry> = {};
+  const geometries: Record<string, TSPGeometry> = {};
   const geometryKeyMap = new Map<string, string>(); // object id -> geometry key
 
   for (const obj of objectList) {
@@ -118,7 +118,7 @@ export function exportToTPJ(objects: Record<string, SceneObject>): TPJFile {
     if (isComplex) {
       // Complex geometry - unique key per object
       const geoKey = `${obj.type}_${obj.id.slice(0, 8)}`;
-      const geo: TPJGeometry = { type: obj.type };
+      const geo: TSPGeometry = { type: obj.type };
 
       // Include the complex geometry data
       if (obj.points) geo.points = obj.points;
@@ -135,15 +135,17 @@ export function exportToTPJ(objects: Record<string, SceneObject>): TPJFile {
       // Simple geometry - shared by type
       if (!geometries[obj.type]) {
         const args = GEOMETRY_ARGS[obj.type];
-        geometries[obj.type] = args ? { type: obj.type, args } : { type: obj.type };
+        geometries[obj.type] = args
+          ? { type: obj.type, args }
+          : { type: obj.type };
       }
       geometryKeyMap.set(obj.id, obj.type);
     }
   }
 
   // Transform objects
-  const tpjObjects: TPJObject[] = objectList.map((obj) => {
-    const base: TPJObject = {
+  const tspObjects: TSPObject[] = objectList.map((obj) => {
+    const base: TSPObject = {
       id: obj.id,
       name: obj.name,
       type: obj.type,
@@ -178,15 +180,15 @@ export function exportToTPJ(objects: Record<string, SceneObject>): TPJFile {
     metadata: {
       name: sceneName,
       created: new Date().toISOString(),
-      generator: "rekuh",
+      generator: "rehkuh",
     },
     materials,
     geometries,
-    objects: tpjObjects,
+    objects: tspObjects,
     roots,
   };
 }
 
-export function serializeTPJ(tpjData: TPJFile): string {
-  return JSON.stringify(tpjData, null, 2);
+export function serializeTSP(tspData: TSPFile): string {
+  return JSON.stringify(tspData, null, 2);
 }
