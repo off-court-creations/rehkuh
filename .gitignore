@@ -39,3 +39,7 @@ vite.config.ts.timestamp-*
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+# Scene sync transient files
+scene/UNAUTHORIZED_EDIT_REVERTED.md
+scene/scene.backup.json

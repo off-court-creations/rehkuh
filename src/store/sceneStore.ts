@@ -33,7 +33,7 @@ interface SceneFileObject {
   shape?: TSPShapePath;
   extrudeOptions?: TSPExtrudeOptions;
   path?: TSPCurve3D;
-  sourceGeometry?: string;
+  tubeRadius?: number;
   vertices?: number[];
   indices?: number[];
 }
@@ -48,6 +48,7 @@ interface SceneState {
   selection: SelectionState;
   transformMode: TransformModeState;
   isLoaded: boolean;
+  isDragging: boolean;
 
   // History
   history: HistoryState;
@@ -80,6 +81,9 @@ interface SceneState {
   // Transform mode
   setTransformMode: (mode: TransformModeState) => void;
 
+  // Dragging state (prevents click-to-select during gizmo drag)
+  setIsDragging: (value: boolean) => void;
+
   // History actions
   undo: () => void;
   redo: () => void;
@@ -100,6 +104,11 @@ function toMaterialProps(mat: MaterialProps | undefined): MaterialProps {
 
   // Handle shader material
   if (mat.type === "shader") {
+    return mat;
+  }
+
+  // Handle physical material - preserve all properties
+  if (mat.type === "physical") {
     return mat;
   }
 
@@ -158,7 +167,7 @@ function toSceneFileObjects(
     if (obj.shape) fileObj.shape = obj.shape;
     if (obj.extrudeOptions) fileObj.extrudeOptions = obj.extrudeOptions;
     if (obj.path) fileObj.path = obj.path;
-    if (obj.sourceGeometry) fileObj.sourceGeometry = obj.sourceGeometry;
+    if (obj.tubeRadius !== undefined) fileObj.tubeRadius = obj.tubeRadius;
     if (obj.vertices) fileObj.vertices = obj.vertices;
     if (obj.indices) fileObj.indices = obj.indices;
     return fileObj;
@@ -228,6 +237,7 @@ export const useSceneStore = create<SceneState>()(
     selection: { selectedIds: [], primaryId: null },
     transformMode: null,
     isLoaded: false,
+    isDragging: false,
     history: { past: [], future: [] },
     transactionSnapshot: null,
 
@@ -285,7 +295,8 @@ export const useSceneStore = create<SceneState>()(
           if (fo.extrudeOptions)
             sceneObject.extrudeOptions = fo.extrudeOptions as TSPExtrudeOptions;
           if (fo.path) sceneObject.path = fo.path as TSPCurve3D;
-          if (fo.sourceGeometry) sceneObject.sourceGeometry = fo.sourceGeometry;
+          if (fo.tubeRadius !== undefined)
+            sceneObject.tubeRadius = fo.tubeRadius;
           if (fo.vertices) sceneObject.vertices = fo.vertices;
           if (fo.indices) sceneObject.indices = fo.indices;
           newObjects[id] = sceneObject;
@@ -599,6 +610,10 @@ export const useSceneStore = create<SceneState>()(
 
     setTransformMode: (mode) => {
       set({ transformMode: mode });
+    },
+
+    setIsDragging: (value) => {
+      set({ isDragging: value });
     },
 
     undo: () => {

@@ -179,6 +179,7 @@ export function SceneObject({ id }) {
     state.selection.selectedIds.includes(id),
   );
   const select = useSceneStore((state) => state.select);
+  const isDragging = useSceneStore((state) => state.isDragging);
 
   const meshRef = useRef();
   const materialRef = useRef();
@@ -227,7 +228,7 @@ export function SceneObject({ id }) {
     return material;
   }, []);
 
-  // Create object material (standard or shader)
+  // Create object material (standard, physical, or shader)
   const objectMaterial = useMemo(() => {
     if (!obj) return null;
     const mat = obj.material;
@@ -255,13 +256,75 @@ export function SceneObject({ id }) {
       }
     }
 
-    // Standard material
+    if (mat?.type === "physical") {
+      // Physical PBR material (MeshPhysicalMaterial)
+      return new THREE.MeshPhysicalMaterial({
+        color: mat.color ?? "#4bd0d2",
+        metalness: mat.metalness ?? 0.2,
+        roughness: mat.roughness ?? 0.4,
+        side: THREE.DoubleSide,
+
+        // Clearcoat channel
+        clearcoat: mat.clearcoat ?? 0,
+        clearcoatRoughness: mat.clearcoatRoughness ?? 0,
+
+        // Sheen channel
+        sheen: mat.sheen ?? 0,
+        sheenRoughness: mat.sheenRoughness ?? 1,
+        sheenColor: mat.sheenColor
+          ? new THREE.Color(mat.sheenColor)
+          : new THREE.Color("#ffffff"),
+
+        // Transmission channel
+        transmission: mat.transmission ?? 0,
+        thickness: mat.thickness ?? 0,
+        attenuationColor: mat.attenuationColor
+          ? new THREE.Color(mat.attenuationColor)
+          : new THREE.Color("#ffffff"),
+        attenuationDistance: mat.attenuationDistance ?? Infinity,
+
+        // IOR
+        ior: mat.ior ?? 1.5,
+
+        // Specular channel
+        specularIntensity: mat.specularIntensity ?? 1,
+        specularColor: mat.specularColor
+          ? new THREE.Color(mat.specularColor)
+          : new THREE.Color("#ffffff"),
+        reflectivity: mat.reflectivity ?? 0.5,
+
+        // Iridescence channel
+        iridescence: mat.iridescence ?? 0,
+        iridescenceIOR: mat.iridescenceIOR ?? 1.3,
+        iridescenceThicknessRange: mat.iridescenceThicknessRange ?? [100, 400],
+
+        // Anisotropy channel
+        anisotropy: mat.anisotropy ?? 0,
+        anisotropyRotation: mat.anisotropyRotation ?? 0,
+
+        // Dispersion
+        dispersion: mat.dispersion ?? 0,
+
+        // Other
+        envMapIntensity: mat.envMapIntensity ?? 1,
+        flatShading: mat.flatShading ?? false,
+      });
+    }
+
+    // Standard material (default)
     return new THREE.MeshStandardMaterial({
       color: mat?.color ?? "#4bd0d2",
       metalness: mat?.metalness ?? 0.2,
       roughness: mat?.roughness ?? 0.4,
-      side: THREE.DoubleSide,
+      emissive: mat?.emissive
+        ? new THREE.Color(mat.emissive)
+        : new THREE.Color("#000000"),
+      emissiveIntensity: mat?.emissiveIntensity ?? 0,
+      opacity: mat?.opacity ?? 1,
+      transparent: mat?.transparent ?? false,
+      side: mat?.side ? sideMap[mat.side] : THREE.DoubleSide,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only recreate material when material props change
   }, [obj?.material]);
 
   // Store material ref for animation
@@ -290,6 +353,8 @@ export function SceneObject({ id }) {
 
   const handleClick = (e) => {
     e.stopPropagation();
+    // Don't select if we just finished a gizmo drag
+    if (isDragging) return;
     select(id, e.shiftKey);
   };
 
@@ -309,7 +374,7 @@ export function SceneObject({ id }) {
       case "cone":
         return new THREE.ConeGeometry(0.5, 1, 32);
       case "torus":
-        return new THREE.TorusGeometry(0.4, 0.15, 16, 32);
+        return new THREE.TorusGeometry(0.5, 0.2, 16, 32);
       case "plane":
         return new THREE.PlaneGeometry(1, 1);
       case "capsule":
@@ -356,20 +421,18 @@ export function SceneObject({ id }) {
         if (!obj.path) return new THREE.BoxGeometry(1, 1, 1);
         const curve = buildCurve3D(obj.path);
         if (!curve) return new THREE.BoxGeometry(1, 1, 1);
-        return new THREE.TubeGeometry(curve, 64, 0.1, 8, false);
+        const tubeRadius = obj.tubeRadius ?? 0.1;
+        return new THREE.TubeGeometry(curve, 64, tubeRadius, 8, false);
 
       case "polyhedron":
         if (!obj.vertices || !obj.indices)
           return new THREE.BoxGeometry(1, 1, 1);
         return new THREE.PolyhedronGeometry(obj.vertices, obj.indices, 1, 0);
 
-      case "edges":
-        // EdgesGeometry needs a source - fallback to box for now
-        return new THREE.BoxGeometry(1, 1, 1);
-
       default:
         return null;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only recreate geometry when geometry-related props change
   }, [
     obj?.type,
     obj?.points,
@@ -395,8 +458,8 @@ export function SceneObject({ id }) {
             ref={meshRef}
             onClick={handleClick}
             userData={{ objectId: id }}
-            castShadow
-            receiveShadow
+            castShadow={obj.castShadow ?? true}
+            receiveShadow={obj.receiveShadow ?? true}
             geometry={geometry}
             material={objectMaterial}
           />

@@ -2,12 +2,14 @@ import type {
   SceneObject,
   PrimitiveType,
   MaterialProps,
+  PhysicalMaterialProps,
   TSPFile,
   TSPMaterial,
+  TSPPhysicalMaterial,
   TSPGeometry,
   TSPObject,
 } from "../types";
-import { isShaderMaterial } from "../types";
+import { isShaderMaterial, isPhysicalMaterial } from "../types";
 
 // Complex geometry types that need per-instance data (not shared)
 const COMPLEX_GEOMETRY_TYPES: PrimitiveType[] = [
@@ -15,12 +17,11 @@ const COMPLEX_GEOMETRY_TYPES: PrimitiveType[] = [
   "extrude",
   "shape",
   "tube",
-  "edges",
   "polyhedron",
 ];
 
 // Default args for simple geometries (unit scale)
-// Complex geometries (lathe, extrude, shape, tube, edges, polyhedron)
+// Complex geometries (lathe, extrude, shape, tube, polyhedron)
 // require additional data fields and are not included here
 const GEOMETRY_ARGS: Partial<Record<PrimitiveType, number[]>> = {
   // Existing
@@ -41,10 +42,55 @@ const GEOMETRY_ARGS: Partial<Record<PrimitiveType, number[]>> = {
   torusKnot: [0.5, 0.15, 64, 8, 2, 3], // radius, tube, tubularSegments, radialSegments, p, q
 };
 
+// Simple hash function for physical material properties
+function hashPhysicalMaterial(mat: PhysicalMaterialProps): string {
+  // Create a string of all non-default properties and hash it
+  const props = [
+    mat.color,
+    mat.metalness,
+    mat.roughness,
+    mat.clearcoat,
+    mat.clearcoatRoughness,
+    mat.sheen,
+    mat.sheenRoughness,
+    mat.sheenColor,
+    mat.transmission,
+    mat.thickness,
+    mat.attenuationColor,
+    mat.attenuationDistance,
+    mat.ior,
+    mat.specularIntensity,
+    mat.specularColor,
+    mat.reflectivity,
+    mat.iridescence,
+    mat.iridescenceIOR,
+    mat.iridescenceThicknessRange?.join(","),
+    mat.anisotropy,
+    mat.anisotropyRotation,
+    mat.dispersion,
+    mat.envMapIntensity,
+    mat.flatShading,
+  ]
+    .filter((v) => v !== undefined)
+    .join("_");
+
+  // Simple hash (djb2)
+  let hash = 5381;
+  for (let i = 0; i < props.length; i++) {
+    hash = (hash * 33) ^ props.charCodeAt(i);
+  }
+  return (hash >>> 0).toString(16).slice(0, 12);
+}
+
 function generateMaterialKey(material: MaterialProps): string {
   if (isShaderMaterial(material)) {
     // For shader materials, use the shader name as the key
     return `mat_shader_${material.shaderName}`;
+  }
+
+  if (isPhysicalMaterial(material)) {
+    // For physical materials, use a content hash
+    return `mat_physical_${hashPhysicalMaterial(material)}`;
   }
 
   // Standard material key
@@ -79,12 +125,91 @@ function convertToTSPMaterial(material: MaterialProps): TSPMaterial {
     return tspMat;
   }
 
+  if (isPhysicalMaterial(material)) {
+    // Physical material - include all defined properties
+    const tspMat: TSPPhysicalMaterial = {
+      type: "physical",
+      color: material.color,
+      metalness: material.metalness,
+      roughness: material.roughness,
+    };
+
+    // Clearcoat channel
+    if (material.clearcoat !== undefined) tspMat.clearcoat = material.clearcoat;
+    if (material.clearcoatRoughness !== undefined)
+      tspMat.clearcoatRoughness = material.clearcoatRoughness;
+
+    // Sheen channel
+    if (material.sheen !== undefined) tspMat.sheen = material.sheen;
+    if (material.sheenRoughness !== undefined)
+      tspMat.sheenRoughness = material.sheenRoughness;
+    if (material.sheenColor !== undefined)
+      tspMat.sheenColor = material.sheenColor;
+
+    // Transmission channel
+    if (material.transmission !== undefined)
+      tspMat.transmission = material.transmission;
+    if (material.thickness !== undefined) tspMat.thickness = material.thickness;
+    if (material.attenuationColor !== undefined)
+      tspMat.attenuationColor = material.attenuationColor;
+    if (material.attenuationDistance !== undefined)
+      tspMat.attenuationDistance = material.attenuationDistance;
+
+    // IOR
+    if (material.ior !== undefined) tspMat.ior = material.ior;
+
+    // Specular channel
+    if (material.specularIntensity !== undefined)
+      tspMat.specularIntensity = material.specularIntensity;
+    if (material.specularColor !== undefined)
+      tspMat.specularColor = material.specularColor;
+    if (material.reflectivity !== undefined)
+      tspMat.reflectivity = material.reflectivity;
+
+    // Iridescence channel
+    if (material.iridescence !== undefined)
+      tspMat.iridescence = material.iridescence;
+    if (material.iridescenceIOR !== undefined)
+      tspMat.iridescenceIOR = material.iridescenceIOR;
+    if (material.iridescenceThicknessRange !== undefined)
+      tspMat.iridescenceThicknessRange = material.iridescenceThicknessRange;
+
+    // Anisotropy channel
+    if (material.anisotropy !== undefined)
+      tspMat.anisotropy = material.anisotropy;
+    if (material.anisotropyRotation !== undefined)
+      tspMat.anisotropyRotation = material.anisotropyRotation;
+
+    // Dispersion
+    if (material.dispersion !== undefined)
+      tspMat.dispersion = material.dispersion;
+
+    // Other
+    if (material.envMapIntensity !== undefined)
+      tspMat.envMapIntensity = material.envMapIntensity;
+    if (material.flatShading !== undefined)
+      tspMat.flatShading = material.flatShading;
+
+    return tspMat;
+  }
+
   // Standard material
-  return {
+  const tspMat: TSPMaterial = {
     color: material.color,
     metalness: material.metalness,
     roughness: material.roughness,
   };
+
+  // Optional extended properties
+  if (material.emissive !== undefined) tspMat.emissive = material.emissive;
+  if (material.emissiveIntensity !== undefined)
+    tspMat.emissiveIntensity = material.emissiveIntensity;
+  if (material.opacity !== undefined) tspMat.opacity = material.opacity;
+  if (material.transparent !== undefined)
+    tspMat.transparent = material.transparent;
+  if (material.side !== undefined) tspMat.side = material.side;
+
+  return tspMat;
 }
 
 export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
@@ -125,7 +250,7 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
       if (obj.shape) geo.shape = obj.shape;
       if (obj.extrudeOptions) geo.extrudeOptions = obj.extrudeOptions;
       if (obj.path) geo.path = obj.path;
-      if (obj.sourceGeometry) geo.sourceGeometry = obj.sourceGeometry;
+      if (obj.tubeRadius !== undefined) geo.tubeRadius = obj.tubeRadius;
       if (obj.vertices) geo.vertices = obj.vertices;
       if (obj.indices) geo.indices = obj.indices;
 
@@ -159,6 +284,13 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
     if (obj.type !== "group") {
       base.geometry = geometryKeyMap.get(obj.id)!;
       base.material = materialKeyMap.get(obj.id)!;
+    }
+
+    // Optional extended properties
+    if (obj.castShadow !== undefined) base.castShadow = obj.castShadow;
+    if (obj.receiveShadow !== undefined) base.receiveShadow = obj.receiveShadow;
+    if (obj.userData !== undefined && Object.keys(obj.userData).length > 0) {
+      base.userData = obj.userData;
     }
 
     return base;

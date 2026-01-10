@@ -6,7 +6,12 @@ import {
   TSPUniformSchema,
   TSPMaterialSideSchema,
 } from "./tsp";
-import { HexColorSchema, ObjectTypeSchema, Vector3Schema } from "./base";
+import {
+  HexColorSchema,
+  ObjectTypeSchema,
+  Vector2Schema,
+  Vector3Schema,
+} from "./base";
 
 // Re-export from base to maintain backwards compatibility
 export {
@@ -27,9 +32,9 @@ export const StandardMaterialPropsSchema = z.object({
 // Shader material schema for scene files
 export const ShaderMaterialPropsSchema = z.object({
   type: z.literal("shader"),
-  shaderName: z.string(),
-  vertex: z.string().optional(), // Cached from file
-  fragment: z.string().optional(), // Cached from file
+  shaderName: z.string().optional(), // Reference to external shader file
+  vertex: z.string().optional(), // Inline or cached from file
+  fragment: z.string().optional(), // Inline or cached from file
   uniforms: z.record(z.string(), TSPUniformSchema),
   transparent: z.boolean().optional(),
   side: TSPMaterialSideSchema.optional(),
@@ -37,9 +42,57 @@ export const ShaderMaterialPropsSchema = z.object({
   depthTest: z.boolean().optional(),
 });
 
+// Physical material schema for scene files (MeshPhysicalMaterial)
+export const PhysicalMaterialPropsSchema = z.object({
+  type: z.literal("physical"),
+  color: HexColorSchema,
+  metalness: z.number().min(0).max(1),
+  roughness: z.number().min(0).max(1),
+
+  // Clearcoat channel
+  clearcoat: z.number().min(0).max(1).optional(),
+  clearcoatRoughness: z.number().min(0).max(1).optional(),
+
+  // Sheen channel
+  sheen: z.number().min(0).max(1).optional(),
+  sheenRoughness: z.number().min(0).max(1).optional(),
+  sheenColor: HexColorSchema.optional(),
+
+  // Transmission channel
+  transmission: z.number().min(0).max(1).optional(),
+  thickness: z.number().min(0).optional(),
+  attenuationColor: HexColorSchema.optional(),
+  attenuationDistance: z.number().min(0).optional(),
+
+  // IOR
+  ior: z.number().min(1).max(2.333).optional(),
+
+  // Specular channel
+  specularIntensity: z.number().min(0).max(1).optional(),
+  specularColor: HexColorSchema.optional(),
+  reflectivity: z.number().min(0).max(1).optional(),
+
+  // Iridescence channel
+  iridescence: z.number().min(0).max(1).optional(),
+  iridescenceIOR: z.number().min(1).max(2.333).optional(),
+  iridescenceThicknessRange: Vector2Schema.optional(),
+
+  // Anisotropy channel
+  anisotropy: z.number().min(0).max(1).optional(),
+  anisotropyRotation: z.number().optional(),
+
+  // Dispersion
+  dispersion: z.number().min(0).optional(),
+
+  // Other
+  envMapIntensity: z.number().min(0).optional(),
+  flatShading: z.boolean().optional(),
+});
+
 // Union type for all material props
 export const MaterialPropsSchema = z.union([
   StandardMaterialPropsSchema,
+  PhysicalMaterialPropsSchema,
   ShaderMaterialPropsSchema,
 ]);
 
@@ -56,7 +109,7 @@ export const SceneFileObjectSchema = z.object({
   shape: TSPShapePathSchema.optional(),
   extrudeOptions: TSPExtrudeOptionsSchema.optional(),
   path: TSPCurve3DSchema.optional(),
-  sourceGeometry: z.string().optional(),
+  tubeRadius: z.number().min(0).optional(), // For tube geometry
   vertices: z.array(z.number()).optional(),
   indices: z.array(z.number()).optional(),
 });

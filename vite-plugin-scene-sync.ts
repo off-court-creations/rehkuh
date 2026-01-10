@@ -1,11 +1,57 @@
 import type { Plugin, ViteDevServer } from "vite";
-import { writeFileSync, readFileSync, existsSync, mkdirSync } from "fs";
+import {
+  writeFileSync,
+  readFileSync,
+  existsSync,
+  mkdirSync,
+  copyFileSync,
+} from "fs";
 import { join, dirname, basename, extname } from "path";
 import chokidar from "chokidar";
 import { createHash } from "crypto";
+import { validateSceneFile, validateParentReferences } from "./src/schemas/scene";
 
-const SCENE_PATH = join(process.cwd(), "scene/scene.json");
+const SCENE_DIR = join(process.cwd(), "scene");
+const SCENE_PATH = join(SCENE_DIR, "scene.json");
+const STAGING_PATH = join(SCENE_DIR, "staging-scene.json");
+const BACKUP_PATH = join(SCENE_DIR, "scene.backup.json");
+const WARNING_PATH = join(SCENE_DIR, "UNAUTHORIZED_EDIT_REVERTED.md");
 const SHADERS_DIR = join(process.cwd(), "shaders");
+
+const WARNING_CONTENT = `# ⚠️ UNAUTHORIZED EDIT DETECTED AND REVERTED
+
+**DO NOT EDIT \`scene.json\` DIRECTLY!**
+
+Your edit to \`scene.json\` was automatically reverted because direct edits are not allowed.
+
+## Correct Workflow
+
+1. **Edit \`staging-scene.json\`** (not \`scene.json\`)
+2. **Validate and promote** by running:
+   \`\`\`bash
+   npm run promote-staging
+   # or
+   curl -X POST http://localhost:5173/__promote-staging
+   \`\`\`
+
+## Why?
+
+- \`scene.json\` is the **live scene** that the viewport renders
+- Direct edits bypass validation and can corrupt the scene
+- The staging workflow ensures your changes are validated before going live
+- UI changes (drag/rotate/recolor) go through the API and are allowed
+
+## Files
+
+| File | Purpose | Who edits it |
+|------|---------|--------------|
+| \`staging-scene.json\` | Your working copy | YOU (AI or human) |
+| \`scene.json\` | Live scene | API/UI only |
+| \`scene.backup.json\` | Auto-backup | System only |
+
+This file was created at: __TIMESTAMP__
+`;
+
 
 // Simple hash function to compare content
 const hashContent = (content: string): string => {
@@ -30,10 +76,16 @@ export function sceneSyncPlugin(): Plugin {
         mkdirSync(sceneDir, { recursive: true });
       }
 
-      // Initialize lastWrittenHash from current file
+      // Initialize lastWrittenHash from current file and ensure backup exists
       try {
         const currentContent = readFileSync(SCENE_PATH, "utf-8");
         lastWrittenHash = hashContent(currentContent);
+
+        // Create initial backup if none exists (so we can revert unauthorized edits)
+        if (!existsSync(BACKUP_PATH)) {
+          copyFileSync(SCENE_PATH, BACKUP_PATH);
+          console.log("[scene-sync] Created initial backup of scene.json");
+        }
       } catch {
         lastWrittenHash = null;
       }
@@ -60,16 +112,43 @@ export function sceneSyncPlugin(): Plugin {
           const newContent = readFileSync(SCENE_PATH, "utf-8");
           const newHash = hashContent(newContent);
 
-          // Only notify if content actually changed from what we know
+          // If content changed and it wasn't us, REVERT the change
           if (newHash !== lastWrittenHash) {
-            console.log("[scene-sync] External change detected, notifying clients");
-            lastWrittenHash = newHash;
+            console.warn(
+              "\x1b[31m[scene-sync] UNAUTHORIZED EDIT DETECTED!\x1b[0m Direct edits to scene.json are not allowed."
+            );
+            console.warn(
+              "[scene-sync] Use staging-scene.json + promote-staging workflow instead."
+            );
 
-            if (server) {
-              server.ws.send({
-                type: "custom",
-                event: "scene-changed",
-              });
+            // Write warning file for AI agents to see
+            const warningWithTimestamp = WARNING_CONTENT.replace(
+              "__TIMESTAMP__",
+              new Date().toISOString()
+            );
+            writeFileSync(WARNING_PATH, warningWithTimestamp, "utf-8");
+            console.warn(
+              "[scene-sync] Created UNAUTHORIZED_EDIT_REVERTED.md - READ THIS FILE!"
+            );
+
+            // Restore from backup if available
+            if (existsSync(BACKUP_PATH)) {
+              try {
+                const backupContent = readFileSync(BACKUP_PATH, "utf-8");
+                ignoreNextChange = true;
+                writeFileSync(SCENE_PATH, backupContent, "utf-8");
+                lastWrittenHash = hashContent(backupContent);
+                console.log(
+                  "[scene-sync] Reverted to backup. Edit staging-scene.json instead."
+                );
+              } catch (restoreErr) {
+                console.error("[scene-sync] Failed to restore backup:", restoreErr);
+              }
+            } else {
+              // No backup - restore to what we last knew
+              console.warn(
+                "[scene-sync] No backup available, change persists but clients not notified."
+              );
             }
           }
         } catch (err) {
@@ -357,6 +436,191 @@ void main() {
             res.end(JSON.stringify({ error: String(err) }));
           }
         });
+      });
+
+      // Promote staging to scene - POST /__promote-staging
+      // Validates staging-scene.json and copies to scene.json if valid
+      srv.middlewares.use("/__promote-staging", (req, res) => {
+        if (req.method !== "POST") {
+          res.writeHead(405);
+          res.end();
+          return;
+        }
+
+        try {
+          // Check staging file exists
+          if (!existsSync(STAGING_PATH)) {
+            res.writeHead(404, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                ok: false,
+                error: "Staging file not found. Create scene/staging-scene.json first.",
+              })
+            );
+            return;
+          }
+
+          // Read and parse staging file
+          const rawContent = readFileSync(STAGING_PATH, "utf-8");
+          let data: unknown;
+          try {
+            data = JSON.parse(rawContent);
+          } catch (parseErr) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                ok: false,
+                error: `Invalid JSON: ${parseErr}`,
+              })
+            );
+            return;
+          }
+
+          // Validate schema
+          const validation = validateSceneFile(data);
+          if (!validation.success) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                ok: false,
+                error: `Schema validation failed: ${validation.error}`,
+              })
+            );
+            return;
+          }
+
+          // Validate parent references
+          const parentValidation = validateParentReferences(validation.data);
+          if (!parentValidation.success) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                ok: false,
+                error: `Parent validation failed: ${parentValidation.error}`,
+              })
+            );
+            return;
+          }
+
+          // Backup current scene.json
+          if (existsSync(SCENE_PATH)) {
+            try {
+              copyFileSync(SCENE_PATH, BACKUP_PATH);
+            } catch {
+              // Non-fatal, continue
+            }
+          }
+
+          // Write validated content to scene.json
+          const formattedContent = JSON.stringify(validation.data, null, 2);
+          const newHash = hashContent(formattedContent);
+          lastWrittenHash = newHash;
+          ignoreNextChange = true;
+          writeFileSync(SCENE_PATH, formattedContent, "utf-8");
+
+          console.log(
+            `[scene-sync] Promoted ${validation.data.length} objects from staging`
+          );
+
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              ok: true,
+              message: `Promoted ${validation.data.length} objects from staging to scene`,
+            })
+          );
+        } catch (err) {
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: String(err) }));
+        }
+      });
+
+      // Copy scene.json to staging-scene.json - POST /__copy-to-staging
+      // Allows AIs to start from current live scene without reading it
+      srv.middlewares.use("/__copy-to-staging", (req, res) => {
+        if (req.method !== "POST") {
+          res.writeHead(405);
+          res.end();
+          return;
+        }
+
+        try {
+          if (!existsSync(SCENE_PATH)) {
+            res.writeHead(404, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                ok: false,
+                error: "No scene.json exists yet.",
+              })
+            );
+            return;
+          }
+
+          const content = readFileSync(SCENE_PATH, "utf-8");
+          writeFileSync(STAGING_PATH, content, "utf-8");
+
+          // Count objects for feedback
+          let objectCount = 0;
+          try {
+            const parsed = JSON.parse(content);
+            if (Array.isArray(parsed)) {
+              objectCount = parsed.length;
+            }
+          } catch {
+            // Non-fatal
+          }
+
+          console.log(
+            `[scene-sync] Copied ${objectCount} objects from scene to staging`
+          );
+
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              ok: true,
+              message: `Copied ${objectCount} objects from scene.json to staging-scene.json`,
+            })
+          );
+        } catch (err) {
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: String(err) }));
+        }
+      });
+
+      // Read staging scene - GET /__staging-scene
+      srv.middlewares.use("/__staging-scene", (req, res) => {
+        if (req.method === "GET") {
+          try {
+            if (existsSync(STAGING_PATH)) {
+              const data = readFileSync(STAGING_PATH, "utf-8");
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(data);
+            } else {
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end("[]");
+            }
+          } catch {
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end("[]");
+          }
+        } else if (req.method === "POST") {
+          // Allow writing to staging scene
+          let body = "";
+          req.on("data", (chunk: string) => (body += chunk));
+          req.on("end", () => {
+            try {
+              writeFileSync(STAGING_PATH, body, "utf-8");
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ ok: true }));
+            } catch (err) {
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ error: String(err) }));
+            }
+          });
+        } else {
+          res.writeHead(405);
+          res.end();
+        }
       });
     },
   };

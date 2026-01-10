@@ -1,11 +1,15 @@
 import { useEffect, useCallback } from "react";
-import { Surface, Box } from "@archway/valet";
+import { Surface } from "@archway/valet";
 import { Viewport } from "@/components/editor/Viewport";
 import { Outliner } from "@/components/editor/Outliner";
 import { PropertyPanel } from "@/components/editor/PropertyPanel";
 import { GlobalSnackbar } from "@/components/GlobalSnackbar";
 import { useSceneStore } from "@/store/sceneStore";
 import { useUndoRedoKeyboard } from "@/hooks/useUndoRedoKeyboard";
+import { EditorToolbar } from "@/components/editor/EditorToolbar";
+
+const SIDEBAR_WIDTH = 280;
+const APPBAR_HEIGHT = 48;
 
 export default function Editor() {
   const loadScene = useSceneStore((s) => s.loadScene);
@@ -13,9 +17,7 @@ export default function Editor() {
 
   useUndoRedoKeyboard();
 
-  // Reload scene from file
   const reloadScene = useCallback(async () => {
-    // Clear current state and reload
     useSceneStore.setState({ objects: {}, isLoaded: false });
     await loadScene();
   }, [loadScene]);
@@ -26,7 +28,6 @@ export default function Editor() {
     }
   }, [isLoaded, loadScene]);
 
-  // Listen for file changes from Vite HMR
   useEffect(() => {
     if (!import.meta.hot) return;
 
@@ -44,7 +45,6 @@ export default function Editor() {
         `[Clay] Shader changed: ${data.shaderName}.${data.shaderType}`,
       );
 
-      // Update all objects using this shader
       const state = useSceneStore.getState();
       const updates: Record<
         string,
@@ -66,7 +66,6 @@ export default function Editor() {
         }
       }
 
-      // Apply all updates
       if (Object.keys(updates).length > 0) {
         const newObjects = { ...state.objects };
         for (const [id, update] of Object.entries(updates)) {
@@ -82,31 +81,86 @@ export default function Editor() {
     import.meta.hot.on("scene-changed", handleSceneChanged);
     import.meta.hot.on("shader-changed", handleShaderChanged);
 
-    // Cleanup listeners on unmount
     return () => {
       import.meta.hot?.off?.("scene-changed", handleSceneChanged);
       import.meta.hot?.off?.("shader-changed", handleShaderChanged);
     };
   }, [reloadScene]);
+
   return (
     <Surface>
-      <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-        <Box
-          sx={{
-            width: "300px",
-            minWidth: "300px",
+      {/* Root container - full viewport */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          overflow: "hidden",
+        }}
+      >
+        {/* AppBar */}
+        <div
+          style={{
+            height: APPBAR_HEIGHT,
+            flexShrink: 0,
             display: "flex",
-            flexDirection: "column",
-            borderRight: "1px solid rgba(255,255,255,0.1)",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 16px",
+            backgroundColor: "rgba(26, 26, 46, 0.98)",
+            borderBottom: "1px solid rgba(255,255,255,0.1)",
           }}
         >
-          <Outliner />
-          <PropertyPanel />
-        </Box>
-        <div style={{ flex: 1, position: "relative" }}>
-          <Viewport />
+          <EditorToolbar section="left" />
+          <EditorToolbar section="right" />
+        </div>
+
+        {/* Main content - horizontal layout */}
+        <div
+          style={{
+            display: "flex",
+            flex: 1,
+            minHeight: 0,
+            overflow: "hidden",
+          }}
+        >
+          {/* Left sidebar - Outliner */}
+          <div
+            style={{
+              width: SIDEBAR_WIDTH,
+              flexShrink: 0,
+              display: "flex",
+              flexDirection: "column",
+              borderRight: "1px solid rgba(255,255,255,0.1)",
+              backgroundColor: "rgba(26, 26, 46, 0.95)",
+              overflow: "hidden",
+            }}
+          >
+            <Outliner />
+          </div>
+
+          {/* Center - Viewport */}
+          <div style={{ flex: 1, position: "relative", minWidth: 0 }}>
+            <Viewport />
+          </div>
+
+          {/* Right sidebar - Property Panel */}
+          <div
+            style={{
+              width: SIDEBAR_WIDTH,
+              flexShrink: 0,
+              display: "flex",
+              flexDirection: "column",
+              borderLeft: "1px solid rgba(255,255,255,0.1)",
+              backgroundColor: "rgba(26, 26, 46, 0.95)",
+              overflow: "hidden",
+            }}
+          >
+            <PropertyPanel />
+          </div>
         </div>
       </div>
+
       <GlobalSnackbar />
     </Surface>
   );
