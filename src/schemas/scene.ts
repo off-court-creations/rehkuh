@@ -27,6 +27,12 @@ export const StandardMaterialPropsSchema = z.object({
   color: HexColorSchema,
   metalness: z.number().min(0).max(1),
   roughness: z.number().min(0).max(1),
+  // Extended properties
+  emissive: HexColorSchema.optional(),
+  emissiveIntensity: z.number().min(0).max(1).optional(),
+  opacity: z.number().min(0).max(1).optional(),
+  transparent: z.boolean().optional(),
+  side: TSPMaterialSideSchema.optional(),
 });
 
 // Shader material schema for scene files

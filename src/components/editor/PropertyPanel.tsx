@@ -221,12 +221,13 @@ export function PropertyPanel() {
             flexShrink: 0,
             padding: "8px 12px",
             borderBottom: "1px solid rgba(255,255,255,0.08)",
-            fontSize: "12px",
             opacity: 0.9,
             userSelect: "none",
           }}
         >
-          Properties
+          <Typography variant="body" sx={{ fontSize: "12px" }}>
+            Properties
+          </Typography>
         </div>
         <div
           style={{
@@ -264,12 +265,13 @@ export function PropertyPanel() {
           flexShrink: 0,
           padding: "8px 12px",
           borderBottom: "1px solid rgba(255,255,255,0.08)",
-          fontSize: "12px",
           opacity: 0.9,
           userSelect: "none",
         }}
       >
-        Properties
+        <Typography variant="body" sx={{ fontSize: "12px" }}>
+          Properties
+        </Typography>
       </div>
       <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
         <Stack gap={0} sx={{ padding: 0 }}>
@@ -341,6 +343,17 @@ export function PropertyPanel() {
               {isStandardMaterial(obj.material) &&
                 (() => {
                   const mat = obj.material;
+
+                  // Helper to update a single standard material property
+                  const updateStandardProp = (
+                    prop: keyof StandardMaterialProps,
+                    value: StandardMaterialProps[keyof StandardMaterialProps],
+                  ) => {
+                    updateObject(primaryId, {
+                      material: { ...mat, type: "standard", [prop]: value },
+                    });
+                  };
+
                   return (
                     <>
                       <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
@@ -369,13 +382,7 @@ export function PropertyPanel() {
                                 e.target.value,
                               );
                               if (!result.success) return;
-                              const newMat: StandardMaterialProps = {
-                                type: "standard",
-                                color: result.data,
-                                metalness: mat.metalness,
-                                roughness: mat.roughness,
-                              };
-                              updateObject(primaryId, { material: newMat });
+                              updateStandardProp("color", result.data);
                             }}
                             style={{
                               width: "16px",
@@ -414,13 +421,10 @@ export function PropertyPanel() {
                           onMouseDown={beginTransaction}
                           onMouseUp={commitTransaction}
                           onChange={(e) => {
-                            const newMat: StandardMaterialProps = {
-                              type: "standard",
-                              color: mat.color,
-                              metalness: parseFloat(e.target.value),
-                              roughness: mat.roughness,
-                            };
-                            updateObject(primaryId, { material: newMat });
+                            updateStandardProp(
+                              "metalness",
+                              parseFloat(e.target.value),
+                            );
                           }}
                           style={{
                             width: "100%",
@@ -451,13 +455,10 @@ export function PropertyPanel() {
                           onMouseDown={beginTransaction}
                           onMouseUp={commitTransaction}
                           onChange={(e) => {
-                            const newMat: StandardMaterialProps = {
-                              type: "standard",
-                              color: mat.color,
-                              metalness: mat.metalness,
-                              roughness: parseFloat(e.target.value),
-                            };
-                            updateObject(primaryId, { material: newMat });
+                            updateStandardProp(
+                              "roughness",
+                              parseFloat(e.target.value),
+                            );
                           }}
                           style={{
                             width: "100%",
@@ -466,6 +467,229 @@ export function PropertyPanel() {
                             padding: 0,
                           }}
                         />
+                      </Stack>
+
+                      {/* Emissive Section */}
+                      <Typography
+                        variant="body"
+                        sx={{
+                          fontSize: "10px",
+                          opacity: 0.5,
+                          padding: "8px 4px 2px 4px",
+                          borderTop: "1px solid rgba(255,255,255,0.1)",
+                          marginTop: "4px",
+                        }}
+                      >
+                        Emissive
+                      </Typography>
+
+                      <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                        <Typography
+                          variant="body"
+                          sx={{
+                            fontSize: "11px",
+                            lineHeight: 1.2,
+                            opacity: 0.7,
+                          }}
+                        >
+                          Emissive Color
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                          }}
+                        >
+                          <input
+                            type="color"
+                            value={mat.emissive ?? "#000000"}
+                            onChange={(e) => {
+                              const result = HexColorSchema.safeParse(
+                                e.target.value,
+                              );
+                              if (!result.success) return;
+                              updateStandardProp("emissive", result.data);
+                            }}
+                            style={{
+                              width: "16px",
+                              height: "16px",
+                              padding: 0,
+                              margin: 0,
+                              border: "none",
+                              borderRadius: "2px",
+                              cursor: "pointer",
+                              backgroundColor: "transparent",
+                            }}
+                          />
+                          <Typography variant="body" sx={{ fontSize: "11px" }}>
+                            {mat.emissive ?? "#000000"}
+                          </Typography>
+                        </Box>
+                      </Stack>
+
+                      <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                        <Typography
+                          variant="body"
+                          sx={{
+                            fontSize: "11px",
+                            lineHeight: 1.2,
+                            opacity: 0.7,
+                          }}
+                        >
+                          Emissive Intensity:{" "}
+                          {(mat.emissiveIntensity ?? 0).toFixed(2)}
+                        </Typography>
+                        <input
+                          type="range"
+                          min="0"
+                          max="1"
+                          step="0.01"
+                          value={mat.emissiveIntensity ?? 0}
+                          onMouseDown={beginTransaction}
+                          onMouseUp={commitTransaction}
+                          onChange={(e) => {
+                            updateStandardProp(
+                              "emissiveIntensity",
+                              parseFloat(e.target.value),
+                            );
+                          }}
+                          style={{
+                            width: "100%",
+                            height: "12px",
+                            margin: 0,
+                            padding: 0,
+                          }}
+                        />
+                      </Stack>
+
+                      {/* Transparency Section */}
+                      <Typography
+                        variant="body"
+                        sx={{
+                          fontSize: "10px",
+                          opacity: 0.5,
+                          padding: "8px 4px 2px 4px",
+                          borderTop: "1px solid rgba(255,255,255,0.1)",
+                          marginTop: "4px",
+                        }}
+                      >
+                        Transparency
+                      </Typography>
+
+                      <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                        <Typography
+                          variant="body"
+                          sx={{
+                            fontSize: "11px",
+                            lineHeight: 1.2,
+                            opacity: 0.7,
+                          }}
+                        >
+                          Opacity: {(mat.opacity ?? 1).toFixed(2)}
+                        </Typography>
+                        <input
+                          type="range"
+                          min="0"
+                          max="1"
+                          step="0.01"
+                          value={mat.opacity ?? 1}
+                          onMouseDown={beginTransaction}
+                          onMouseUp={commitTransaction}
+                          onChange={(e) => {
+                            updateStandardProp(
+                              "opacity",
+                              parseFloat(e.target.value),
+                            );
+                          }}
+                          style={{
+                            width: "100%",
+                            height: "12px",
+                            margin: 0,
+                            padding: 0,
+                          }}
+                        />
+                      </Stack>
+
+                      <Stack
+                        gap={0}
+                        sx={{
+                          padding: "0 4px 4px 4px",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={mat.transparent ?? false}
+                          onChange={(e) => {
+                            updateStandardProp("transparent", e.target.checked);
+                          }}
+                          style={{
+                            width: "12px",
+                            height: "12px",
+                            margin: 0,
+                            marginRight: "6px",
+                          }}
+                        />
+                        <Typography
+                          variant="body"
+                          sx={{
+                            fontSize: "11px",
+                            lineHeight: 1.2,
+                            opacity: 0.7,
+                          }}
+                        >
+                          Transparent
+                        </Typography>
+                      </Stack>
+
+                      {/* Rendering Section */}
+                      <Typography
+                        variant="body"
+                        sx={{
+                          fontSize: "10px",
+                          opacity: 0.5,
+                          padding: "8px 4px 2px 4px",
+                          borderTop: "1px solid rgba(255,255,255,0.1)",
+                          marginTop: "4px",
+                        }}
+                      >
+                        Rendering
+                      </Typography>
+
+                      <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                        <Typography
+                          variant="body"
+                          sx={{
+                            fontSize: "11px",
+                            lineHeight: 1.2,
+                            opacity: 0.7,
+                          }}
+                        >
+                          Side
+                        </Typography>
+                        <select
+                          value={mat.side ?? "double"}
+                          onChange={(e) => {
+                            updateStandardProp(
+                              "side",
+                              e.target.value as "front" | "back" | "double",
+                            );
+                          }}
+                          style={{
+                            fontSize: "11px",
+                            padding: "2px 4px",
+                            backgroundColor: "rgba(255,255,255,0.1)",
+                            border: "1px solid rgba(255,255,255,0.2)",
+                            borderRadius: "2px",
+                            color: "inherit",
+                          }}
+                        >
+                          <option value="front">Front</option>
+                          <option value="back">Back</option>
+                          <option value="double">Double</option>
+                        </select>
                       </Stack>
                     </>
                   );

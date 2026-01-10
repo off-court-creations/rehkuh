@@ -382,20 +382,38 @@ async function tryApiPromotion(): Promise<{
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 1000);
 
-    const port = process.env.VITE_PORT || "5178";
-    const res = await fetch(`http://localhost:${port}/__promote-staging`, {
-      method: "POST",
-      signal: controller.signal,
-    });
+    const candidatePorts = process.env.VITE_PORT
+      ? [process.env.VITE_PORT]
+      : ["5178", "5173"];
+
+    for (const port of candidatePorts) {
+      try {
+        const res = await fetch(`http://localhost:${port}/__promote-staging`, {
+          method: "POST",
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeout);
+
+        const data = (await res.json()) as {
+          ok?: boolean;
+          message?: string;
+          error?: string;
+        };
+        if (data.ok) {
+          return { success: true, message: data.message || "Promoted via API" };
+        }
+        return {
+          success: false,
+          message: data.error || "API promotion failed",
+        };
+      } catch {
+        // try next port
+      }
+    }
 
     clearTimeout(timeout);
-
-    const data = (await res.json()) as { ok?: boolean; message?: string; error?: string };
-    if (data.ok) {
-      return { success: true, message: data.message || "Promoted via API" };
-    } else {
-      return { success: false, message: data.error || "API promotion failed" };
-    }
+    return null;
   } catch {
     // Server not running or unreachable, fall back to direct file write
     return null;

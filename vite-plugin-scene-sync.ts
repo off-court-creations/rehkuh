@@ -275,6 +275,33 @@ export function sceneSyncPlugin(): Plugin {
         }
       });
 
+      // Reset all scene json files (scene.json, staging-scene.json, scene.backup.json)
+      // POST /__reset-scene-files
+      srv.middlewares.use("/__reset-scene-files", (req, res) => {
+        if (req.method !== "POST") {
+          res.writeHead(405);
+          res.end();
+          return;
+        }
+
+        try {
+          const emptyScene = "[]";
+          const newHash = hashContent(emptyScene);
+          lastWrittenHash = newHash;
+          ignoreNextChange = true;
+
+          writeFileSync(SCENE_PATH, emptyScene, "utf-8");
+          writeFileSync(STAGING_PATH, emptyScene, "utf-8");
+          writeFileSync(BACKUP_PATH, emptyScene, "utf-8");
+
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: true }));
+        } catch (err) {
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: String(err) }));
+        }
+      });
+
       // Shader API endpoint - GET /__shader/:shaderName returns { vert, frag }
       srv.middlewares.use("/__shader", (req, res) => {
         if (req.method !== "GET") {
@@ -517,6 +544,14 @@ void main() {
           lastWrittenHash = newHash;
           ignoreNextChange = true;
           writeFileSync(SCENE_PATH, formattedContent, "utf-8");
+
+          // Notify clients to reload the scene
+          if (server) {
+            server.ws.send({
+              type: "custom",
+              event: "scene-changed",
+            });
+          }
 
           console.log(
             `[scene-sync] Promoted ${validation.data.length} objects from staging`

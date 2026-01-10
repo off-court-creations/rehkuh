@@ -50,20 +50,35 @@ async function tryApiCopy(): Promise<{
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 1000);
 
-    const port = process.env.VITE_PORT || "5178";
-    const res = await fetch(`http://localhost:${port}/__copy-to-staging`, {
-      method: "POST",
-      signal: controller.signal,
-    });
+    const candidatePorts = process.env.VITE_PORT
+      ? [process.env.VITE_PORT]
+      : ["5178", "5173"];
+
+    for (const port of candidatePorts) {
+      try {
+        const res = await fetch(`http://localhost:${port}/__copy-to-staging`, {
+          method: "POST",
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeout);
+
+        const data = (await res.json()) as {
+          ok?: boolean;
+          message?: string;
+          error?: string;
+        };
+        if (data.ok) {
+          return { success: true, message: data.message || "Copied via API" };
+        }
+        return { success: false, message: data.error || "API copy failed" };
+      } catch {
+        // try next port
+      }
+    }
 
     clearTimeout(timeout);
-
-    const data = (await res.json()) as { ok?: boolean; message?: string; error?: string };
-    if (data.ok) {
-      return { success: true, message: data.message || "Copied via API" };
-    } else {
-      return { success: false, message: data.error || "API copy failed" };
-    }
+    return null;
   } catch {
     return null;
   }

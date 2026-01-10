@@ -1,4 +1,4 @@
-import { Button, Stack, Box } from "@archway/valet";
+import { Button, Stack, Tooltip, IconButton, Divider } from "@archway/valet";
 import { useSceneStore } from "@/store/sceneStore";
 import { validateTSPFile } from "@/schemas/tsp";
 import { showError } from "@/store/notificationStore";
@@ -24,11 +24,35 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
     addObject({ type });
   };
 
-  const handleClearScene = () => {
+  const renderPrimitiveButton = (
+    label: string,
+    type: PrimitiveType | "group",
+    icon: string,
+    variant: "filled" | "outlined" | "plain" = "filled",
+  ) => (
+    <Tooltip placement="bottom" title={label}>
+      <IconButton
+        variant={variant}
+        size="sm"
+        icon={icon}
+        onClick={() => handleAddPrimitive(type)}
+        aria-label={label}
+      />
+    </Tooltip>
+  );
+
+  const handleClearScene = async () => {
     const shouldClear = window.confirm(
       "Clear the scene? This cannot be undone.",
     );
     if (!shouldClear) return;
+
+    try {
+      await fetch("/__reset-scene-files", { method: "POST" });
+    } catch {
+      // Non-fatal: fall back to clearing store (which will still POST /__scene)
+    }
+
     clearScene();
   };
 
@@ -166,7 +190,7 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
       <Stack direction="row" gap={1}>
         <Button
           size="sm"
-          variant="plain"
+          variant="filled"
           onClick={undo}
           disabled={!canUndo}
           title="Undo (Ctrl+Z)"
@@ -175,28 +199,21 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
         </Button>
         <Button
           size="sm"
-          variant="plain"
+          variant="filled"
           onClick={redo}
           disabled={!canRedo}
           title="Redo (Ctrl+Shift+Z)"
         >
           Redo
         </Button>
-        <Box
-          sx={{
-            width: "1px",
-            height: "20px",
-            backgroundColor: "rgba(255,255,255,0.2)",
-            alignSelf: "center",
-          }}
-        />
-        <Button size="sm" variant="plain" onClick={handleClearScene}>
+        <Divider orientation="vertical" />
+        <Button size="sm" variant="filled" onClick={handleClearScene}>
           Clear
         </Button>
-        <Button size="sm" variant="plain" onClick={handleImportTSP}>
+        <Button size="sm" variant="filled" onClick={handleImportTSP}>
           Import
         </Button>
-        <Button size="sm" variant="plain" onClick={handleExportScene}>
+        <Button size="sm" variant="filled" onClick={handleExportScene}>
           Export
         </Button>
       </Stack>
@@ -204,56 +221,31 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
   }
 
   return (
-    <Stack direction="row" gap={1}>
-      <Button
-        size="sm"
-        variant="plain"
-        onClick={() => handleAddPrimitive("box")}
-      >
-        Box
-      </Button>
-      <Button
-        size="sm"
-        variant="plain"
-        onClick={() => handleAddPrimitive("sphere")}
-      >
-        Sphere
-      </Button>
-      <Button
-        size="sm"
-        variant="plain"
-        onClick={() => handleAddPrimitive("cylinder")}
-      >
-        Cylinder
-      </Button>
-      <Button
-        size="sm"
-        variant="plain"
-        onClick={() => handleAddPrimitive("cone")}
-      >
-        Cone
-      </Button>
-      <Button
-        size="sm"
-        variant="plain"
-        onClick={() => handleAddPrimitive("torus")}
-      >
-        Torus
-      </Button>
-      <Button
-        size="sm"
-        variant="plain"
-        onClick={() => handleAddPrimitive("plane")}
-      >
-        Plane
-      </Button>
-      <Button
-        size="sm"
-        variant="plain"
-        onClick={() => handleAddPrimitive("group")}
-      >
-        Group
-      </Button>
+    <Stack direction="row" gap={0.5}>
+      {renderPrimitiveButton(
+        "Group",
+        "group",
+        "mdi:folder-outline",
+        "outlined",
+      )}
+      {renderPrimitiveButton("Box", "box", "mdi:cube-outline")}
+      {renderPrimitiveButton("Sphere", "sphere", "mdi:sphere")}
+      {renderPrimitiveButton("Cylinder", "cylinder", "mdi:cylinder")}
+      {renderPrimitiveButton("Cone", "cone", "mdi:cone")}
+      {renderPrimitiveButton("Torus", "torus", "mdi:circle-double")}
+      {renderPrimitiveButton("Plane", "plane", "mdi:square-outline")}
+      {renderPrimitiveButton("Capsule", "capsule", "mdi:pill")}
+      {renderPrimitiveButton("Circle", "circle", "mdi:circle-outline")}
+      {renderPrimitiveButton("Ring", "ring", "mdi:ring")}
+      {renderPrimitiveButton("Tetra", "tetrahedron", "mdi:triangle-outline")}
+      {renderPrimitiveButton("Octa", "octahedron", "mdi:octagram-outline")}
+      {renderPrimitiveButton(
+        "Icosa",
+        "icosahedron",
+        "mdi:hexagon-multiple-outline",
+      )}
+      {renderPrimitiveButton("Dodeca", "dodecahedron", "mdi:pentagon-outline")}
+      {renderPrimitiveButton("Knot", "torusKnot", "mdi:infinity")}
     </Stack>
   );
 }

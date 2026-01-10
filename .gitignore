@@ -1,9 +1,10 @@
 .claude
-.valet-mcp/
+.tmp
+.valet-mcp
 
 dist
 
-node_modules/
+node_modules
 
 .env
 
