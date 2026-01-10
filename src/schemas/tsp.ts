@@ -6,10 +6,10 @@ import {
   HexColorSchema,
 } from "./base";
 
-export const TPJMaterialSideSchema = z.enum(["front", "back", "double"]);
+export const TSPMaterialSideSchema = z.enum(["front", "back", "double"]);
 
 // Shader uniform types
-export const TPJUniformTypeSchema = z.enum([
+export const TSPUniformTypeSchema = z.enum([
   "float",
   "int",
   "bool",
@@ -20,8 +20,8 @@ export const TPJUniformTypeSchema = z.enum([
 ]);
 
 // Shader uniform definition
-export const TPJUniformSchema = z.object({
-  type: TPJUniformTypeSchema,
+export const TSPUniformSchema = z.object({
+  type: TSPUniformTypeSchema,
   value: z.union([z.number(), z.boolean(), z.string(), z.array(z.number())]),
   animated: z.boolean().optional(),
   min: z.number().optional(),
@@ -30,7 +30,7 @@ export const TPJUniformSchema = z.object({
 });
 
 // Standard material schema
-export const TPJStandardMaterialSchema = z.object({
+export const TSPStandardMaterialSchema = z.object({
   type: z.literal("standard").optional(), // Optional for backwards compatibility
   color: HexColorSchema,
   metalness: z.number().min(0).max(1),
@@ -40,29 +40,29 @@ export const TPJStandardMaterialSchema = z.object({
   emissiveIntensity: z.number().min(0).max(1).optional(),
   opacity: z.number().min(0).max(1).optional(),
   transparent: z.boolean().optional(),
-  side: TPJMaterialSideSchema.optional(),
+  side: TSPMaterialSideSchema.optional(),
 });
 
 // Shader material schema
-export const TPJShaderMaterialSchema = z.object({
+export const TSPShaderMaterialSchema = z.object({
   type: z.literal("shader"),
   vertex: z.string(),
   fragment: z.string(),
-  uniforms: z.record(z.string(), TPJUniformSchema),
+  uniforms: z.record(z.string(), TSPUniformSchema),
   transparent: z.boolean().optional(),
-  side: TPJMaterialSideSchema.optional(),
+  side: TSPMaterialSideSchema.optional(),
   depthWrite: z.boolean().optional(),
   depthTest: z.boolean().optional(),
 });
 
-// Union type for all TPJ materials
-export const TPJMaterialSchema = z.union([
-  TPJStandardMaterialSchema,
-  TPJShaderMaterialSchema,
+// Union type for all TSP materials
+export const TSPMaterialSchema = z.union([
+  TSPStandardMaterialSchema,
+  TSPShaderMaterialSchema,
 ]);
 
 // Shape path command schemas (mirrors THREE.Path/Shape API)
-export const TPJShapeCommandSchema = z.discriminatedUnion("op", [
+export const TSPShapeCommandSchema = z.discriminatedUnion("op", [
   z.object({ op: z.literal("moveTo"), x: z.number(), y: z.number() }),
   z.object({ op: z.literal("lineTo"), x: z.number(), y: z.number() }),
   z.object({
@@ -123,13 +123,13 @@ export const TPJShapeCommandSchema = z.discriminatedUnion("op", [
   }),
 ]);
 
-export const TPJShapePathSchema = z.object({
-  commands: z.array(TPJShapeCommandSchema),
-  holes: z.array(z.array(TPJShapeCommandSchema)).optional(),
+export const TSPShapePathSchema = z.object({
+  commands: z.array(TSPShapeCommandSchema),
+  holes: z.array(z.array(TSPShapeCommandSchema)).optional(),
 });
 
 // 3D curve schemas for TubeGeometry
-export const TPJCurve3DSchema = z.discriminatedUnion("curveType", [
+export const TSPCurve3DSchema = z.discriminatedUnion("curveType", [
   z.object({
     curveType: z.literal("catmullRom"),
     points: z.array(Vector3Schema),
@@ -157,7 +157,7 @@ export const TPJCurve3DSchema = z.discriminatedUnion("curveType", [
 ]);
 
 // Extrude options for ExtrudeGeometry
-export const TPJExtrudeOptionsSchema = z.object({
+export const TSPExtrudeOptionsSchema = z.object({
   depth: z.number().optional(),
   bevelEnabled: z.boolean().optional(),
   bevelThickness: z.number().optional(),
@@ -165,22 +165,22 @@ export const TPJExtrudeOptionsSchema = z.object({
   bevelOffset: z.number().optional(),
   bevelSegments: z.number().optional(),
   steps: z.number().optional(),
-  extrudePath: TPJCurve3DSchema.optional(),
+  extrudePath: TSPCurve3DSchema.optional(),
 });
 
 // Extended geometry schema supporting all Three.js geometry types
-export const TPJGeometrySchema = z.object({
+export const TSPGeometrySchema = z.object({
   type: PrimitiveTypeSchema,
   // Simple geometries (numeric args)
   args: z.array(z.number()).optional(),
   // LatheGeometry (Vector2 points)
   points: z.array(z.tuple([z.number(), z.number()])).optional(),
   // ExtrudeGeometry, ShapeGeometry (shape path)
-  shape: TPJShapePathSchema.optional(),
+  shape: TSPShapePathSchema.optional(),
   // ExtrudeGeometry options
-  extrudeOptions: TPJExtrudeOptionsSchema.optional(),
+  extrudeOptions: TSPExtrudeOptionsSchema.optional(),
   // TubeGeometry (3D curve path)
-  path: TPJCurve3DSchema.optional(),
+  path: TSPCurve3DSchema.optional(),
   // EdgesGeometry (reference to source geometry)
   sourceGeometry: z.string().optional(),
   // PolyhedronGeometry (raw vertex/index data)
@@ -188,7 +188,7 @@ export const TPJGeometrySchema = z.object({
   indices: z.array(z.number()).optional(),
 });
 
-export const TPJObjectSchema = z.object({
+export const TSPObjectSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   type: ObjectTypeSchema,
@@ -205,27 +205,27 @@ export const TPJObjectSchema = z.object({
   userData: z.record(z.string(), z.unknown()).optional(),
 });
 
-export const TPJMetadataSchema = z.object({
+export const TSPMetadataSchema = z.object({
   name: z.string(),
   created: z.string(),
   generator: z.string(),
 });
 
-export const TPJFileSchema = z.object({
+export const TSPFileSchema = z.object({
   version: z.string(),
-  metadata: TPJMetadataSchema,
-  materials: z.record(z.string(), TPJMaterialSchema),
-  geometries: z.record(z.string(), TPJGeometrySchema),
-  objects: z.array(TPJObjectSchema),
+  metadata: TSPMetadataSchema,
+  materials: z.record(z.string(), TSPMaterialSchema),
+  geometries: z.record(z.string(), TSPGeometrySchema),
+  objects: z.array(TSPObjectSchema),
   roots: z.array(z.string()),
 });
 
-export type TPJFileZ = z.infer<typeof TPJFileSchema>;
+export type TSPFileZ = z.infer<typeof TSPFileSchema>;
 
-export function validateTPJFile(
+export function validateTSPFile(
   data: unknown,
-): { success: true; data: TPJFileZ } | { success: false; error: string } {
-  const result = TPJFileSchema.safeParse(data);
+): { success: true; data: TSPFileZ } | { success: false; error: string } {
+  const result = TSPFileSchema.safeParse(data);
   if (result.success) {
     return { success: true, data: result.data };
   }

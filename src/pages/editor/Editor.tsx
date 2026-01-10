@@ -31,7 +31,7 @@ export default function Editor() {
     if (!import.meta.hot) return;
 
     const handleSceneChanged = () => {
-      console.log("[Clay] Scene file changed externally, reloading...");
+      console.log("[rehkuh] Scene file changed externally, reloading...");
       reloadScene();
     };
 

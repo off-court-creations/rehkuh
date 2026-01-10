@@ -7,15 +7,15 @@ import type {
   TransformMode,
   PrimitiveType,
   MaterialProps,
-  TPJShapePath,
-  TPJCurve3D,
-  TPJExtrudeOptions,
+  TSPShapePath,
+  TSPCurve3D,
+  TSPExtrudeOptions,
 } from "@/types";
 import { validateSceneFile, validateParentReferences } from "@/schemas/scene";
 import { showError } from "@/store/notificationStore";
-import { exportToTPJ, serializeTPJ } from "@/export/tpjExporter";
-import { importFromTPJ } from "@/export/tpjImporter";
-import type { TPJFile } from "@/types";
+import { exportToTSP, serializeTSP } from "@/export/tspExporter";
+import { importFromTSP } from "@/export/tspImporter";
+import type { TSPFile } from "@/types";
 
 type TransformModeState = TransformMode | null;
 
@@ -30,9 +30,9 @@ interface SceneFileObject {
   material?: MaterialProps | undefined;
   // Complex geometry data
   points?: [number, number][];
-  shape?: TPJShapePath;
-  extrudeOptions?: TPJExtrudeOptions;
-  path?: TPJCurve3D;
+  shape?: TSPShapePath;
+  extrudeOptions?: TSPExtrudeOptions;
+  path?: TSPCurve3D;
   sourceGeometry?: string;
   vertices?: number[];
   indices?: number[];
@@ -55,9 +55,9 @@ interface SceneState {
 
   // Lifecycle
   loadScene: () => Promise<void>;
-  loadFromTPJ: (tpjData: TPJFile) => void;
+  loadFromTSP: (tspData: TSPFile) => void;
   serializeScene: () => string;
-  serializeSceneAsTPJ: () => string;
+  serializeSceneAsTSP: () => string;
   clearScene: () => void;
 
   // Object actions
@@ -115,7 +115,9 @@ function toMaterialProps(mat: MaterialProps | undefined): MaterialProps {
 const HISTORY_LIMIT = 50;
 
 // Helper to load shader files for a shader material
-async function loadShaderFiles(shaderName: string): Promise<{ vert: string; frag: string }> {
+async function loadShaderFiles(
+  shaderName: string,
+): Promise<{ vert: string; frag: string }> {
   try {
     const res = await fetch(`/__shader/${shaderName}`);
     return await res.json();
@@ -279,10 +281,10 @@ export const useSceneStore = create<SceneState>()(
           };
           // Complex geometry data - only assign if defined
           if (fo.points) sceneObject.points = fo.points;
-          if (fo.shape) sceneObject.shape = fo.shape as TPJShapePath;
+          if (fo.shape) sceneObject.shape = fo.shape as TSPShapePath;
           if (fo.extrudeOptions)
-            sceneObject.extrudeOptions = fo.extrudeOptions as TPJExtrudeOptions;
-          if (fo.path) sceneObject.path = fo.path as TPJCurve3D;
+            sceneObject.extrudeOptions = fo.extrudeOptions as TSPExtrudeOptions;
+          if (fo.path) sceneObject.path = fo.path as TSPCurve3D;
           if (fo.sourceGeometry) sceneObject.sourceGeometry = fo.sourceGeometry;
           if (fo.vertices) sceneObject.vertices = fo.vertices;
           if (fo.indices) sceneObject.indices = fo.indices;
@@ -310,7 +312,7 @@ export const useSceneStore = create<SceneState>()(
                   obj.material.vertex = vert;
                   obj.material.fragment = frag;
                 }
-              })
+              }),
             );
           }
         }
@@ -330,9 +332,9 @@ export const useSceneStore = create<SceneState>()(
       }
     },
 
-    loadFromTPJ: (tpjData: TPJFile) => {
+    loadFromTSP: (tspData: TSPFile) => {
       const state = get();
-      const newObjects = importFromTPJ(tpjData);
+      const newObjects = importFromTSP(tspData);
 
       // Push current state to history
       const newPast = [...state.history.past, state.objects].slice(
@@ -353,9 +355,9 @@ export const useSceneStore = create<SceneState>()(
       return JSON.stringify(fileObjects, null, 2);
     },
 
-    serializeSceneAsTPJ: () => {
-      const tpjData = exportToTPJ(get().objects);
-      return serializeTPJ(tpjData);
+    serializeSceneAsTSP: () => {
+      const tspData = exportToTSP(get().objects);
+      return serializeTSP(tspData);
     },
 
     clearScene: () => {

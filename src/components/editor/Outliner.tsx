@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Panel, Stack, Typography, Button, Box } from "@archway/valet";
 import { useSceneStore } from "@/store/sceneStore";
 import { OutlinerNode } from "./OutlinerNode";
-import type { PrimitiveType, TPJFile } from "@/types";
-import { validateTPJFile } from "@/schemas/tpj";
+import type { PrimitiveType, TSPFile } from "@/types";
+import { validateTSPFile } from "@/schemas/tsp";
 import { showError } from "@/store/notificationStore";
 
 export function Outliner() {
@@ -13,10 +13,10 @@ export function Outliner() {
   const addObject = useSceneStore((state) => state.addObject);
   const reparent = useSceneStore((state) => state.reparentObject);
   const clearScene = useSceneStore((state) => state.clearScene);
-  const serializeSceneAsTPJ = useSceneStore(
-    (state) => state.serializeSceneAsTPJ,
+  const serializeSceneAsTSP = useSceneStore(
+    (state) => state.serializeSceneAsTSP,
   );
-  const loadFromTPJ = useSceneStore((state) => state.loadFromTPJ);
+  const loadFromTSP = useSceneStore((state) => state.loadFromTSP);
   const undo = useSceneStore((state) => state.undo);
   const redo = useSceneStore((state) => state.redo);
   const canUndo = useSceneStore((state) => state.history.past.length > 0);
@@ -37,18 +37,18 @@ export function Outliner() {
   };
 
   const handleExportScene = async () => {
-    const tpj = serializeSceneAsTPJ();
+    const tsp = serializeSceneAsTSP();
 
     // Validate before export
     let parsed: unknown;
     try {
-      parsed = JSON.parse(tpj);
+      parsed = JSON.parse(tsp);
     } catch {
       showError("Cannot export: Invalid JSON");
       return;
     }
 
-    const validation = validateTPJFile(parsed);
+    const validation = validateTSPFile(parsed);
     if (!validation.success) {
       showError(`Cannot export: ${validation.error}`);
       return;
@@ -66,11 +66,11 @@ export function Outliner() {
 
       if (typeof picker === "function") {
         const handle = (await picker({
-          suggestedName: `${sceneName}.tpj`,
+          suggestedName: `${sceneName}.tsp`,
           types: [
             {
-              description: "Three Primitive JSON",
-              accept: { "application/json": [".tpj"] },
+              description: "Three Shaded Primitive",
+              accept: { "application/json": [".tsp"] },
             },
           ],
         })) as {
@@ -81,7 +81,7 @@ export function Outliner() {
         };
 
         const writable = await handle.createWritable();
-        await writable.write(tpj);
+        await writable.write(tsp);
         await writable.close();
         return;
       }
@@ -89,18 +89,18 @@ export function Outliner() {
       if (err instanceof DOMException && err.name === "AbortError") return;
     }
 
-    const blob = new Blob([tpj], { type: "application/json" });
+    const blob = new Blob([tsp], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${sceneName}.tpj`;
+    link.download = `${sceneName}.tsp`;
     document.body.appendChild(link);
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
   };
 
-  const handleImportTPJ = async () => {
+  const handleImportTSP = async () => {
     try {
       const picker = (
         window as unknown as {
@@ -114,8 +114,8 @@ export function Outliner() {
         const handles = (await picker({
           types: [
             {
-              description: "Three Primitive JSON",
-              accept: { "application/json": [".tpj"] },
+              description: "Three Shaded Primitive",
+              accept: { "application/json": [".tsp"] },
             },
           ],
           multiple: false,
@@ -132,7 +132,7 @@ export function Outliner() {
         fileContent = await new Promise<string>((resolve, reject) => {
           const input = document.createElement("input");
           input.type = "file";
-          input.accept = ".tpj,application/json";
+          input.accept = ".tsp,application/json";
           input.onchange = async () => {
             const file = input.files?.[0];
             if (!file) {
@@ -153,13 +153,13 @@ export function Outliner() {
         return;
       }
 
-      const validation = validateTPJFile(parsed);
+      const validation = validateTSPFile(parsed);
       if (!validation.success) {
         showError(`Import failed: ${validation.error}`);
         return;
       }
 
-      loadFromTPJ(validation.data as TPJFile);
+      loadFromTSP(validation.data as TSPFile);
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return;
       showError(
@@ -275,7 +275,7 @@ export function Outliner() {
                 fontSize: "11px",
                 lineHeight: "16px",
               }}
-              onClick={handleImportTPJ}
+              onClick={handleImportTSP}
             >
               Import
             </Button>

@@ -16,7 +16,7 @@ export interface DocMeta {
   tldr?: string;
 }
 
-// Clay Scene Types
+// rehkuh Scene Types
 
 export type PrimitiveType =
   // Existing
@@ -114,9 +114,9 @@ export interface SceneObject {
   locked: boolean;
   // Complex geometry data (optional, for lathe/extrude/shape/tube/edges/polyhedron)
   points?: [number, number][];
-  shape?: TPJShapePath;
-  extrudeOptions?: TPJExtrudeOptions;
-  path?: TPJCurve3D;
+  shape?: TSPShapePath;
+  extrudeOptions?: TSPExtrudeOptions;
+  path?: TSPCurve3D;
   sourceGeometry?: string;
   vertices?: number[];
   indices?: number[];
@@ -127,12 +127,12 @@ export interface SelectionState {
   primaryId: string | null;
 }
 
-// TPJ (Three Primitive JSON) Export Types
+// TSP (Three Shaded Primitive) Export Types
 
-export type TPJMaterialSide = "front" | "back" | "double";
+export type TSPMaterialSide = "front" | "back" | "double";
 
-// Standard PBR material for TPJ
-export interface TPJStandardMaterial {
+// Standard PBR material for TSP
+export interface TSPStandardMaterial {
   type?: "standard"; // Optional for backwards compatibility
   color: string;
   metalness: number;
@@ -142,26 +142,26 @@ export interface TPJStandardMaterial {
   emissiveIntensity?: number; // 0-1, default 0
   opacity?: number; // 0-1, default 1
   transparent?: boolean; // default false
-  side?: TPJMaterialSide; // default "front"
+  side?: TSPMaterialSide; // default "front"
 }
 
-// Shader material for TPJ (inline GLSL)
-export interface TPJShaderMaterial {
+// Shader material for TSP (inline GLSL)
+export interface TSPShaderMaterial {
   type: "shader";
   vertex: string; // GLSL vertex shader code
   fragment: string; // GLSL fragment shader code
   uniforms: Record<string, ShaderUniform>;
   transparent?: boolean;
-  side?: TPJMaterialSide;
+  side?: TSPMaterialSide;
   depthWrite?: boolean;
   depthTest?: boolean;
 }
 
-// Union type for TPJ materials
-export type TPJMaterial = TPJStandardMaterial | TPJShaderMaterial;
+// Union type for TSP materials
+export type TSPMaterial = TSPStandardMaterial | TSPShaderMaterial;
 
 // Shape path command types (mirrors THREE.Path/Shape API)
-export type TPJShapeCommand =
+export type TSPShapeCommand =
   | { op: "moveTo"; x: number; y: number }
   | { op: "lineTo"; x: number; y: number }
   | {
@@ -215,13 +215,13 @@ export type TPJShapeCommand =
       rotation?: number;
     };
 
-export interface TPJShapePath {
-  commands: TPJShapeCommand[];
-  holes?: TPJShapeCommand[][];
+export interface TSPShapePath {
+  commands: TSPShapeCommand[];
+  holes?: TSPShapeCommand[][];
 }
 
 // 3D curve types for TubeGeometry
-export type TPJCurve3D =
+export type TSPCurve3D =
   | {
       curveType: "catmullRom";
       points: [number, number, number][];
@@ -248,7 +248,7 @@ export type TPJCurve3D =
     };
 
 // Extrude options for ExtrudeGeometry
-export interface TPJExtrudeOptions {
+export interface TSPExtrudeOptions {
   depth?: number;
   bevelEnabled?: boolean;
   bevelThickness?: number;
@@ -256,21 +256,21 @@ export interface TPJExtrudeOptions {
   bevelOffset?: number;
   bevelSegments?: number;
   steps?: number;
-  extrudePath?: TPJCurve3D;
+  extrudePath?: TSPCurve3D;
 }
 
-export interface TPJGeometry {
+export interface TSPGeometry {
   type: PrimitiveType;
   // Simple geometries (numeric args)
   args?: number[];
   // LatheGeometry (Vector2 points)
   points?: [number, number][];
   // ExtrudeGeometry, ShapeGeometry (shape path)
-  shape?: TPJShapePath;
+  shape?: TSPShapePath;
   // ExtrudeGeometry options
-  extrudeOptions?: TPJExtrudeOptions;
+  extrudeOptions?: TSPExtrudeOptions;
   // TubeGeometry (3D curve path)
-  path?: TPJCurve3D;
+  path?: TSPCurve3D;
   // EdgesGeometry (reference to source geometry)
   sourceGeometry?: string;
   // PolyhedronGeometry (raw vertex/index data)
@@ -278,7 +278,7 @@ export interface TPJGeometry {
   indices?: number[];
 }
 
-export interface TPJObject {
+export interface TSPObject {
   id: string;
   name: string;
   type: PrimitiveType | "group";
@@ -295,17 +295,17 @@ export interface TPJObject {
   userData?: Record<string, unknown>; // custom properties
 }
 
-export interface TPJMetadata {
+export interface TSPMetadata {
   name: string;
   created: string; // ISO 8601 timestamp
   generator: string;
 }
 
-export interface TPJFile {
+export interface TSPFile {
   version: string;
-  metadata: TPJMetadata;
-  materials: Record<string, TPJMaterial>;
-  geometries: Record<string, TPJGeometry>;
-  objects: TPJObject[];
+  metadata: TSPMetadata;
+  materials: Record<string, TSPMaterial>;
+  geometries: Record<string, TSPGeometry>;
+  objects: TSPObject[];
   roots: string[]; // ids of root objects
 }
