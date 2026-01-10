@@ -7,6 +7,9 @@ import type {
   TransformMode,
   PrimitiveType,
   MaterialProps,
+  TPJShapePath,
+  TPJCurve3D,
+  TPJExtrudeOptions,
 } from "@/types";
 import { validateSceneFile, validateParentReferences } from "@/schemas/scene";
 import { showError } from "@/store/notificationStore";
@@ -25,6 +28,14 @@ interface SceneFileObject {
   rotation: [number, number, number];
   scale: [number, number, number];
   material?: MaterialProps | undefined;
+  // Complex geometry data
+  points?: [number, number][];
+  shape?: TPJShapePath;
+  extrudeOptions?: TPJExtrudeOptions;
+  path?: TPJCurve3D;
+  sourceGeometry?: string;
+  vertices?: number[];
+  indices?: number[];
 }
 
 interface HistoryState {
@@ -90,27 +101,38 @@ let objectCounter = 0;
 function toSceneFileObjects(
   objects: Record<string, SceneObject>,
 ): SceneFileObject[] {
-  return Object.values(objects).map((obj) => ({
-    name: obj.name,
-    type: obj.type,
-    parent: obj.parentId ? objects[obj.parentId]?.name : undefined,
-    position: obj.position.map((n) => Math.round(n * 1000) / 1000) as [
-      number,
-      number,
-      number,
-    ],
-    rotation: obj.rotation.map((n) => Math.round(n * 1000) / 1000) as [
-      number,
-      number,
-      number,
-    ],
-    scale: obj.scale.map((n) => Math.round(n * 1000) / 1000) as [
-      number,
-      number,
-      number,
-    ],
-    material: obj.type !== "group" ? obj.material : undefined,
-  }));
+  return Object.values(objects).map((obj) => {
+    const fileObj: SceneFileObject = {
+      name: obj.name,
+      type: obj.type,
+      parent: obj.parentId ? objects[obj.parentId]?.name : undefined,
+      position: obj.position.map((n) => Math.round(n * 1000) / 1000) as [
+        number,
+        number,
+        number,
+      ],
+      rotation: obj.rotation.map((n) => Math.round(n * 1000) / 1000) as [
+        number,
+        number,
+        number,
+      ],
+      scale: obj.scale.map((n) => Math.round(n * 1000) / 1000) as [
+        number,
+        number,
+        number,
+      ],
+      material: obj.type !== "group" ? obj.material : undefined,
+    };
+    // Include complex geometry data if present
+    if (obj.points) fileObj.points = obj.points;
+    if (obj.shape) fileObj.shape = obj.shape;
+    if (obj.extrudeOptions) fileObj.extrudeOptions = obj.extrudeOptions;
+    if (obj.path) fileObj.path = obj.path;
+    if (obj.sourceGeometry) fileObj.sourceGeometry = obj.sourceGeometry;
+    if (obj.vertices) fileObj.vertices = obj.vertices;
+    if (obj.indices) fileObj.indices = obj.indices;
+    return fileObj;
+  });
 }
 
 // Helper: compute world matrix by walking up parent chain
@@ -215,7 +237,7 @@ export const useSceneStore = create<SceneState>()(
           const id = crypto.randomUUID();
           objectCounter++;
           nameToId[fo.name] = id;
-          newObjects[id] = {
+          const sceneObject: SceneObject = {
             id,
             name: fo.name,
             type: fo.type,
@@ -227,6 +249,16 @@ export const useSceneStore = create<SceneState>()(
             visible: true,
             locked: false,
           };
+          // Complex geometry data - only assign if defined
+          if (fo.points) sceneObject.points = fo.points;
+          if (fo.shape) sceneObject.shape = fo.shape as TPJShapePath;
+          if (fo.extrudeOptions)
+            sceneObject.extrudeOptions = fo.extrudeOptions as TPJExtrudeOptions;
+          if (fo.path) sceneObject.path = fo.path as TPJCurve3D;
+          if (fo.sourceGeometry) sceneObject.sourceGeometry = fo.sourceGeometry;
+          if (fo.vertices) sceneObject.vertices = fo.vertices;
+          if (fo.indices) sceneObject.indices = fo.indices;
+          newObjects[id] = sceneObject;
         }
 
         // Second pass: link parents by name

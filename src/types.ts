@@ -19,12 +19,29 @@ export interface DocMeta {
 // Clay Scene Types
 
 export type PrimitiveType =
+  // Existing
   | "box"
   | "sphere"
   | "cylinder"
   | "cone"
   | "torus"
-  | "plane";
+  | "plane"
+  // Simple additions
+  | "capsule"
+  | "circle"
+  | "dodecahedron"
+  | "icosahedron"
+  | "octahedron"
+  | "ring"
+  | "tetrahedron"
+  | "torusKnot"
+  // Complex additions
+  | "lathe"
+  | "extrude"
+  | "shape"
+  | "tube"
+  | "edges"
+  | "polyhedron";
 
 export type TransformMode = "translate" | "rotate" | "scale";
 
@@ -45,6 +62,14 @@ export interface SceneObject {
   material: MaterialProps;
   visible: boolean;
   locked: boolean;
+  // Complex geometry data (optional, for lathe/extrude/shape/tube/edges/polyhedron)
+  points?: [number, number][];
+  shape?: TPJShapePath;
+  extrudeOptions?: TPJExtrudeOptions;
+  path?: TPJCurve3D;
+  sourceGeometry?: string;
+  vertices?: number[];
+  indices?: number[];
 }
 
 export interface SelectionState {
@@ -68,9 +93,122 @@ export interface TPJMaterial {
   side?: TPJMaterialSide; // default "front"
 }
 
+// Shape path command types (mirrors THREE.Path/Shape API)
+export type TPJShapeCommand =
+  | { op: "moveTo"; x: number; y: number }
+  | { op: "lineTo"; x: number; y: number }
+  | {
+      op: "bezierCurveTo";
+      cp1x: number;
+      cp1y: number;
+      cp2x: number;
+      cp2y: number;
+      x: number;
+      y: number;
+    }
+  | { op: "quadraticCurveTo"; cpx: number; cpy: number; x: number; y: number }
+  | {
+      op: "arc";
+      x: number;
+      y: number;
+      radius: number;
+      startAngle: number;
+      endAngle: number;
+      clockwise?: boolean;
+    }
+  | {
+      op: "absarc";
+      x: number;
+      y: number;
+      radius: number;
+      startAngle: number;
+      endAngle: number;
+      clockwise?: boolean;
+    }
+  | {
+      op: "ellipse";
+      x: number;
+      y: number;
+      xRadius: number;
+      yRadius: number;
+      startAngle: number;
+      endAngle: number;
+      clockwise?: boolean;
+      rotation?: number;
+    }
+  | {
+      op: "absellipse";
+      x: number;
+      y: number;
+      xRadius: number;
+      yRadius: number;
+      startAngle: number;
+      endAngle: number;
+      clockwise?: boolean;
+      rotation?: number;
+    };
+
+export interface TPJShapePath {
+  commands: TPJShapeCommand[];
+  holes?: TPJShapeCommand[][];
+}
+
+// 3D curve types for TubeGeometry
+export type TPJCurve3D =
+  | {
+      curveType: "catmullRom";
+      points: [number, number, number][];
+      closed?: boolean;
+      tension?: number;
+    }
+  | {
+      curveType: "cubicBezier";
+      v0: [number, number, number];
+      v1: [number, number, number];
+      v2: [number, number, number];
+      v3: [number, number, number];
+    }
+  | {
+      curveType: "quadraticBezier";
+      v0: [number, number, number];
+      v1: [number, number, number];
+      v2: [number, number, number];
+    }
+  | {
+      curveType: "line";
+      v1: [number, number, number];
+      v2: [number, number, number];
+    };
+
+// Extrude options for ExtrudeGeometry
+export interface TPJExtrudeOptions {
+  depth?: number;
+  bevelEnabled?: boolean;
+  bevelThickness?: number;
+  bevelSize?: number;
+  bevelOffset?: number;
+  bevelSegments?: number;
+  steps?: number;
+  extrudePath?: TPJCurve3D;
+}
+
 export interface TPJGeometry {
   type: PrimitiveType;
-  args: number[];
+  // Simple geometries (numeric args)
+  args?: number[];
+  // LatheGeometry (Vector2 points)
+  points?: [number, number][];
+  // ExtrudeGeometry, ShapeGeometry (shape path)
+  shape?: TPJShapePath;
+  // ExtrudeGeometry options
+  extrudeOptions?: TPJExtrudeOptions;
+  // TubeGeometry (3D curve path)
+  path?: TPJCurve3D;
+  // EdgesGeometry (reference to source geometry)
+  sourceGeometry?: string;
+  // PolyhedronGeometry (raw vertex/index data)
+  vertices?: number[];
+  indices?: number[];
 }
 
 export interface TPJObject {

@@ -1,29 +1,22 @@
 import { z } from "zod";
+import {
+  TPJShapePathSchema,
+  TPJCurve3DSchema,
+  TPJExtrudeOptionsSchema,
+} from "./tpj";
+import {
+  HexColorSchema,
+  ObjectTypeSchema,
+  Vector3Schema,
+} from "./base";
 
-export const PrimitiveTypeSchema = z.enum([
-  "box",
-  "sphere",
-  "cylinder",
-  "cone",
-  "torus",
-  "plane",
-]);
-
-export const ObjectTypeSchema = z.enum([
-  "box",
-  "sphere",
-  "cylinder",
-  "cone",
-  "torus",
-  "plane",
-  "group",
-]);
-
-export const Vector3Schema = z.tuple([z.number(), z.number(), z.number()]);
-
-export const HexColorSchema = z
-  .string()
-  .regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color format");
+// Re-export from base to maintain backwards compatibility
+export {
+  PrimitiveTypeSchema,
+  ObjectTypeSchema,
+  Vector3Schema,
+  HexColorSchema,
+} from "./base";
 
 export const MaterialPropsSchema = z.object({
   color: HexColorSchema,
@@ -39,6 +32,14 @@ export const SceneFileObjectSchema = z.object({
   rotation: Vector3Schema,
   scale: Vector3Schema,
   material: MaterialPropsSchema.optional(),
+  // Complex geometry data (optional)
+  points: z.array(z.tuple([z.number(), z.number()])).optional(),
+  shape: TPJShapePathSchema.optional(),
+  extrudeOptions: TPJExtrudeOptionsSchema.optional(),
+  path: TPJCurve3DSchema.optional(),
+  sourceGeometry: z.string().optional(),
+  vertices: z.array(z.number()).optional(),
+  indices: z.array(z.number()).optional(),
 });
 
 export const SceneFileSchema = z.array(SceneFileObjectSchema);

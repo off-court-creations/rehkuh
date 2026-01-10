@@ -8,13 +8,26 @@ import type {
   TPJObject,
 } from "../types";
 
-const GEOMETRY_ARGS: Record<PrimitiveType, number[]> = {
+// Default args for simple geometries (unit scale)
+// Complex geometries (lathe, extrude, shape, tube, edges, polyhedron)
+// require additional data fields and are not included here
+const GEOMETRY_ARGS: Partial<Record<PrimitiveType, number[]>> = {
+  // Existing
   box: [1, 1, 1],
   sphere: [0.5, 32, 32],
   cylinder: [0.5, 0.5, 1, 32],
   cone: [0.5, 1, 32],
   torus: [0.5, 0.2, 16, 32],
   plane: [1, 1],
+  // New simple geometries
+  capsule: [0.5, 1, 4, 8], // radius, length, capSegments, radialSegments
+  circle: [0.5, 32], // radius, segments
+  dodecahedron: [0.5, 0], // radius, detail
+  icosahedron: [0.5, 0], // radius, detail
+  octahedron: [0.5, 0], // radius, detail
+  ring: [0.25, 0.5, 32], // innerRadius, outerRadius, thetaSegments
+  tetrahedron: [0.5, 0], // radius, detail
+  torusKnot: [0.5, 0.15, 64, 8, 2, 3], // radius, tube, tubularSegments, radialSegments, p, q
 };
 
 function generateMaterialKey(material: MaterialProps): string {
@@ -68,10 +81,14 @@ export function exportToTPJ(objects: Record<string, SceneObject>): TPJFile {
   }
 
   for (const type of usedTypes) {
-    geometries[type] = {
-      type,
-      args: GEOMETRY_ARGS[type],
-    };
+    const args = GEOMETRY_ARGS[type];
+    if (args) {
+      // Simple geometry with numeric args
+      geometries[type] = { type, args };
+    } else {
+      // Complex geometry - args are optional, handled by other fields
+      geometries[type] = { type };
+    }
   }
 
   // Transform objects
@@ -107,7 +124,7 @@ export function exportToTPJ(objects: Record<string, SceneObject>): TPJFile {
   const sceneName = firstRoot?.name || "scene";
 
   return {
-    version: "1.1",
+    version: "1.0",
     metadata: {
       name: sceneName,
       created: new Date().toISOString(),
