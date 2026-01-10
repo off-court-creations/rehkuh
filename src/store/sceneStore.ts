@@ -34,7 +34,6 @@ interface SceneFileObject {
   extrudeOptions?: TSPExtrudeOptions;
   path?: TSPCurve3D;
   tubeRadius?: number;
-  sourceGeometry?: string;
   vertices?: number[];
   indices?: number[];
 }
@@ -165,7 +164,6 @@ function toSceneFileObjects(
     if (obj.extrudeOptions) fileObj.extrudeOptions = obj.extrudeOptions;
     if (obj.path) fileObj.path = obj.path;
     if (obj.tubeRadius !== undefined) fileObj.tubeRadius = obj.tubeRadius;
-    if (obj.sourceGeometry) fileObj.sourceGeometry = obj.sourceGeometry;
     if (obj.vertices) fileObj.vertices = obj.vertices;
     if (obj.indices) fileObj.indices = obj.indices;
     return fileObj;
@@ -294,7 +292,6 @@ export const useSceneStore = create<SceneState>()(
           if (fo.path) sceneObject.path = fo.path as TSPCurve3D;
           if (fo.tubeRadius !== undefined)
             sceneObject.tubeRadius = fo.tubeRadius;
-          if (fo.sourceGeometry) sceneObject.sourceGeometry = fo.sourceGeometry;
           if (fo.vertices) sceneObject.vertices = fo.vertices;
           if (fo.indices) sceneObject.indices = fo.indices;
           newObjects[id] = sceneObject;

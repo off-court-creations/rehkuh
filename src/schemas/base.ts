@@ -29,7 +29,6 @@ export const PrimitiveTypeSchema = z.enum([
   "extrude",
   "shape",
   "tube",
-  "edges",
   "polyhedron",
 ]);
 
@@ -55,7 +54,6 @@ export const ObjectTypeSchema = z.enum([
   "extrude",
   "shape",
   "tube",
-  "edges",
   "polyhedron",
   // Group
   "group",

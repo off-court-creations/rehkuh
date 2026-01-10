@@ -44,37 +44,12 @@
     }
   },
   {
-    "name": "baseRing1",
-    "type": "torus",
-    "parent": "base",
-    "position": [
-      0,
-      0.32,
-      0
-    ],
-    "rotation": [
-      1.571,
-      0,
-      0
-    ],
-    "scale": [
-      2.35,
-      2.35,
-      0.15
-    ],
-    "material": {
-      "color": "#b8860b",
-      "metalness": 0.85,
-      "roughness": 0.25
-    }
-  },
-  {
     "name": "baseMiddle",
     "type": "cylinder",
     "parent": "base",
     "position": [
       0,
-      0.429,
+      0.573,
       0
     ],
     "rotation": [
@@ -84,38 +59,13 @@
     ],
     "scale": [
       2.55,
-      0.18,
+      0.499,
       2.55
     ],
     "material": {
       "color": "#d4af37",
       "metalness": 0.9,
       "roughness": 0.2
-    }
-  },
-  {
-    "name": "baseRing2",
-    "type": "torus",
-    "parent": "base",
-    "position": [
-      0,
-      0.518,
-      0
-    ],
-    "rotation": [
-      1.571,
-      0,
-      0
-    ],
-    "scale": [
-      2.35,
-      2.35,
-      0.12
-    ],
-    "material": {
-      "color": "#8b6914",
-      "metalness": 0.8,
-      "roughness": 0.3
     }
   },
   {
@@ -273,9 +223,9 @@
     "name": "cabin",
     "type": "group",
     "position": [
-      0.55,
-      0.88,
-      0.35
+      0.248,
+      0.822,
+      0.322
     ],
     "rotation": [
       0,
@@ -1521,9 +1471,9 @@
     "name": "snowman",
     "type": "group",
     "position": [
-      -0.7,
-      0.88,
-      0.35
+      -0.275,
+      0.781,
+      0.103
     ],
     "rotation": [
       0,
@@ -1531,9 +1481,9 @@
       0
     ],
     "scale": [
-      0.16,
-      0.16,
-      0.16
+      0.436,
+      0.529,
+      0.423
     ]
   },
   {

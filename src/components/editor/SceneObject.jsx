@@ -315,8 +315,15 @@ export function SceneObject({ id }) {
       color: mat?.color ?? "#4bd0d2",
       metalness: mat?.metalness ?? 0.2,
       roughness: mat?.roughness ?? 0.4,
-      side: THREE.DoubleSide,
+      emissive: mat?.emissive
+        ? new THREE.Color(mat.emissive)
+        : new THREE.Color("#000000"),
+      emissiveIntensity: mat?.emissiveIntensity ?? 0,
+      opacity: mat?.opacity ?? 1,
+      transparent: mat?.transparent ?? false,
+      side: mat?.side ? sideMap[mat.side] : THREE.DoubleSide,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only recreate material when material props change
   }, [obj?.material]);
 
   // Store material ref for animation
@@ -419,13 +426,10 @@ export function SceneObject({ id }) {
           return new THREE.BoxGeometry(1, 1, 1);
         return new THREE.PolyhedronGeometry(obj.vertices, obj.indices, 1, 0);
 
-      case "edges":
-        // EdgesGeometry needs a source - fallback to box for now
-        return new THREE.BoxGeometry(1, 1, 1);
-
       default:
         return null;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only recreate geometry when geometry-related props change
   }, [
     obj?.type,
     obj?.points,
@@ -451,8 +455,8 @@ export function SceneObject({ id }) {
             ref={meshRef}
             onClick={handleClick}
             userData={{ objectId: id }}
-            castShadow
-            receiveShadow
+            castShadow={obj.castShadow ?? true}
+            receiveShadow={obj.receiveShadow ?? true}
             geometry={geometry}
             material={objectMaterial}
           />

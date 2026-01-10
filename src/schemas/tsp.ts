@@ -237,8 +237,8 @@ export const TSPGeometrySchema = z.object({
   extrudeOptions: TSPExtrudeOptionsSchema.optional(),
   // TubeGeometry (3D curve path)
   path: TSPCurve3DSchema.optional(),
-  // EdgesGeometry (reference to source geometry)
-  sourceGeometry: z.string().optional(),
+  // TubeGeometry radius
+  tubeRadius: z.number().optional(),
   // PolyhedronGeometry (raw vertex/index data)
   vertices: z.array(z.number()).optional(),
   indices: z.array(z.number()).optional(),

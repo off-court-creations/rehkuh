@@ -69,7 +69,7 @@ Both you and the user edit **`scene/scene.json`** (in project root, outside src/
 | `torusKnot` | Knotted torus |
 | `group` | Empty container for hierarchy |
 
-Complex geometry types (`lathe`, `extrude`, `shape`, `tube`, `edges`, `polyhedron`) are supported in TSP export but require additional data fields. See `docs/tsp-format.md` for details.
+Complex geometry types (`lathe`, `extrude`, `shape`, `tube`, `polyhedron`) are supported in TSP export but require additional data fields. See `docs/tsp-format.md` for details.
 
 #### How It Works
 

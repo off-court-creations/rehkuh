@@ -341,18 +341,6 @@ Tube along a 3D curve.
 }
 ```
 
-##### EdgesGeometry
-
-Wireframe edges of another geometry.
-
-```json
-{
-  "type": "edges",
-  "sourceGeometry": "box",
-  "args": [1]
-}
-```
-
 ##### PolyhedronGeometry
 
 Custom polyhedron from raw vertex/index data.

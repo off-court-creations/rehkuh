@@ -17,12 +17,11 @@ const COMPLEX_GEOMETRY_TYPES: PrimitiveType[] = [
   "extrude",
   "shape",
   "tube",
-  "edges",
   "polyhedron",
 ];
 
 // Default args for simple geometries (unit scale)
-// Complex geometries (lathe, extrude, shape, tube, edges, polyhedron)
+// Complex geometries (lathe, extrude, shape, tube, polyhedron)
 // require additional data fields and are not included here
 const GEOMETRY_ARGS: Partial<Record<PrimitiveType, number[]>> = {
   // Existing
@@ -195,11 +194,22 @@ function convertToTSPMaterial(material: MaterialProps): TSPMaterial {
   }
 
   // Standard material
-  return {
+  const tspMat: TSPMaterial = {
     color: material.color,
     metalness: material.metalness,
     roughness: material.roughness,
   };
+
+  // Optional extended properties
+  if (material.emissive !== undefined) tspMat.emissive = material.emissive;
+  if (material.emissiveIntensity !== undefined)
+    tspMat.emissiveIntensity = material.emissiveIntensity;
+  if (material.opacity !== undefined) tspMat.opacity = material.opacity;
+  if (material.transparent !== undefined)
+    tspMat.transparent = material.transparent;
+  if (material.side !== undefined) tspMat.side = material.side;
+
+  return tspMat;
 }
 
 export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
@@ -241,7 +251,6 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
       if (obj.extrudeOptions) geo.extrudeOptions = obj.extrudeOptions;
       if (obj.path) geo.path = obj.path;
       if (obj.tubeRadius !== undefined) geo.tubeRadius = obj.tubeRadius;
-      if (obj.sourceGeometry) geo.sourceGeometry = obj.sourceGeometry;
       if (obj.vertices) geo.vertices = obj.vertices;
       if (obj.indices) geo.indices = obj.indices;
 
@@ -275,6 +284,13 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
     if (obj.type !== "group") {
       base.geometry = geometryKeyMap.get(obj.id)!;
       base.material = materialKeyMap.get(obj.id)!;
+    }
+
+    // Optional extended properties
+    if (obj.castShadow !== undefined) base.castShadow = obj.castShadow;
+    if (obj.receiveShadow !== undefined) base.receiveShadow = obj.receiveShadow;
+    if (obj.userData !== undefined && Object.keys(obj.userData).length > 0) {
+      base.userData = obj.userData;
     }
 
     return base;

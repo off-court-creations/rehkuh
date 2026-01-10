@@ -40,10 +40,12 @@ export type PrimitiveType =
   | "extrude"
   | "shape"
   | "tube"
-  | "edges"
   | "polyhedron";
 
 export type TransformMode = "translate" | "rotate" | "scale";
+
+// Material render side
+export type MaterialSide = "front" | "back" | "double";
 
 // Standard PBR material (MeshStandardMaterial)
 export interface StandardMaterialProps {
@@ -51,6 +53,12 @@ export interface StandardMaterialProps {
   color: string;
   metalness: number;
   roughness: number;
+  // Optional extended properties
+  emissive?: string; // Hex color, default "#000000"
+  emissiveIntensity?: number; // 0-1, default 0
+  opacity?: number; // 0-1, default 1
+  transparent?: boolean; // default false
+  side?: MaterialSide; // default "front"
 }
 
 // Physical PBR material (MeshPhysicalMaterial)
@@ -169,13 +177,17 @@ export interface SceneObject {
   material: MaterialProps;
   visible: boolean;
   locked: boolean;
-  // Complex geometry data (optional, for lathe/extrude/shape/tube/edges/polyhedron)
+  // Shadow properties (optional, default true for meshes)
+  castShadow?: boolean;
+  receiveShadow?: boolean;
+  // Custom properties
+  userData?: Record<string, unknown>;
+  // Complex geometry data (optional, for lathe/extrude/shape/tube/polyhedron)
   points?: [number, number][];
   shape?: TSPShapePath;
   extrudeOptions?: TSPExtrudeOptions;
   path?: TSPCurve3D;
   tubeRadius?: number;
-  sourceGeometry?: string;
   vertices?: number[];
   indices?: number[];
 }
@@ -388,8 +400,6 @@ export interface TSPGeometry {
   path?: TSPCurve3D;
   // TubeGeometry radius
   tubeRadius?: number;
-  // EdgesGeometry (reference to source geometry)
-  sourceGeometry?: string;
   // PolyhedronGeometry (raw vertex/index data)
   vertices?: number[];
   indices?: number[];

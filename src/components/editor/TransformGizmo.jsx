@@ -17,6 +17,7 @@ export function TransformGizmo({ objectId, onDragStart, onDragEnd }) {
       target.rotation.set(...obj.rotation);
       target.scale.set(...obj.scale);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only sync when transform props change
   }, [target, obj?.position, obj?.rotation, obj?.scale, objectId]);
 
   useEffect(() => {

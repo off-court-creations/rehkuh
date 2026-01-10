@@ -113,11 +113,21 @@ function convertTSPMaterial(tspMat: TSPMaterial): MaterialProps {
   }
 
   // Standard material
-  return {
+  const stdMat: StandardMaterialProps = {
     color: tspMat.color,
     metalness: tspMat.metalness,
     roughness: tspMat.roughness,
   };
+
+  // Optional extended properties
+  if (tspMat.emissive !== undefined) stdMat.emissive = tspMat.emissive;
+  if (tspMat.emissiveIntensity !== undefined)
+    stdMat.emissiveIntensity = tspMat.emissiveIntensity;
+  if (tspMat.opacity !== undefined) stdMat.opacity = tspMat.opacity;
+  if (tspMat.transparent !== undefined) stdMat.transparent = tspMat.transparent;
+  if (tspMat.side !== undefined) stdMat.side = tspMat.side;
+
+  return stdMat;
 }
 
 export function importFromTSP(tspData: TSPFile): Record<string, SceneObject> {
@@ -155,11 +165,17 @@ export function importFromTSP(tspData: TSPFile): Record<string, SceneObject> {
         if (geo.extrudeOptions) sceneObj.extrudeOptions = geo.extrudeOptions;
         if (geo.path) sceneObj.path = geo.path;
         if (geo.tubeRadius !== undefined) sceneObj.tubeRadius = geo.tubeRadius;
-        if (geo.sourceGeometry) sceneObj.sourceGeometry = geo.sourceGeometry;
         if (geo.vertices) sceneObj.vertices = geo.vertices;
         if (geo.indices) sceneObj.indices = geo.indices;
       }
     }
+
+    // Optional extended properties
+    if (tspObj.castShadow !== undefined)
+      sceneObj.castShadow = tspObj.castShadow;
+    if (tspObj.receiveShadow !== undefined)
+      sceneObj.receiveShadow = tspObj.receiveShadow;
+    if (tspObj.userData !== undefined) sceneObj.userData = tspObj.userData;
 
     objects[tspObj.id] = sceneObj;
   }
