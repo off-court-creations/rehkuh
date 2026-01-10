@@ -38,9 +38,11 @@
       2.5
     ],
     "material": {
-      "color": "#1a0d08",
-      "metalness": 0.15,
-      "roughness": 0.7
+      "type": "shader",
+      "shaderName": "imported_shader",
+      "vertex": "varying vec3 vWorldPosition; varying vec3 vNormal; varying vec2 vUv; void main() { vUv = uv; vec4 worldPos = modelMatrix * vec4(position, 1.0); vWorldPosition = worldPos.xyz; vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      "fragment": "varying vec3 vWorldPosition; varying vec3 vNormal; varying vec2 vUv; float hash(float n) { return fract(sin(n) * 43758.5453); } float noise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * f * (f * (f * 6.0 - 15.0) + 10.0); float a = hash(i.x + i.y * 57.0); float b = hash(i.x + 1.0 + i.y * 57.0); float c = hash(i.x + (i.y + 1.0) * 57.0); float d = hash(i.x + 1.0 + (i.y + 1.0) * 57.0); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y); } void main() { vec3 darkWood = vec3(0.28, 0.16, 0.08); vec3 midWood = vec3(0.45, 0.28, 0.15); vec3 lightWood = vec3(0.62, 0.42, 0.24); float angle = atan(vWorldPosition.z, vWorldPosition.x); float circumf = angle * 12.0; float radial = vUv.y * 6.0; float n1 = noise(vec2(circumf * 0.3, radial * 0.5)) * 0.4; float n2 = noise(vec2(circumf * 0.8, radial * 0.2 + 10.0)) * 0.3; float n3 = noise(vec2(circumf * 2.0, radial * 0.1 + 20.0)) * 0.15; float warp = n1 + n2 + n3; float grain = sin((circumf + warp * 8.0) * 2.5) * 0.5 + 0.5; grain = smoothstep(0.2, 0.8, grain); float fineLine = sin((circumf + warp * 4.0) * 15.0) * 0.5 + 0.5; fineLine = smoothstep(0.4, 0.6, fineLine) * 0.3; grain = grain + fineLine * (1.0 - grain); vec3 color = mix(darkWood, midWood, grain); color = mix(color, lightWood, pow(grain, 2.0) * 0.5); vec3 lightDir = normalize(vec3(1.0, 1.0, 0.5)); float diff = max(dot(vNormal, lightDir), 0.0) * 0.5 + 0.5; color *= diff; gl_FragColor = vec4(color, 1.0); }",
+      "uniforms": {}
     }
   },
   {
@@ -49,7 +51,7 @@
     "parent": "base",
     "position": [
       0,
-      0.573,
+      0.379,
       0
     ],
     "rotation": [
@@ -59,7 +61,7 @@
     ],
     "scale": [
       2.55,
-      0.499,
+      0.271,
       2.55
     ],
     "material": {
@@ -166,11 +168,35 @@
     }
   },
   {
+    "name": "pond",
+    "type": "cylinder",
+    "position": [
+      -0.05,
+      0.837,
+      0.259
+    ],
+    "rotation": [
+      0,
+      0.3,
+      0
+    ],
+    "scale": [
+      0.35,
+      0.02,
+      0.28
+    ],
+    "material": {
+      "color": "#3a7ca5",
+      "metalness": 0.3,
+      "roughness": 0.2
+    }
+  },
+  {
     "name": "domeRim",
     "type": "torus",
     "position": [
       0,
-      0.832,
+      0.625,
       0
     ],
     "rotation": [
@@ -181,12 +207,14 @@
     "scale": [
       1.92,
       1.92,
-      0.2
+      -1.034
     ],
     "material": {
-      "color": "#c9a227",
-      "metalness": 0.95,
-      "roughness": 0.12
+      "type": "shader",
+      "shaderName": "imported_shader",
+      "vertex": "varying vec3 vWorldPosition; varying vec3 vNormal; varying vec2 vUv; void main() { vUv = uv; vec4 worldPos = modelMatrix * vec4(position, 1.0); vWorldPosition = worldPos.xyz; vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      "fragment": "varying vec3 vWorldPosition; varying vec3 vNormal; varying vec2 vUv; float hash(float n) { return fract(sin(n) * 43758.5453); } float noise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * f * (f * (f * 6.0 - 15.0) + 10.0); float a = hash(i.x + i.y * 57.0); float b = hash(i.x + 1.0 + i.y * 57.0); float c = hash(i.x + (i.y + 1.0) * 57.0); float d = hash(i.x + 1.0 + (i.y + 1.0) * 57.0); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y); } void main() { vec3 darkWood = vec3(0.28, 0.16, 0.08); vec3 midWood = vec3(0.45, 0.28, 0.15); vec3 lightWood = vec3(0.62, 0.42, 0.24); float angle = atan(vWorldPosition.z, vWorldPosition.x); float circumf = angle * 12.0; float radial = vUv.y * 6.0; float n1 = noise(vec2(circumf * 0.3, radial * 0.5)) * 0.4; float n2 = noise(vec2(circumf * 0.8, radial * 0.2 + 10.0)) * 0.3; float n3 = noise(vec2(circumf * 2.0, radial * 0.1 + 20.0)) * 0.15; float warp = n1 + n2 + n3; float grain = sin((circumf + warp * 8.0) * 2.5) * 0.5 + 0.5; grain = smoothstep(0.2, 0.8, grain); float fineLine = sin((circumf + warp * 4.0) * 15.0) * 0.5 + 0.5; fineLine = smoothstep(0.4, 0.6, fineLine) * 0.3; grain = grain + fineLine * (1.0 - grain); vec3 color = mix(darkWood, midWood, grain); color = mix(color, lightWood, pow(grain, 2.0) * 0.5); vec3 lightDir = normalize(vec3(1.0, 1.0, 0.5)); float diff = max(dot(vNormal, lightDir), 0.0) * 0.5 + 0.5; color *= diff; gl_FragColor = vec4(color, 1.0); }",
+      "uniforms": {}
     }
   },
   {
@@ -223,9 +251,9 @@
     "name": "cabin",
     "type": "group",
     "position": [
-      0.248,
-      0.822,
-      0.322
+      0.358,
+      0.84,
+      0.3
     ],
     "rotation": [
       0,
@@ -1471,9 +1499,9 @@
     "name": "snowman",
     "type": "group",
     "position": [
-      -0.275,
-      0.781,
-      0.103
+      -0.125,
+      0.845,
+      0.209
     ],
     "rotation": [
       0,
@@ -1481,9 +1509,9 @@
       0
     ],
     "scale": [
-      0.436,
-      0.529,
-      0.423
+      0.16,
+      0.16,
+      0.16
     ]
   },
   {

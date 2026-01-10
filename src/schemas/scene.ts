@@ -32,9 +32,9 @@ export const StandardMaterialPropsSchema = z.object({
 // Shader material schema for scene files
 export const ShaderMaterialPropsSchema = z.object({
   type: z.literal("shader"),
-  shaderName: z.string(),
-  vertex: z.string().optional(), // Cached from file
-  fragment: z.string().optional(), // Cached from file
+  shaderName: z.string().optional(), // Reference to external shader file
+  vertex: z.string().optional(), // Inline or cached from file
+  fragment: z.string().optional(), // Inline or cached from file
   uniforms: z.record(z.string(), TSPUniformSchema),
   transparent: z.boolean().optional(),
   side: TSPMaterialSideSchema.optional(),
