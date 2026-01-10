@@ -179,6 +179,7 @@ export function SceneObject({ id }) {
     state.selection.selectedIds.includes(id),
   );
   const select = useSceneStore((state) => state.select);
+  const isDragging = useSceneStore((state) => state.isDragging);
 
   const meshRef = useRef();
   const materialRef = useRef();
@@ -352,6 +353,8 @@ export function SceneObject({ id }) {
 
   const handleClick = (e) => {
     e.stopPropagation();
+    // Don't select if we just finished a gizmo drag
+    if (isDragging) return;
     select(id, e.shiftKey);
   };
 

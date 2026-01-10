@@ -48,6 +48,7 @@ interface SceneState {
   selection: SelectionState;
   transformMode: TransformModeState;
   isLoaded: boolean;
+  isDragging: boolean;
 
   // History
   history: HistoryState;
@@ -79,6 +80,9 @@ interface SceneState {
 
   // Transform mode
   setTransformMode: (mode: TransformModeState) => void;
+
+  // Dragging state (prevents click-to-select during gizmo drag)
+  setIsDragging: (value: boolean) => void;
 
   // History actions
   undo: () => void;
@@ -233,6 +237,7 @@ export const useSceneStore = create<SceneState>()(
     selection: { selectedIds: [], primaryId: null },
     transformMode: null,
     isLoaded: false,
+    isDragging: false,
     history: { past: [], future: [] },
     transactionSnapshot: null,
 
@@ -605,6 +610,10 @@ export const useSceneStore = create<SceneState>()(
 
     setTransformMode: (mode) => {
       set({ transformMode: mode });
+    },
+
+    setIsDragging: (value) => {
+      set({ isDragging: value });
     },
 
     undo: () => {

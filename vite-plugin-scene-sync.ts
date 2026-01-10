@@ -15,7 +15,43 @@ const SCENE_DIR = join(process.cwd(), "scene");
 const SCENE_PATH = join(SCENE_DIR, "scene.json");
 const STAGING_PATH = join(SCENE_DIR, "staging-scene.json");
 const BACKUP_PATH = join(SCENE_DIR, "scene.backup.json");
+const WARNING_PATH = join(SCENE_DIR, "UNAUTHORIZED_EDIT_REVERTED.md");
 const SHADERS_DIR = join(process.cwd(), "shaders");
+
+const WARNING_CONTENT = `# ⚠️ UNAUTHORIZED EDIT DETECTED AND REVERTED
+
+**DO NOT EDIT \`scene.json\` DIRECTLY!**
+
+Your edit to \`scene.json\` was automatically reverted because direct edits are not allowed.
+
+## Correct Workflow
+
+1. **Edit \`staging-scene.json\`** (not \`scene.json\`)
+2. **Validate and promote** by running:
+   \`\`\`bash
+   npm run promote-staging
+   # or
+   curl -X POST http://localhost:5173/__promote-staging
+   \`\`\`
+
+## Why?
+
+- \`scene.json\` is the **live scene** that the viewport renders
+- Direct edits bypass validation and can corrupt the scene
+- The staging workflow ensures your changes are validated before going live
+- UI changes (drag/rotate/recolor) go through the API and are allowed
+
+## Files
+
+| File | Purpose | Who edits it |
+|------|---------|--------------|
+| \`staging-scene.json\` | Your working copy | YOU (AI or human) |
+| \`scene.json\` | Live scene | API/UI only |
+| \`scene.backup.json\` | Auto-backup | System only |
+
+This file was created at: __TIMESTAMP__
+`;
+
 
 // Simple hash function to compare content
 const hashContent = (content: string): string => {
@@ -40,10 +76,16 @@ export function sceneSyncPlugin(): Plugin {
         mkdirSync(sceneDir, { recursive: true });
       }
 
-      // Initialize lastWrittenHash from current file
+      // Initialize lastWrittenHash from current file and ensure backup exists
       try {
         const currentContent = readFileSync(SCENE_PATH, "utf-8");
         lastWrittenHash = hashContent(currentContent);
+
+        // Create initial backup if none exists (so we can revert unauthorized edits)
+        if (!existsSync(BACKUP_PATH)) {
+          copyFileSync(SCENE_PATH, BACKUP_PATH);
+          console.log("[scene-sync] Created initial backup of scene.json");
+        }
       } catch {
         lastWrittenHash = null;
       }
@@ -70,16 +112,43 @@ export function sceneSyncPlugin(): Plugin {
           const newContent = readFileSync(SCENE_PATH, "utf-8");
           const newHash = hashContent(newContent);
 
-          // Only notify if content actually changed from what we know
+          // If content changed and it wasn't us, REVERT the change
           if (newHash !== lastWrittenHash) {
-            console.log("[scene-sync] External change detected, notifying clients");
-            lastWrittenHash = newHash;
+            console.warn(
+              "\x1b[31m[scene-sync] UNAUTHORIZED EDIT DETECTED!\x1b[0m Direct edits to scene.json are not allowed."
+            );
+            console.warn(
+              "[scene-sync] Use staging-scene.json + promote-staging workflow instead."
+            );
 
-            if (server) {
-              server.ws.send({
-                type: "custom",
-                event: "scene-changed",
-              });
+            // Write warning file for AI agents to see
+            const warningWithTimestamp = WARNING_CONTENT.replace(
+              "__TIMESTAMP__",
+              new Date().toISOString()
+            );
+            writeFileSync(WARNING_PATH, warningWithTimestamp, "utf-8");
+            console.warn(
+              "[scene-sync] Created UNAUTHORIZED_EDIT_REVERTED.md - READ THIS FILE!"
+            );
+
+            // Restore from backup if available
+            if (existsSync(BACKUP_PATH)) {
+              try {
+                const backupContent = readFileSync(BACKUP_PATH, "utf-8");
+                ignoreNextChange = true;
+                writeFileSync(SCENE_PATH, backupContent, "utf-8");
+                lastWrittenHash = hashContent(backupContent);
+                console.log(
+                  "[scene-sync] Reverted to backup. Edit staging-scene.json instead."
+                );
+              } catch (restoreErr) {
+                console.error("[scene-sync] Failed to restore backup:", restoreErr);
+              }
+            } else {
+              // No backup - restore to what we last knew
+              console.warn(
+                "[scene-sync] No backup available, change persists but clients not notified."
+              );
             }
           }
         } catch (err) {

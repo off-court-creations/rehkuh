@@ -181,19 +181,22 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
   const transformMode = useSceneStore((state) => state.transformMode);
   const beginTransaction = useSceneStore((state) => state.beginTransaction);
   const commitTransaction = useSceneStore((state) => state.commitTransaction);
+  const setIsDragging = useSceneStore((state) => state.setIsDragging);
 
   const rootObjects = objects.filter((o) => o.parentId === null);
 
   const handleDragStart = () => {
     isDraggingRef.current = true;
+    setIsDragging(true);
     setOrbitEnabled(false);
     beginTransaction();
   };
 
   const handleDragEnd = () => {
-    // Delay resetting the flag so onPointerMissed doesn't fire
+    // Delay resetting the flag so click-to-select doesn't fire on mouseup
     setTimeout(() => {
       isDraggingRef.current = false;
+      setIsDragging(false);
     }, 100);
     setOrbitEnabled(true);
     commitTransaction();

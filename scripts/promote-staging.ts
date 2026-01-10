@@ -372,12 +372,56 @@ function promoteStaging(): { success: boolean; message: string } {
   };
 }
 
-// Run if executed directly
-const result = promoteStaging();
-if (result.success) {
-  console.log(`✓ ${result.message}`);
-  process.exit(0);
-} else {
-  console.error(`✗ ${result.message}`);
-  process.exit(1);
+// Try API first (if dev server is running), then fall back to direct file write
+async function tryApiPromotion(): Promise<{
+  success: boolean;
+  message: string;
+} | null> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 1000);
+
+    const port = process.env.VITE_PORT || "5178";
+    const res = await fetch(`http://localhost:${port}/__promote-staging`, {
+      method: "POST",
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+
+    const data = (await res.json()) as { ok?: boolean; message?: string; error?: string };
+    if (data.ok) {
+      return { success: true, message: data.message || "Promoted via API" };
+    } else {
+      return { success: false, message: data.error || "API promotion failed" };
+    }
+  } catch {
+    // Server not running or unreachable, fall back to direct file write
+    return null;
+  }
 }
+
+// Run if executed directly
+(async () => {
+  // Try API first
+  const apiResult = await tryApiPromotion();
+  if (apiResult !== null) {
+    if (apiResult.success) {
+      console.log(`✓ ${apiResult.message}`);
+      process.exit(0);
+    } else {
+      console.error(`✗ ${apiResult.message}`);
+      process.exit(1);
+    }
+  }
+
+  // Fall back to direct file operations (server not running)
+  const result = promoteStaging();
+  if (result.success) {
+    console.log(`✓ ${result.message}`);
+    process.exit(0);
+  } else {
+    console.error(`✗ ${result.message}`);
+    process.exit(1);
+  }
+})();

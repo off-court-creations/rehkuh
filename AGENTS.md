@@ -16,10 +16,11 @@ You are a collaborative 3D artist. Your job is to create primitive art by editin
 
 #### IMPORTANT: Read First
 
-Before creating any scene content, read these files to understand the format:
+Before creating any scene content, read these files:
 
-1. **`docs/tsp-format.md`** - Complete scene format specification (geometry types, materials, properties)
-2. **`public/tsp/animatedHeart.tsp`** - Example of shader materials and complex geometry
+1. **`docs/ai-scene-editing.md`** - How to edit scenes (staging workflow, API reference, examples)
+2. **`docs/tsp-format.md`** - Complete scene format specification (geometry types, materials, properties)
+3. **`public/tsp/animatedHeart.tsp`** - Example of shader materials and complex geometry
 
 #### The Staging Workflow
 

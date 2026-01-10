@@ -1,6 +1,6 @@
 [
   {
-    "name": "base",
+    "name": "oasis",
     "type": "group",
     "position": [
       0,
@@ -19,12 +19,12 @@
     ]
   },
   {
-    "name": "baseBottom",
+    "name": "sandBase",
     "type": "cylinder",
-    "parent": "base",
+    "parent": "oasis",
     "position": [
       0,
-      0.15,
+      0.1,
       0
     ],
     "rotation": [
@@ -33,147 +33,25 @@
       0
     ],
     "scale": [
-      2.5,
-      0.3,
-      2.5
+      4,
+      0.2,
+      4
     ],
     "material": {
       "type": "shader",
-      "shaderName": "imported_shader",
-      "vertex": "varying vec3 vWorldPosition; varying vec3 vNormal; varying vec2 vUv; void main() { vUv = uv; vec4 worldPos = modelMatrix * vec4(position, 1.0); vWorldPosition = worldPos.xyz; vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
-      "fragment": "varying vec3 vWorldPosition; varying vec3 vNormal; varying vec2 vUv; float hash(float n) { return fract(sin(n) * 43758.5453); } float noise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * f * (f * (f * 6.0 - 15.0) + 10.0); float a = hash(i.x + i.y * 57.0); float b = hash(i.x + 1.0 + i.y * 57.0); float c = hash(i.x + (i.y + 1.0) * 57.0); float d = hash(i.x + 1.0 + (i.y + 1.0) * 57.0); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y); } void main() { vec3 darkWood = vec3(0.28, 0.16, 0.08); vec3 midWood = vec3(0.45, 0.28, 0.15); vec3 lightWood = vec3(0.62, 0.42, 0.24); float angle = atan(vWorldPosition.z, vWorldPosition.x); float circumf = angle * 12.0; float radial = vUv.y * 6.0; float n1 = noise(vec2(circumf * 0.3, radial * 0.5)) * 0.4; float n2 = noise(vec2(circumf * 0.8, radial * 0.2 + 10.0)) * 0.3; float n3 = noise(vec2(circumf * 2.0, radial * 0.1 + 20.0)) * 0.15; float warp = n1 + n2 + n3; float grain = sin((circumf + warp * 8.0) * 2.5) * 0.5 + 0.5; grain = smoothstep(0.2, 0.8, grain); float fineLine = sin((circumf + warp * 4.0) * 15.0) * 0.5 + 0.5; fineLine = smoothstep(0.4, 0.6, fineLine) * 0.3; grain = grain + fineLine * (1.0 - grain); vec3 color = mix(darkWood, midWood, grain); color = mix(color, lightWood, pow(grain, 2.0) * 0.5); vec3 lightDir = normalize(vec3(1.0, 1.0, 0.5)); float diff = max(dot(vNormal, lightDir), 0.0) * 0.5 + 0.5; color *= diff; gl_FragColor = vec4(color, 1.0); }",
+      "vertex": "varying vec3 vWorldPosition; varying vec2 vUv; void main() { vUv = uv; vec4 worldPos = modelMatrix * vec4(position, 1.0); vWorldPosition = worldPos.xyz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      "fragment": "varying vec3 vWorldPosition; varying vec2 vUv; float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); } float noise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f); float a = hash(i); float b = hash(i + vec2(1.0, 0.0)); float c = hash(i + vec2(0.0, 1.0)); float d = hash(i + vec2(1.0, 1.0)); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y); } void main() { vec3 sandLight = vec3(0.96, 0.87, 0.7); vec3 sandDark = vec3(0.85, 0.72, 0.52); vec2 pos = vWorldPosition.xz * 2.0; float n = noise(pos) * 0.5 + noise(pos * 2.0) * 0.25 + noise(pos * 4.0) * 0.125; vec3 color = mix(sandDark, sandLight, n); gl_FragColor = vec4(color, 1.0); }",
       "uniforms": {}
     }
   },
   {
-    "name": "baseMiddle",
-    "type": "cylinder",
-    "parent": "base",
-    "position": [
-      0,
-      0.379,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      2.55,
-      0.271,
-      2.55
-    ],
-    "material": {
-      "color": "#d4af37",
-      "metalness": 0.9,
-      "roughness": 0.2
-    }
-  },
-  {
-    "name": "baseTop",
-    "type": "cylinder",
-    "parent": "base",
-    "position": [
-      0,
-      0.638,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      2.2,
-      0.2,
-      2.2
-    ],
-    "material": {
-      "color": "#2d1810",
-      "metalness": 0.1,
-      "roughness": 0.75
-    }
-  },
-  {
-    "name": "snowGround",
-    "type": "cylinder",
-    "position": [
-      0,
-      0.783,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      2,
-      0.117,
-      2
-    ],
-    "material": {
-      "color": "#f5f9ff",
-      "metalness": 0,
-      "roughness": 1
-    }
-  },
-  {
-    "name": "snowHill1",
+    "name": "sandDune1",
     "type": "sphere",
+    "parent": "oasis",
     "position": [
-      -0.5,
-      0.82,
-      0.4
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.5,
+      2.5,
       0.15,
-      0.4
-    ],
-    "material": {
-      "color": "#eef4ff",
-      "metalness": 0,
-      "roughness": 1
-    }
-  },
-  {
-    "name": "snowHill2",
-    "type": "sphere",
-    "position": [
-      0.55,
-      0.82,
-      -0.35
-    ],
-    "rotation": [
-      0,
-      0.5,
-      0
-    ],
-    "scale": [
-      0.4,
-      0.12,
-      0.35
-    ],
-    "material": {
-      "color": "#e8f0ff",
-      "metalness": 0,
-      "roughness": 1
-    }
-  },
-  {
-    "name": "pond",
-    "type": "cylinder",
-    "position": [
-      -0.05,
-      0.837,
-      0.259
+      1
     ],
     "rotation": [
       0,
@@ -181,22 +59,106 @@
       0
     ],
     "scale": [
-      0.35,
-      0.02,
-      0.28
+      1.5,
+      0.3,
+      1.2
     ],
     "material": {
-      "color": "#3a7ca5",
-      "metalness": 0.3,
-      "roughness": 0.2
+      "color": "#d4b896",
+      "metalness": 0,
+      "roughness": 1
     }
   },
   {
-    "name": "domeRim",
-    "type": "torus",
+    "name": "sandDune2",
+    "type": "sphere",
+    "parent": "oasis",
+    "position": [
+      -2.2,
+      0.12,
+      -1.5
+    ],
+    "rotation": [
+      0,
+      -0.5,
+      0
+    ],
+    "scale": [
+      1.3,
+      0.25,
+      1
+    ],
+    "material": {
+      "color": "#d9c4a5",
+      "metalness": 0,
+      "roughness": 1
+    }
+  },
+  {
+    "name": "sandDune3",
+    "type": "sphere",
+    "parent": "oasis",
+    "position": [
+      0.5,
+      0.1,
+      -2.8
+    ],
+    "rotation": [
+      0,
+      0.8,
+      0
+    ],
+    "scale": [
+      1.8,
+      0.2,
+      1.1
+    ],
+    "material": {
+      "color": "#d4b896",
+      "metalness": 0,
+      "roughness": 1
+    }
+  },
+  {
+    "name": "waterPool",
+    "type": "cylinder",
+    "parent": "oasis",
     "position": [
       0,
-      0.625,
+      0.22,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      1.8,
+      0.05,
+      1.8
+    ],
+    "material": {
+      "type": "shader",
+      "vertex": "varying vec2 vUv; varying vec3 vWorldPos; void main() { vUv = uv; vec4 worldPos = modelMatrix * vec4(position, 1.0); vWorldPos = worldPos.xyz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      "fragment": "uniform float time; varying vec2 vUv; varying vec3 vWorldPos; float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); } float noise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f); float a = hash(i); float b = hash(i + vec2(1.0, 0.0)); float c = hash(i + vec2(0.0, 1.0)); float d = hash(i + vec2(1.0, 1.0)); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y); } void main() { vec3 waterDeep = vec3(0.0, 0.35, 0.5); vec3 waterShallow = vec3(0.2, 0.6, 0.7); vec3 highlight = vec3(0.9, 0.95, 1.0); vec2 pos = vWorldPos.xz; float wave1 = sin(pos.x * 3.0 + time * 1.5) * 0.5 + 0.5; float wave2 = sin(pos.y * 2.5 - time * 1.2) * 0.5 + 0.5; float wave3 = sin((pos.x + pos.y) * 2.0 + time * 0.8) * 0.5 + 0.5; float waves = (wave1 + wave2 + wave3) / 3.0; float n = noise(pos * 4.0 + time * 0.3) * 0.3; float ripple = noise(pos * 8.0 - time * 0.5) * 0.15; float pattern = waves * 0.4 + n + ripple; vec3 color = mix(waterDeep, waterShallow, pattern); float sparkle = pow(max(0.0, sin(pos.x * 20.0 + time * 3.0) * sin(pos.y * 20.0 - time * 2.5)), 8.0) * 0.5; color = mix(color, highlight, sparkle); float edge = 1.0 - smoothstep(0.7, 1.0, length(vUv - 0.5) * 2.0); color = mix(waterDeep * 0.8, color, edge); gl_FragColor = vec4(color, 0.9); }",
+      "uniforms": {
+        "time": {
+          "type": "float",
+          "value": 0,
+          "animated": true
+        }
+      },
+      "transparent": true
+    }
+  },
+  {
+    "name": "poolRim",
+    "type": "torus",
+    "parent": "oasis",
+    "position": [
+      0,
+      0.22,
       0
     ],
     "rotation": [
@@ -205,402 +167,24 @@
       0
     ],
     "scale": [
-      1.92,
-      1.92,
-      -1.034
-    ],
-    "material": {
-      "type": "shader",
-      "shaderName": "imported_shader",
-      "vertex": "varying vec3 vWorldPosition; varying vec3 vNormal; varying vec2 vUv; void main() { vUv = uv; vec4 worldPos = modelMatrix * vec4(position, 1.0); vWorldPosition = worldPos.xyz; vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
-      "fragment": "varying vec3 vWorldPosition; varying vec3 vNormal; varying vec2 vUv; float hash(float n) { return fract(sin(n) * 43758.5453); } float noise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * f * (f * (f * 6.0 - 15.0) + 10.0); float a = hash(i.x + i.y * 57.0); float b = hash(i.x + 1.0 + i.y * 57.0); float c = hash(i.x + (i.y + 1.0) * 57.0); float d = hash(i.x + 1.0 + (i.y + 1.0) * 57.0); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y); } void main() { vec3 darkWood = vec3(0.28, 0.16, 0.08); vec3 midWood = vec3(0.45, 0.28, 0.15); vec3 lightWood = vec3(0.62, 0.42, 0.24); float angle = atan(vWorldPosition.z, vWorldPosition.x); float circumf = angle * 12.0; float radial = vUv.y * 6.0; float n1 = noise(vec2(circumf * 0.3, radial * 0.5)) * 0.4; float n2 = noise(vec2(circumf * 0.8, radial * 0.2 + 10.0)) * 0.3; float n3 = noise(vec2(circumf * 2.0, radial * 0.1 + 20.0)) * 0.15; float warp = n1 + n2 + n3; float grain = sin((circumf + warp * 8.0) * 2.5) * 0.5 + 0.5; grain = smoothstep(0.2, 0.8, grain); float fineLine = sin((circumf + warp * 4.0) * 15.0) * 0.5 + 0.5; fineLine = smoothstep(0.4, 0.6, fineLine) * 0.3; grain = grain + fineLine * (1.0 - grain); vec3 color = mix(darkWood, midWood, grain); color = mix(color, lightWood, pow(grain, 2.0) * 0.5); vec3 lightDir = normalize(vec3(1.0, 1.0, 0.5)); float diff = max(dot(vNormal, lightDir), 0.0) * 0.5 + 0.5; color *= diff; gl_FragColor = vec4(color, 1.0); }",
-      "uniforms": {}
-    }
-  },
-  {
-    "name": "glassDome",
-    "type": "sphere",
-    "position": [
-      0,
-      0.88,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
       1.85,
-      1.6,
-      1.85
-    ],
-    "material": {
-      "type": "physical",
-      "color": "#f0f8ff",
-      "metalness": 0,
-      "roughness": 0.02,
-      "clearcoat": 1,
-      "clearcoatRoughness": 0,
-      "transmission": 0.98,
-      "thickness": 0.25,
-      "ior": 1.5
-    }
-  },
-  {
-    "name": "cabin",
-    "type": "group",
-    "position": [
-      0.358,
-      0.84,
-      0.3
-    ],
-    "rotation": [
-      0,
-      -0.5,
-      0
-    ],
-    "scale": [
-      0.26,
-      0.26,
-      0.26
-    ]
-  },
-  {
-    "name": "cabinBody",
-    "type": "box",
-    "parent": "cabin",
-    "position": [
-      0,
-      0.22,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.7,
-      0.4,
-      0.55
-    ],
-    "material": {
-      "color": "#8b4513",
-      "metalness": 0,
-      "roughness": 0.9
-    }
-  },
-  {
-    "name": "cabinRoof",
-    "type": "cone",
-    "parent": "cabin",
-    "position": [
-      0,
-      0.55,
-      0
-    ],
-    "rotation": [
-      0,
-      0.785,
-      0
-    ],
-    "scale": [
-      0.7,
-      0.35,
-      0.7
-    ],
-    "material": {
-      "color": "#a0522d",
-      "metalness": 0,
-      "roughness": 0.85
-    }
-  },
-  {
-    "name": "cabinDoor",
-    "type": "box",
-    "parent": "cabin",
-    "position": [
-      0.36,
-      0.15,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.02,
-      0.26,
-      0.18
-    ],
-    "material": {
-      "color": "#5c3317",
-      "metalness": 0,
-      "roughness": 0.8
-    }
-  },
-  {
-    "name": "cabinChimney",
-    "type": "box",
-    "parent": "cabin",
-    "position": [
-      -0.15,
-      0.7,
-      0.12
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.12,
-      0.25,
-      0.12
-    ],
-    "material": {
-      "color": "#654321",
-      "metalness": 0,
-      "roughness": 0.9
-    }
-  },
-  {
-    "name": "cabinSnowRoof",
-    "type": "cone",
-    "parent": "cabin",
-    "position": [
-      0,
-      0.62,
-      0
-    ],
-    "rotation": [
-      0,
-      0.785,
-      0
-    ],
-    "scale": [
-      0.72,
-      0.12,
-      0.72
-    ],
-    "material": {
-      "color": "#ffffff",
-      "metalness": 0,
-      "roughness": 1
-    }
-  },
-  {
-    "name": "tree1",
-    "type": "group",
-    "position": [
-      0,
-      0.88,
-      0
-    ],
-    "rotation": [
-      0,
-      0.2,
-      0
-    ],
-    "scale": [
-      0.58,
-      0.58,
-      0.58
-    ]
-  },
-  {
-    "name": "tree1Trunk",
-    "type": "cylinder",
-    "parent": "tree1",
-    "position": [
-      0,
-      0.14,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.08,
-      0.28,
-      0.08
-    ],
-    "material": {
-      "color": "#4a3728",
-      "metalness": 0,
-      "roughness": 0.9
-    }
-  },
-  {
-    "name": "tree1Foliage1",
-    "type": "cone",
-    "parent": "tree1",
-    "position": [
-      0,
-      0.4,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.52,
-      0.36,
-      0.52
-    ],
-    "material": {
-      "color": "#1a472a",
-      "metalness": 0,
-      "roughness": 0.8
-    }
-  },
-  {
-    "name": "tree1Foliage2",
-    "type": "cone",
-    "parent": "tree1",
-    "position": [
-      0,
-      0.62,
-      0
-    ],
-    "rotation": [
-      0,
-      0.5,
-      0
-    ],
-    "scale": [
-      0.4,
-      0.32,
+      1.85,
       0.4
     ],
     "material": {
-      "color": "#1f5c32",
+      "color": "#c9a86c",
       "metalness": 0,
-      "roughness": 0.8
+      "roughness": 0.9
     }
   },
   {
-    "name": "tree1Foliage3",
-    "type": "cone",
-    "parent": "tree1",
+    "name": "palm1",
+    "type": "group",
+    "parent": "oasis",
     "position": [
-      0,
-      0.82,
-      0
-    ],
-    "rotation": [
-      0,
-      0.3,
-      0
-    ],
-    "scale": [
-      0.28,
-      0.28,
-      0.28
-    ],
-    "material": {
-      "color": "#247038",
-      "metalness": 0,
-      "roughness": 0.8
-    }
-  },
-  {
-    "name": "tree1Star",
-    "type": "octahedron",
-    "parent": "tree1",
-    "position": [
-      0,
-      1,
-      0
-    ],
-    "rotation": [
-      0,
-      0.785,
-      0
-    ],
-    "scale": [
-      0.1,
-      0.14,
-      0.1
-    ],
-    "material": {
-      "color": "#ffd700",
-      "metalness": 0.95,
-      "roughness": 0.05
-    }
-  },
-  {
-    "name": "garland1",
-    "type": "tube",
-    "parent": "tree1",
-    "position": [
-      0,
-      0,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      1,
-      1,
-      1
-    ],
-    "material": {
-      "color": "#ffd700",
-      "metalness": 0.7,
-      "roughness": 0.3
-    },
-    "path": {
-      "curveType": "catmullRom",
-      "points": [
-        [
-          0.22,
-          0.42,
-          0
-        ],
-        [
-          0,
-          0.38,
-          0.22
-        ],
-        [
-          -0.22,
-          0.42,
-          0
-        ],
-        [
-          0,
-          0.38,
-          -0.22
-        ],
-        [
-          0.22,
-          0.42,
-          0
-        ]
-      ],
-      "closed": true,
-      "tension": 0.5
-    },
-    "tubeRadius": 0.015
-  },
-  {
-    "name": "garland2",
-    "type": "tube",
-    "parent": "tree1",
-    "position": [
-      0,
-      0,
-      0
+      -1.2,
+      0.2,
+      0.8
     ],
     "rotation": [
       0,
@@ -611,662 +195,166 @@
       1,
       1,
       1
-    ],
-    "material": {
-      "color": "#c41e3a",
-      "metalness": 0.5,
-      "roughness": 0.4
-    },
-    "path": {
-      "curveType": "catmullRom",
-      "points": [
-        [
-          0.16,
-          0.64,
-          0
-        ],
-        [
-          0,
-          0.6,
-          0.16
-        ],
-        [
-          -0.16,
-          0.64,
-          0
-        ],
-        [
-          0,
-          0.6,
-          -0.16
-        ],
-        [
-          0.16,
-          0.64,
-          0
-        ]
-      ],
-      "closed": true,
-      "tension": 0.5
-    },
-    "tubeRadius": 0.012
+    ]
   },
   {
-    "name": "garland3",
-    "type": "tube",
-    "parent": "tree1",
+    "name": "palm1Trunk",
+    "type": "cylinder",
+    "parent": "palm1",
     "position": [
-      0,
-      0,
-      0
-    ],
-    "rotation": [
       0,
       0.8,
       0
     ],
-    "scale": [
-      1,
-      1,
-      1
-    ],
-    "material": {
-      "color": "#ffd700",
-      "metalness": 0.7,
-      "roughness": 0.3
-    },
-    "path": {
-      "curveType": "catmullRom",
-      "points": [
-        [
-          0.11,
-          0.84,
-          0
-        ],
-        [
-          0,
-          0.81,
-          0.11
-        ],
-        [
-          -0.11,
-          0.84,
-          0
-        ],
-        [
-          0,
-          0.81,
-          -0.11
-        ],
-        [
-          0.11,
-          0.84,
-          0
-        ]
-      ],
-      "closed": true,
-      "tension": 0.5
-    },
-    "tubeRadius": 0.01
-  },
-  {
-    "name": "ornament1",
-    "type": "sphere",
-    "parent": "tree1",
-    "position": [
-      0.2,
-      0.45,
-      0.1
-    ],
     "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.06,
-      0.06,
-      0.06
-    ],
-    "material": {
-      "color": "#c41e3a",
-      "metalness": 0.95,
-      "roughness": 0.05
-    }
-  },
-  {
-    "name": "ornament2",
-    "type": "sphere",
-    "parent": "tree1",
-    "position": [
-      -0.15,
-      0.42,
-      0.15
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
       0.05,
-      0.05,
-      0.05
-    ],
-    "material": {
-      "color": "#ffd700",
-      "metalness": 0.95,
-      "roughness": 0.05
-    }
-  },
-  {
-    "name": "ornament3",
-    "type": "sphere",
-    "parent": "tree1",
-    "position": [
-      0.05,
-      0.38,
-      -0.2
-    ],
-    "rotation": [
       0,
-      0,
-      0
-    ],
-    "scale": [
-      0.055,
-      0.055,
-      0.055
-    ],
-    "material": {
-      "color": "#e8e8e8",
-      "metalness": 0.98,
-      "roughness": 0.02
-    }
-  },
-  {
-    "name": "ornament4",
-    "type": "sphere",
-    "parent": "tree1",
-    "position": [
-      0.14,
-      0.65,
       0.08
     ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
     "scale": [
-      0.045,
-      0.045,
-      0.045
+      0.15,
+      1.6,
+      0.15
     ],
     "material": {
-      "color": "#b8860b",
-      "metalness": 0.9,
-      "roughness": 0.1
+      "type": "shader",
+      "vertex": "varying vec2 vUv; varying vec3 vNormal; void main() { vUv = uv; vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      "fragment": "varying vec2 vUv; varying vec3 vNormal; void main() { vec3 trunkDark = vec3(0.35, 0.25, 0.15); vec3 trunkLight = vec3(0.55, 0.4, 0.25); float bands = sin(vUv.y * 40.0) * 0.5 + 0.5; bands = smoothstep(0.3, 0.7, bands); vec3 color = mix(trunkDark, trunkLight, bands); vec3 lightDir = normalize(vec3(1.0, 1.0, 0.5)); float diff = max(dot(vNormal, lightDir), 0.0) * 0.5 + 0.5; color *= diff; gl_FragColor = vec4(color, 1.0); }",
+      "uniforms": {}
     }
   },
   {
-    "name": "ornament5",
-    "type": "sphere",
-    "parent": "tree1",
+    "name": "palm1Frond1",
+    "type": "cone",
+    "parent": "palm1",
     "position": [
-      -0.12,
-      0.62,
-      -0.08
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.05,
-      0.05,
-      0.05
-    ],
-    "material": {
-      "color": "#8b0000",
-      "metalness": 0.1,
-      "roughness": 0.85
-    }
-  },
-  {
-    "name": "ornament6",
-    "type": "sphere",
-    "parent": "tree1",
-    "position": [
-      0,
-      0.68,
-      0.14
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.04,
-      0.04,
-      0.04
-    ],
-    "material": {
-      "color": "#d4af37",
-      "metalness": 0.2,
-      "roughness": 0.8
-    }
-  },
-  {
-    "name": "ornament7",
-    "type": "sphere",
-    "parent": "tree1",
-    "position": [
-      0.1,
-      0.85,
-      0.05
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.035,
-      0.035,
-      0.035
-    ],
-    "material": {
-      "color": "#c0c0c0",
-      "metalness": 0.98,
-      "roughness": 0.02
-    }
-  },
-  {
-    "name": "ornament8",
-    "type": "sphere",
-    "parent": "tree1",
-    "position": [
-      -0.08,
-      0.83,
-      -0.06
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.04,
-      0.04,
-      0.04
-    ],
-    "material": {
-      "color": "#cc0000",
-      "metalness": 0.95,
-      "roughness": 0.05
-    }
-  },
-  {
-    "name": "ornament9",
-    "type": "sphere",
-    "parent": "tree1",
-    "position": [
-      -0.18,
-      0.48,
-      -0.12
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.05,
-      0.05,
-      0.05
-    ],
-    "material": {
-      "color": "#228b22",
-      "metalness": 0.15,
-      "roughness": 0.8
-    }
-  },
-  {
-    "name": "ornament10",
-    "type": "sphere",
-    "parent": "tree1",
-    "position": [
-      0.18,
-      0.58,
-      -0.1
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.045,
-      0.045,
-      0.045
-    ],
-    "material": {
-      "color": "#ffc0cb",
-      "metalness": 0.85,
-      "roughness": 0.15
-    }
-  },
-  {
-    "name": "tree2",
-    "type": "group",
-    "position": [
-      -0.45,
-      0.88,
-      -0.15
-    ],
-    "rotation": [
-      0,
       0.6,
-      0
-    ],
-    "scale": [
-      0.35,
-      0.35,
-      0.35
-    ]
-  },
-  {
-    "name": "tree2Trunk",
-    "type": "cylinder",
-    "parent": "tree2",
-    "position": [
-      0,
-      0.12,
+      1.7,
       0
     ],
     "rotation": [
       0,
       0,
-      0
+      -1.2
     ],
     "scale": [
-      0.06,
-      0.24,
-      0.06
-    ],
-    "material": {
-      "color": "#5c4033",
-      "metalness": 0,
-      "roughness": 0.9
-    }
-  },
-  {
-    "name": "tree2Foliage1",
-    "type": "cone",
-    "parent": "tree2",
-    "position": [
-      0,
-      0.35,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.38,
-      0.3,
-      0.38
-    ],
-    "material": {
-      "color": "#1a472a",
-      "metalness": 0,
-      "roughness": 0.8
-    }
-  },
-  {
-    "name": "tree2Foliage2",
-    "type": "cone",
-    "parent": "tree2",
-    "position": [
-      0,
-      0.52,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.25,
-      0.24,
-      0.25
-    ],
-    "material": {
-      "color": "#1f5c32",
-      "metalness": 0,
-      "roughness": 0.8
-    }
-  },
-  {
-    "name": "tree3",
-    "type": "group",
-    "position": [
-      0.32,
-      0.88,
-      -0.42
-    ],
-    "rotation": [
-      0,
-      -0.3,
-      0
-    ],
-    "scale": [
-      0.32,
-      0.32,
-      0.32
-    ]
-  },
-  {
-    "name": "tree3Trunk",
-    "type": "cylinder",
-    "parent": "tree3",
-    "position": [
-      0,
-      0.11,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.055,
-      0.22,
-      0.055
-    ],
-    "material": {
-      "color": "#4a3728",
-      "metalness": 0,
-      "roughness": 0.9
-    }
-  },
-  {
-    "name": "tree3Foliage1",
-    "type": "cone",
-    "parent": "tree3",
-    "position": [
-      0,
-      0.32,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.35,
-      0.28,
-      0.35
-    ],
-    "material": {
-      "color": "#154c24",
-      "metalness": 0,
-      "roughness": 0.8
-    }
-  },
-  {
-    "name": "tree3Foliage2",
-    "type": "cone",
-    "parent": "tree3",
-    "position": [
-      0,
-      0.48,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.22,
-      0.22,
-      0.22
-    ],
-    "material": {
-      "color": "#1a5c2e",
-      "metalness": 0,
-      "roughness": 0.8
-    }
-  },
-  {
-    "name": "tree4",
-    "type": "group",
-    "position": [
-      -0.28,
-      0.88,
-      0.38
-    ],
-    "rotation": [
-      0,
+      0.15,
       1.2,
-      0
+      0.08
     ],
-    "scale": [
-      0.3,
-      0.3,
+    "material": {
+      "color": "#2d5a27",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "palm1Frond2",
+    "type": "cone",
+    "parent": "palm1",
+    "position": [
+      -0.5,
+      1.7,
       0.3
-    ]
-  },
-  {
-    "name": "tree4Trunk",
-    "type": "cylinder",
-    "parent": "tree4",
-    "position": [
-      0,
-      0.1,
-      0
     ],
     "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.05,
-      0.2,
-      0.05
-    ],
-    "material": {
-      "color": "#5c4033",
-      "metalness": 0,
-      "roughness": 0.9
-    }
-  },
-  {
-    "name": "tree4Foliage1",
-    "type": "cone",
-    "parent": "tree4",
-    "position": [
-      0,
       0.3,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
+      0.8,
+      1.1
     ],
     "scale": [
-      0.32,
-      0.26,
-      0.32
+      0.15,
+      1.1,
+      0.08
     ],
     "material": {
-      "color": "#1a472a",
+      "color": "#3a6b32",
       "metalness": 0,
       "roughness": 0.8
     }
   },
   {
-    "name": "tree5",
-    "type": "group",
-    "position": [
-      -0.52,
-      0.88,
-      0.32
-    ],
-    "rotation": [
-      0,
-      0.9,
-      0
-    ],
-    "scale": [
-      0.25,
-      0.25,
-      0.25
-    ]
-  },
-  {
-    "name": "tree5Trunk",
-    "type": "cylinder",
-    "parent": "tree5",
-    "position": [
-      0,
-      0.09,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.045,
-      0.18,
-      0.045
-    ],
-    "material": {
-      "color": "#4a3728",
-      "metalness": 0,
-      "roughness": 0.9
-    }
-  },
-  {
-    "name": "tree5Foliage1",
+    "name": "palm1Frond3",
     "type": "cone",
-    "parent": "tree5",
+    "parent": "palm1",
+    "position": [
+      -0.4,
+      1.7,
+      -0.4
+    ],
+    "rotation": [
+      -0.4,
+      -0.6,
+      1
+    ],
+    "scale": [
+      0.15,
+      1.15,
+      0.08
+    ],
+    "material": {
+      "color": "#2d5a27",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "palm1Frond4",
+    "type": "cone",
+    "parent": "palm1",
+    "position": [
+      0.3,
+      1.7,
+      -0.5
+    ],
+    "rotation": [
+      -0.5,
+      -0.3,
+      -0.9
+    ],
+    "scale": [
+      0.15,
+      1,
+      0.08
+    ],
+    "material": {
+      "color": "#3a6b32",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "palm1Frond5",
+    "type": "cone",
+    "parent": "palm1",
+    "position": [
+      0.4,
+      1.7,
+      0.4
+    ],
+    "rotation": [
+      0.5,
+      0.4,
+      -1
+    ],
+    "scale": [
+      0.15,
+      1.05,
+      0.08
+    ],
+    "material": {
+      "color": "#2d5a27",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "palm1Frond6",
+    "type": "cone",
+    "parent": "palm1",
     "position": [
       0,
-      0.26,
+      1.85,
       0
     ],
     "rotation": [
@@ -1275,23 +363,24 @@
       0
     ],
     "scale": [
-      0.28,
-      0.24,
-      0.28
+      0.12,
+      0.6,
+      0.12
     ],
     "material": {
-      "color": "#1f5c32",
+      "color": "#4a7a42",
       "metalness": 0,
       "roughness": 0.8
     }
   },
   {
-    "name": "tree6",
+    "name": "palm2",
     "type": "group",
+    "parent": "oasis",
     "position": [
-      0.22,
-      0.88,
-      0.32
+      1,
+      0.2,
+      -0.9
     ],
     "rotation": [
       0,
@@ -1299,126 +388,302 @@
       0
     ],
     "scale": [
-      0.28,
-      0.28,
-      0.28
+      0.85,
+      0.85,
+      0.85
     ]
   },
   {
-    "name": "tree6Trunk",
+    "name": "palm2Trunk",
     "type": "cylinder",
-    "parent": "tree6",
+    "parent": "palm2",
     "position": [
       0,
-      0.1,
+      0.7,
       0
     ],
     "rotation": [
+      -0.06,
       0,
-      0,
-      0
-    ],
-    "scale": [
-      0.05,
-      0.2,
       0.05
     ],
+    "scale": [
+      0.14,
+      1.4,
+      0.14
+    ],
     "material": {
-      "color": "#5c4033",
+      "color": "#5c4030",
       "metalness": 0,
       "roughness": 0.9
     }
   },
   {
-    "name": "tree6Foliage1",
+    "name": "palm2Frond1",
     "type": "cone",
-    "parent": "tree6",
+    "parent": "palm2",
     "position": [
-      0,
-      0.28,
+      0.5,
+      1.5,
       0
     ],
     "rotation": [
       0,
       0,
-      0
+      -1.1
     ],
     "scale": [
-      0.3,
-      0.24,
-      0.3
+      0.14,
+      1,
+      0.07
     ],
     "material": {
-      "color": "#154c24",
+      "color": "#2d5a27",
       "metalness": 0,
       "roughness": 0.8
     }
   },
   {
-    "name": "tree7",
-    "type": "group",
+    "name": "palm2Frond2",
+    "type": "cone",
+    "parent": "palm2",
     "position": [
-      -0.15,
-      0.88,
-      -0.45
+      -0.45,
+      1.5,
+      0.25
+    ],
+    "rotation": [
+      0.3,
+      0.7,
+      1
+    ],
+    "scale": [
+      0.14,
+      0.95,
+      0.07
+    ],
+    "material": {
+      "color": "#3a6b32",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "palm2Frond3",
+    "type": "cone",
+    "parent": "palm2",
+    "position": [
+      -0.35,
+      1.5,
+      -0.35
+    ],
+    "rotation": [
+      -0.35,
+      -0.5,
+      0.95
+    ],
+    "scale": [
+      0.14,
+      1,
+      0.07
+    ],
+    "material": {
+      "color": "#2d5a27",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "palm2Frond4",
+    "type": "cone",
+    "parent": "palm2",
+    "position": [
+      0.25,
+      1.5,
+      -0.4
+    ],
+    "rotation": [
+      -0.45,
+      -0.25,
+      -0.85
+    ],
+    "scale": [
+      0.14,
+      0.9,
+      0.07
+    ],
+    "material": {
+      "color": "#3a6b32",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "palm2Frond5",
+    "type": "cone",
+    "parent": "palm2",
+    "position": [
+      0.3,
+      1.5,
+      0.35
+    ],
+    "rotation": [
+      0.4,
+      0.35,
+      -0.9
+    ],
+    "scale": [
+      0.14,
+      0.92,
+      0.07
+    ],
+    "material": {
+      "color": "#2d5a27",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "palm3",
+    "type": "group",
+    "parent": "oasis",
+    "position": [
+      0.3,
+      0.2,
+      1.3
     ],
     "rotation": [
       0,
-      2.1,
+      1.5,
       0
     ],
     "scale": [
-      0.26,
-      0.26,
-      0.26
+      0.7,
+      0.7,
+      0.7
     ]
   },
   {
-    "name": "tree7Trunk",
+    "name": "palm3Trunk",
     "type": "cylinder",
-    "parent": "tree7",
+    "parent": "palm3",
     "position": [
       0,
-      0.09,
+      0.55,
       0
     ],
     "rotation": [
+      0.04,
       0,
-      0,
-      0
+      -0.06
     ],
     "scale": [
-      0.045,
-      0.18,
-      0.045
+      0.12,
+      1.1,
+      0.12
     ],
     "material": {
-      "color": "#4a3728",
+      "color": "#5c4030",
       "metalness": 0,
       "roughness": 0.9
     }
   },
   {
-    "name": "tree7Foliage1",
+    "name": "palm3Frond1",
     "type": "cone",
-    "parent": "tree7",
+    "parent": "palm3",
     "position": [
-      0,
-      0.26,
+      0.4,
+      1.2,
       0
     ],
     "rotation": [
       0,
       0,
-      0
+      -1
     ],
     "scale": [
-      0.28,
-      0.22,
-      0.28
+      0.12,
+      0.85,
+      0.06
     ],
     "material": {
-      "color": "#1a472a",
+      "color": "#3a6b32",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "palm3Frond2",
+    "type": "cone",
+    "parent": "palm3",
+    "position": [
+      -0.35,
+      1.2,
+      0.2
+    ],
+    "rotation": [
+      0.25,
+      0.6,
+      0.9
+    ],
+    "scale": [
+      0.12,
+      0.8,
+      0.06
+    ],
+    "material": {
+      "color": "#2d5a27",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "palm3Frond3",
+    "type": "cone",
+    "parent": "palm3",
+    "position": [
+      -0.3,
+      1.2,
+      -0.3
+    ],
+    "rotation": [
+      -0.3,
+      -0.45,
+      0.85
+    ],
+    "scale": [
+      0.12,
+      0.82,
+      0.06
+    ],
+    "material": {
+      "color": "#3a6b32",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "palm3Frond4",
+    "type": "cone",
+    "parent": "palm3",
+    "position": [
+      0.2,
+      1.2,
+      -0.35
+    ],
+    "rotation": [
+      -0.4,
+      -0.2,
+      -0.8
+    ],
+    "scale": [
+      0.12,
+      0.78,
+      0.06
+    ],
+    "material": {
+      "color": "#2d5a27",
       "metalness": 0,
       "roughness": 0.8
     }
@@ -1426,10 +691,11 @@
   {
     "name": "rock1",
     "type": "dodecahedron",
+    "parent": "oasis",
     "position": [
-      -0.72,
-      0.9,
-      -0.1
+      1.8,
+      0.3,
+      0.5
     ],
     "rotation": [
       0.3,
@@ -1437,23 +703,24 @@
       0.2
     ],
     "scale": [
-      0.08,
-      0.06,
-      0.07
+      0.35,
+      0.25,
+      0.3
     ],
     "material": {
-      "color": "#5a5a5a",
+      "color": "#7a6b5a",
       "metalness": 0.1,
-      "roughness": 0.9
+      "roughness": 0.95
     }
   },
   {
     "name": "rock2",
-    "type": "dodecahedron",
+    "type": "icosahedron",
+    "parent": "oasis",
     "position": [
-      -0.65,
-      0.88,
-      -0.02
+      -1.6,
+      0.25,
+      -0.6
     ],
     "rotation": [
       0.5,
@@ -1461,23 +728,24 @@
       0.4
     ],
     "scale": [
-      0.05,
-      0.04,
-      0.05
+      0.28,
+      0.2,
+      0.25
     ],
     "material": {
-      "color": "#6b6b6b",
+      "color": "#8a7b6a",
       "metalness": 0.1,
       "roughness": 0.9
     }
   },
   {
     "name": "rock3",
-    "type": "icosahedron",
+    "type": "dodecahedron",
+    "parent": "oasis",
     "position": [
-      0.7,
-      0.89,
-      -0.15
+      0.6,
+      0.22,
+      1.9
     ],
     "rotation": [
       0.2,
@@ -1485,118 +753,124 @@
       0.1
     ],
     "scale": [
+      0.22,
+      0.15,
+      0.2
+    ],
+    "material": {
+      "color": "#6a5b4a",
+      "metalness": 0.1,
+      "roughness": 0.95
+    }
+  },
+  {
+    "name": "grass1",
+    "type": "cone",
+    "parent": "oasis",
+    "position": [
+      1.5,
+      0.35,
+      -0.3
+    ],
+    "rotation": [
+      0.1,
+      0,
+      0.15
+    ],
+    "scale": [
+      0.08,
+      0.4,
+      0.08
+    ],
+    "material": {
+      "color": "#4a7a3a",
+      "metalness": 0,
+      "roughness": 0.9
+    }
+  },
+  {
+    "name": "grass2",
+    "type": "cone",
+    "parent": "oasis",
+    "position": [
+      1.55,
+      0.32,
+      -0.25
+    ],
+    "rotation": [
+      -0.08,
+      0.3,
+      -0.12
+    ],
+    "scale": [
       0.06,
-      0.05,
+      0.35,
       0.06
     ],
     "material": {
-      "color": "#4f4f4f",
-      "metalness": 0.1,
-      "roughness": 0.85
-    }
-  },
-  {
-    "name": "snowman",
-    "type": "group",
-    "position": [
-      -0.125,
-      0.845,
-      0.209
-    ],
-    "rotation": [
-      0,
-      0.6,
-      0
-    ],
-    "scale": [
-      0.16,
-      0.16,
-      0.16
-    ]
-  },
-  {
-    "name": "snowmanBody",
-    "type": "sphere",
-    "parent": "snowman",
-    "position": [
-      0,
-      0.2,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.38,
-      0.32,
-      0.38
-    ],
-    "material": {
-      "color": "#ffffff",
+      "color": "#5a8a4a",
       "metalness": 0,
-      "roughness": 1
+      "roughness": 0.9
     }
   },
   {
-    "name": "snowmanHead",
-    "type": "sphere",
-    "parent": "snowman",
-    "position": [
-      0,
-      0.48,
-      0
-    ],
-    "rotation": [
-      0,
-      0,
-      0
-    ],
-    "scale": [
-      0.24,
-      0.24,
-      0.24
-    ],
-    "material": {
-      "color": "#ffffff",
-      "metalness": 0,
-      "roughness": 1
-    }
-  },
-  {
-    "name": "snowmanNose",
+    "name": "grass3",
     "type": "cone",
-    "parent": "snowman",
+    "parent": "oasis",
     "position": [
-      0.12,
-      0.48,
-      0
+      -1.4,
+      0.33,
+      0.4
     ],
     "rotation": [
-      0,
-      0,
-      -1.571
+      0.12,
+      0.5,
+      0.1
     ],
     "scale": [
-      0.04,
-      0.12,
-      0.04
+      0.07,
+      0.38,
+      0.07
     ],
     "material": {
-      "color": "#ff6600",
+      "color": "#4a7a3a",
       "metalness": 0,
-      "roughness": 0.7
+      "roughness": 0.9
     }
   },
   {
-    "name": "snowmanHat",
-    "type": "cylinder",
-    "parent": "snowman",
+    "name": "grass4",
+    "type": "cone",
+    "parent": "oasis",
     "position": [
-      0,
-      0.68,
-      0
+      -1.35,
+      0.3,
+      0.45
+    ],
+    "rotation": [
+      -0.1,
+      0.2,
+      -0.08
+    ],
+    "scale": [
+      0.055,
+      0.32,
+      0.055
+    ],
+    "material": {
+      "color": "#5a8a4a",
+      "metalness": 0,
+      "roughness": 0.9
+    }
+  },
+  {
+    "name": "coconut1",
+    "type": "sphere",
+    "parent": "palm1",
+    "position": [
+      0.12,
+      1.6,
+      0.1
     ],
     "rotation": [
       0,
@@ -1604,24 +878,24 @@
       0
     ],
     "scale": [
-      0.16,
-      0.14,
-      0.16
+      0.1,
+      0.12,
+      0.1
     ],
     "material": {
-      "color": "#1a1a1a",
-      "metalness": 0.1,
+      "color": "#5a4030",
+      "metalness": 0,
       "roughness": 0.8
     }
   },
   {
-    "name": "snowmanHatBrim",
-    "type": "cylinder",
-    "parent": "snowman",
+    "name": "coconut2",
+    "type": "sphere",
+    "parent": "palm1",
     "position": [
-      0,
-      0.58,
-      0
+      -0.08,
+      1.58,
+      -0.1
     ],
     "rotation": [
       0,
@@ -1629,13 +903,38 @@
       0
     ],
     "scale": [
-      0.24,
-      0.03,
-      0.24
+      0.09,
+      0.11,
+      0.09
     ],
     "material": {
-      "color": "#1a1a1a",
-      "metalness": 0.1,
+      "color": "#4a3525",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "coconut3",
+    "type": "sphere",
+    "parent": "palm2",
+    "position": [
+      0.1,
+      1.38,
+      0.08
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.08,
+      0.1,
+      0.08
+    ],
+    "material": {
+      "color": "#5a4030",
+      "metalness": 0,
       "roughness": 0.8
     }
   }
