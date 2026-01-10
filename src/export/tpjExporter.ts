@@ -7,6 +7,17 @@ import type {
   TPJGeometry,
   TPJObject,
 } from "../types";
+import { isShaderMaterial } from "../types";
+
+// Complex geometry types that need per-instance data (not shared)
+const COMPLEX_GEOMETRY_TYPES: PrimitiveType[] = [
+  "lathe",
+  "extrude",
+  "shape",
+  "tube",
+  "edges",
+  "polyhedron",
+];
 
 // Default args for simple geometries (unit scale)
 // Complex geometries (lathe, extrude, shape, tube, edges, polyhedron)
@@ -31,6 +42,12 @@ const GEOMETRY_ARGS: Partial<Record<PrimitiveType, number[]>> = {
 };
 
 function generateMaterialKey(material: MaterialProps): string {
+  if (isShaderMaterial(material)) {
+    // For shader materials, use the shader name as the key
+    return `mat_shader_${material.shaderName}`;
+  }
+
+  // Standard material key
   const colorPart = material.color.replace("#", "").toLowerCase();
   const metalPart = Math.round(material.metalness * 100)
     .toString()
@@ -41,12 +58,33 @@ function generateMaterialKey(material: MaterialProps): string {
   return `mat_${colorPart}_${metalPart}_${roughPart}`;
 }
 
-function materialsEqual(a: MaterialProps, b: MaterialProps): boolean {
-  return (
-    a.color.toLowerCase() === b.color.toLowerCase() &&
-    Math.round(a.metalness * 100) === Math.round(b.metalness * 100) &&
-    Math.round(a.roughness * 100) === Math.round(b.roughness * 100)
-  );
+function convertToTPJMaterial(material: MaterialProps): TPJMaterial {
+  if (isShaderMaterial(material)) {
+    // For shader materials, we need to read the shader files and inline them
+    // For now, we'll use the cached vertex/fragment if available
+    const tpjMat: TPJMaterial = {
+      type: "shader",
+      vertex: material.vertex || "",
+      fragment: material.fragment || "",
+      uniforms: material.uniforms,
+    };
+
+    if (material.transparent !== undefined)
+      tpjMat.transparent = material.transparent;
+    if (material.side) tpjMat.side = material.side;
+    if (material.depthWrite !== undefined)
+      tpjMat.depthWrite = material.depthWrite;
+    if (material.depthTest !== undefined) tpjMat.depthTest = material.depthTest;
+
+    return tpjMat;
+  }
+
+  // Standard material
+  return {
+    color: material.color,
+    metalness: material.metalness,
+    roughness: material.roughness,
+  };
 }
 
 export function exportToTPJ(objects: Record<string, SceneObject>): TPJFile {
@@ -61,33 +99,45 @@ export function exportToTPJ(objects: Record<string, SceneObject>): TPJFile {
 
     const key = generateMaterialKey(obj.material);
     if (!materials[key]) {
-      materials[key] = {
-        color: obj.material.color,
-        metalness: obj.material.metalness,
-        roughness: obj.material.roughness,
-      };
+      materials[key] = convertToTPJMaterial(obj.material);
     }
     materialKeyMap.set(obj.id, key);
   }
 
-  // Build geometries dictionary (one per type used)
+  // Build geometries dictionary
+  // Simple geometries: one per type (shared)
+  // Complex geometries: one per object (unique data per instance)
   const geometries: Record<string, TPJGeometry> = {};
-  const usedTypes = new Set<PrimitiveType>();
+  const geometryKeyMap = new Map<string, string>(); // object id -> geometry key
 
   for (const obj of objectList) {
-    if (obj.type !== "group") {
-      usedTypes.add(obj.type);
-    }
-  }
+    if (obj.type === "group") continue;
 
-  for (const type of usedTypes) {
-    const args = GEOMETRY_ARGS[type];
-    if (args) {
-      // Simple geometry with numeric args
-      geometries[type] = { type, args };
+    const isComplex = COMPLEX_GEOMETRY_TYPES.includes(obj.type);
+
+    if (isComplex) {
+      // Complex geometry - unique key per object
+      const geoKey = `${obj.type}_${obj.id.slice(0, 8)}`;
+      const geo: TPJGeometry = { type: obj.type };
+
+      // Include the complex geometry data
+      if (obj.points) geo.points = obj.points;
+      if (obj.shape) geo.shape = obj.shape;
+      if (obj.extrudeOptions) geo.extrudeOptions = obj.extrudeOptions;
+      if (obj.path) geo.path = obj.path;
+      if (obj.sourceGeometry) geo.sourceGeometry = obj.sourceGeometry;
+      if (obj.vertices) geo.vertices = obj.vertices;
+      if (obj.indices) geo.indices = obj.indices;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
     } else {
-      // Complex geometry - args are optional, handled by other fields
-      geometries[type] = { type };
+      // Simple geometry - shared by type
+      if (!geometries[obj.type]) {
+        const args = GEOMETRY_ARGS[obj.type];
+        geometries[obj.type] = args ? { type: obj.type, args } : { type: obj.type };
+      }
+      geometryKeyMap.set(obj.id, obj.type);
     }
   }
 
@@ -105,7 +155,7 @@ export function exportToTPJ(objects: Record<string, SceneObject>): TPJFile {
     };
 
     if (obj.type !== "group") {
-      base.geometry = obj.type;
+      base.geometry = geometryKeyMap.get(obj.id)!;
       base.material = materialKeyMap.get(obj.id)!;
     }
 

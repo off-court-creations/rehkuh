@@ -141,6 +141,35 @@ function buildCurve3D(curveDef) {
   }
 }
 
+// Side map for shader materials
+const sideMap = {
+  front: THREE.FrontSide,
+  back: THREE.BackSide,
+  double: THREE.DoubleSide,
+};
+
+// Parse uniform value based on type
+function parseUniformValue(type, value) {
+  switch (type) {
+    case "color":
+      return new THREE.Color(value);
+    case "vec2":
+      return new THREE.Vector2(...value);
+    case "vec3":
+      return new THREE.Vector3(...value);
+    case "vec4":
+      return new THREE.Vector4(...value);
+    case "float":
+    case "int":
+    case "bool":
+    default:
+      return value;
+  }
+}
+
+// Hot pink error material for shader compilation failures
+const errorMaterial = new THREE.MeshBasicMaterial({ color: "#ff00ff" });
+
 export function SceneObject({ id }) {
   const obj = useSceneStore((state) => state.objects[id]);
   const children = useSceneStore((state) =>
@@ -152,6 +181,7 @@ export function SceneObject({ id }) {
   const select = useSceneStore((state) => state.select);
 
   const meshRef = useRef();
+  const materialRef = useRef();
 
   const outlineMaterial = useMemo(() => {
     const material = new THREE.ShaderMaterial({
@@ -197,9 +227,65 @@ export function SceneObject({ id }) {
     return material;
   }, []);
 
+  // Create object material (standard or shader)
+  const objectMaterial = useMemo(() => {
+    if (!obj) return null;
+    const mat = obj.material;
+
+    if (mat?.type === "shader") {
+      // Shader material
+      const uniforms = {};
+      for (const [name, def] of Object.entries(mat.uniforms || {})) {
+        uniforms[name] = { value: parseUniformValue(def.type, def.value) };
+      }
+
+      try {
+        return new THREE.ShaderMaterial({
+          vertexShader: mat.vertex || "",
+          fragmentShader: mat.fragment || "",
+          uniforms,
+          transparent: mat.transparent ?? false,
+          side: sideMap[mat.side] ?? THREE.DoubleSide,
+          depthWrite: mat.depthWrite ?? true,
+          depthTest: mat.depthTest ?? true,
+        });
+      } catch (e) {
+        console.error("Shader compilation failed:", e);
+        return errorMaterial;
+      }
+    }
+
+    // Standard material
+    return new THREE.MeshStandardMaterial({
+      color: mat?.color ?? "#4bd0d2",
+      metalness: mat?.metalness ?? 0.2,
+      roughness: mat?.roughness ?? 0.4,
+      side: THREE.DoubleSide,
+    });
+  }, [obj?.material]);
+
+  // Store material ref for animation
+  materialRef.current = objectMaterial;
+
   useFrame(({ clock }) => {
-    if (!isSelected) return;
-    outlineMaterial.uniforms.time.value = clock.getElapsedTime();
+    const elapsed = clock.getElapsedTime();
+
+    // Animate outline material when selected
+    if (isSelected) {
+      outlineMaterial.uniforms.time.value = elapsed;
+    }
+
+    // Animate shader material uniforms
+    if (obj?.material?.type === "shader" && materialRef.current) {
+      const mat = obj.material;
+      for (const [name, def] of Object.entries(mat.uniforms || {})) {
+        if (def.animated && materialRef.current.uniforms?.[name]) {
+          if (name === "time") {
+            materialRef.current.uniforms[name].value = elapsed;
+          }
+        }
+      }
+    }
   });
 
   const handleClick = (e) => {
@@ -284,7 +370,15 @@ export function SceneObject({ id }) {
       default:
         return null;
     }
-  }, [obj?.type, obj?.points, obj?.shape, obj?.extrudeOptions, obj?.path, obj?.vertices, obj?.indices]);
+  }, [
+    obj?.type,
+    obj?.points,
+    obj?.shape,
+    obj?.extrudeOptions,
+    obj?.path,
+    obj?.vertices,
+    obj?.indices,
+  ]);
 
   if (!obj || !obj.visible) return null;
 
@@ -295,7 +389,7 @@ export function SceneObject({ id }) {
       scale={obj.scale}
       userData={{ objectId: id }}
     >
-      {obj.type !== "group" && geometry && (
+      {obj.type !== "group" && geometry && objectMaterial && (
         <>
           <mesh
             ref={meshRef}
@@ -304,14 +398,8 @@ export function SceneObject({ id }) {
             castShadow
             receiveShadow
             geometry={geometry}
-          >
-            <meshStandardMaterial
-              color={obj.material.color}
-              metalness={obj.material.metalness}
-              roughness={obj.material.roughness}
-              side={THREE.DoubleSide}
-            />
-          </mesh>
+            material={objectMaterial}
+          />
 
           {isSelected && (
             <mesh

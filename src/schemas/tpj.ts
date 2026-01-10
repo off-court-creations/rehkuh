@@ -8,7 +8,30 @@ import {
 
 export const TPJMaterialSideSchema = z.enum(["front", "back", "double"]);
 
-export const TPJMaterialSchema = z.object({
+// Shader uniform types
+export const TPJUniformTypeSchema = z.enum([
+  "float",
+  "int",
+  "bool",
+  "color",
+  "vec2",
+  "vec3",
+  "vec4",
+]);
+
+// Shader uniform definition
+export const TPJUniformSchema = z.object({
+  type: TPJUniformTypeSchema,
+  value: z.union([z.number(), z.boolean(), z.string(), z.array(z.number())]),
+  animated: z.boolean().optional(),
+  min: z.number().optional(),
+  max: z.number().optional(),
+  step: z.number().optional(),
+});
+
+// Standard material schema
+export const TPJStandardMaterialSchema = z.object({
+  type: z.literal("standard").optional(), // Optional for backwards compatibility
   color: HexColorSchema,
   metalness: z.number().min(0).max(1),
   roughness: z.number().min(0).max(1),
@@ -19,6 +42,24 @@ export const TPJMaterialSchema = z.object({
   transparent: z.boolean().optional(),
   side: TPJMaterialSideSchema.optional(),
 });
+
+// Shader material schema
+export const TPJShaderMaterialSchema = z.object({
+  type: z.literal("shader"),
+  vertex: z.string(),
+  fragment: z.string(),
+  uniforms: z.record(z.string(), TPJUniformSchema),
+  transparent: z.boolean().optional(),
+  side: TPJMaterialSideSchema.optional(),
+  depthWrite: z.boolean().optional(),
+  depthTest: z.boolean().optional(),
+});
+
+// Union type for all TPJ materials
+export const TPJMaterialSchema = z.union([
+  TPJStandardMaterialSchema,
+  TPJShaderMaterialSchema,
+]);
 
 // Shape path command schemas (mirrors THREE.Path/Shape API)
 export const TPJShapeCommandSchema = z.discriminatedUnion("op", [

@@ -45,10 +45,60 @@ export type PrimitiveType =
 
 export type TransformMode = "translate" | "rotate" | "scale";
 
-export interface MaterialProps {
+// Standard PBR material (MeshStandardMaterial)
+export interface StandardMaterialProps {
+  type?: "standard"; // Optional for backwards compatibility
   color: string;
   metalness: number;
   roughness: number;
+}
+
+// Uniform types for shader materials
+export type ShaderUniformType =
+  | "float"
+  | "int"
+  | "bool"
+  | "color"
+  | "vec2"
+  | "vec3"
+  | "vec4";
+
+export interface ShaderUniform {
+  type: ShaderUniformType;
+  value: number | boolean | string | number[];
+  animated?: boolean; // If true, runtime updates (e.g., time)
+  min?: number; // UI hint for sliders
+  max?: number; // UI hint for sliders
+  step?: number; // UI hint for sliders
+}
+
+// Shader material (custom GLSL shaders)
+export interface ShaderMaterialProps {
+  type: "shader";
+  shaderName: string; // References shaders/{name}.vert and .frag files
+  vertex?: string; // Cached vertex shader code (loaded from file)
+  fragment?: string; // Cached fragment shader code (loaded from file)
+  uniforms: Record<string, ShaderUniform>;
+  transparent?: boolean;
+  side?: "front" | "back" | "double";
+  depthWrite?: boolean;
+  depthTest?: boolean;
+}
+
+// Union type for all materials
+export type MaterialProps = StandardMaterialProps | ShaderMaterialProps;
+
+// Type guards
+export function isShaderMaterial(
+  mat: MaterialProps,
+): mat is ShaderMaterialProps {
+  return mat.type === "shader";
+}
+
+export function isStandardMaterial(
+  mat: MaterialProps,
+): mat is StandardMaterialProps {
+  return mat.type === "standard" || mat.type === undefined;
 }
 
 export interface SceneObject {
@@ -81,7 +131,9 @@ export interface SelectionState {
 
 export type TPJMaterialSide = "front" | "back" | "double";
 
-export interface TPJMaterial {
+// Standard PBR material for TPJ
+export interface TPJStandardMaterial {
+  type?: "standard"; // Optional for backwards compatibility
   color: string;
   metalness: number;
   roughness: number;
@@ -92,6 +144,21 @@ export interface TPJMaterial {
   transparent?: boolean; // default false
   side?: TPJMaterialSide; // default "front"
 }
+
+// Shader material for TPJ (inline GLSL)
+export interface TPJShaderMaterial {
+  type: "shader";
+  vertex: string; // GLSL vertex shader code
+  fragment: string; // GLSL fragment shader code
+  uniforms: Record<string, ShaderUniform>;
+  transparent?: boolean;
+  side?: TPJMaterialSide;
+  depthWrite?: boolean;
+  depthTest?: boolean;
+}
+
+// Union type for TPJ materials
+export type TPJMaterial = TPJStandardMaterial | TPJShaderMaterial;
 
 // Shape path command types (mirrors THREE.Path/Shape API)
 export type TPJShapeCommand =

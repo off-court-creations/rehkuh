@@ -3,12 +3,10 @@ import {
   TPJShapePathSchema,
   TPJCurve3DSchema,
   TPJExtrudeOptionsSchema,
+  TPJUniformSchema,
+  TPJMaterialSideSchema,
 } from "./tpj";
-import {
-  HexColorSchema,
-  ObjectTypeSchema,
-  Vector3Schema,
-} from "./base";
+import { HexColorSchema, ObjectTypeSchema, Vector3Schema } from "./base";
 
 // Re-export from base to maintain backwards compatibility
 export {
@@ -18,11 +16,32 @@ export {
   HexColorSchema,
 } from "./base";
 
-export const MaterialPropsSchema = z.object({
+// Standard material schema for scene files
+export const StandardMaterialPropsSchema = z.object({
+  type: z.literal("standard").optional(), // Optional for backwards compatibility
   color: HexColorSchema,
   metalness: z.number().min(0).max(1),
   roughness: z.number().min(0).max(1),
 });
+
+// Shader material schema for scene files
+export const ShaderMaterialPropsSchema = z.object({
+  type: z.literal("shader"),
+  shaderName: z.string(),
+  vertex: z.string().optional(), // Cached from file
+  fragment: z.string().optional(), // Cached from file
+  uniforms: z.record(z.string(), TPJUniformSchema),
+  transparent: z.boolean().optional(),
+  side: TPJMaterialSideSchema.optional(),
+  depthWrite: z.boolean().optional(),
+  depthTest: z.boolean().optional(),
+});
+
+// Union type for all material props
+export const MaterialPropsSchema = z.union([
+  StandardMaterialPropsSchema,
+  ShaderMaterialPropsSchema,
+]);
 
 export const SceneFileObjectSchema = z.object({
   name: z.string().min(1, "Object name cannot be empty"),

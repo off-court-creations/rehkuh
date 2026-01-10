@@ -94,7 +94,35 @@ const defaultMaterial: MaterialProps = {
   roughness: 0.4,
 };
 
+// Helper to convert scene file material to internal MaterialProps
+function toMaterialProps(mat: MaterialProps | undefined): MaterialProps {
+  if (!mat) return { ...defaultMaterial };
+
+  // Handle shader material
+  if (mat.type === "shader") {
+    return mat;
+  }
+
+  // Handle standard material - strip undefined type
+  const result: MaterialProps = {
+    color: mat.color,
+    metalness: mat.metalness,
+    roughness: mat.roughness,
+  };
+  return result;
+}
+
 const HISTORY_LIMIT = 50;
+
+// Helper to load shader files for a shader material
+async function loadShaderFiles(shaderName: string): Promise<{ vert: string; frag: string }> {
+  try {
+    const res = await fetch(`/__shader/${shaderName}`);
+    return await res.json();
+  } catch {
+    return { vert: "", frag: "" };
+  }
+}
 
 let objectCounter = 0;
 
@@ -245,7 +273,7 @@ export const useSceneStore = create<SceneState>()(
             position: fo.position,
             rotation: fo.rotation,
             scale: fo.scale,
-            material: fo.material ?? { ...defaultMaterial },
+            material: toMaterialProps(fo.material as MaterialProps | undefined),
             visible: true,
             locked: false,
           };
@@ -270,6 +298,23 @@ export const useSceneStore = create<SceneState>()(
             newObjects[id].parentId = parentId;
           }
         }
+
+        // Third pass: load shader files for shader materials
+        const shaderLoadPromises: Promise<void>[] = [];
+        for (const obj of Object.values(newObjects)) {
+          if (obj.material?.type === "shader" && obj.material.shaderName) {
+            const shaderName = obj.material.shaderName;
+            shaderLoadPromises.push(
+              loadShaderFiles(shaderName).then(({ vert, frag }) => {
+                if (obj.material?.type === "shader") {
+                  obj.material.vertex = vert;
+                  obj.material.fragment = frag;
+                }
+              })
+            );
+          }
+        }
+        await Promise.all(shaderLoadPromises);
 
         set({
           objects: newObjects,
