@@ -11,7 +11,7 @@ Edit `scene/staging-scene.json` instead, then promote it.
 ## Quick Start
 
 ```bash
-# 1. Copy current scene to staging (optional - starts from current state)
+# 1. Copy current scene and shaders to staging (optional - starts from current state)
 curl -X POST http://localhost:5173/__copy-to-staging
 
 # 2. Edit scene/staging-scene.json with your changes
@@ -27,9 +27,19 @@ curl -X POST http://localhost:5173/__promote-staging
 ```
 scene/
 ├── staging-scene.json      ← YOU EDIT THIS
-├── scene.json              ← Live scene (API/UI only, auto-reverts direct edits)
+├── scene.json              ← Live scene (auto-reverts direct edits)
 ├── scene.backup.json       ← Auto-backup before promotions
 └── UNAUTHORIZED_EDIT_REVERTED.md  ← Created if you edit scene.json directly
+
+shaders/
+├── staging/                ← YOU EDIT SHADERS HERE
+│   ├── myShader.vert
+│   └── myShader.frag
+├── _template.vert          ← Template for new shaders
+├── _template.frag
+├── myShader.vert           ← Live shaders (auto-reverts direct edits)
+├── myShader.frag
+└── UNAUTHORIZED_EDIT_REVERTED.md  ← Created if you edit live shaders directly
 ```
 
 ## API Reference
@@ -42,11 +52,11 @@ All endpoints are on the dev server (default `http://localhost:5173`).
 curl -X POST http://localhost:5173/__copy-to-staging
 ```
 
-Copies `scene.json` → `staging-scene.json`. Use this to start editing from the current scene state without reading the file into context.
+Copies `scene.json` → `staging-scene.json` and shaders from `shaders/` → `shaders/staging/` (excluding templates). Use this to start editing from the current scene state without reading files into context.
 
 **Response:**
 ```json
-{ "ok": true, "message": "Copied 15 objects from scene.json to staging-scene.json" }
+{ "ok": true, "message": "Copied 15 objects and 2 shader(s) to staging" }
 ```
 
 ### Promote Staging to Live
@@ -57,7 +67,7 @@ npm run promote-staging
 curl -X POST http://localhost:5173/__promote-staging
 ```
 
-Validates `staging-scene.json` and if valid, copies it to `scene.json`. The viewport auto-reloads.
+Validates `staging-scene.json` and if valid, copies it to `scene.json` and shaders from `shaders/staging/` to `shaders/`. The viewport auto-reloads.
 
 **Success Response:**
 ```json
@@ -100,7 +110,7 @@ Returns the current live `scene.json`. Use this to see what the user changed via
 ### Adding Objects to Existing Scene
 
 ```bash
-# 1. Start from current scene
+# 1. Start from current scene and shaders
 curl -X POST http://localhost:5173/__copy-to-staging
 
 # 2. Edit staging-scene.json - add your new objects
@@ -156,6 +166,118 @@ For full format details, see `docs/tsp-format.md`.
 
 For shader material examples, see `public/tsp/animatedHeart.tsp`.
 
+## External Shader Files
+
+For shader materials, you can write vertex and fragment shaders as separate files instead of inlining them in JSON. This makes shaders easier to write and maintain.
+
+### Directory Structure
+
+```
+scene/
+├── staging-scene.json     ← Scene JSON with shaderName references
+└── shaders/               ← Staging shader files
+    ├── myShader.vert      ← Vertex shader
+    └── myShader.frag      ← Fragment shader
+
+shaders/                   ← Production shaders (copied on promote)
+├── _template.vert         ← Template for new shaders
+└── _template.frag
+```
+
+### Workflow
+
+1. **Write the staging scene JSON** with a `shaderName` reference (no inline `vertex`/`fragment`):
+
+```json
+[
+  {
+    "name": "glowingSphere",
+    "type": "sphere",
+    "position": [0, 1, 0],
+    "rotation": [0, 0, 0],
+    "scale": [1, 1, 1],
+    "material": {
+      "type": "shader",
+      "shaderName": "glow",
+      "uniforms": {
+        "baseColor": { "type": "color", "value": "#00ffff" },
+        "time": { "type": "float", "value": 0, "animated": true }
+      }
+    }
+  }
+]
+```
+
+2. **Write the shader files** in `shaders/staging/`:
+
+**shaders/staging/glow.vert:**
+```glsl
+varying vec2 vUv;
+varying vec3 vWorldPosition;
+
+void main() {
+  vUv = uv;
+  vec4 worldPos = modelMatrix * vec4(position, 1.0);
+  vWorldPosition = worldPos.xyz;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+```
+
+**shaders/staging/glow.frag:**
+```glsl
+uniform vec3 baseColor;
+uniform float time;
+
+varying vec2 vUv;
+varying vec3 vWorldPosition;
+
+void main() {
+  float glow = sin(time * 2.0) * 0.5 + 0.5;
+  vec3 color = baseColor * (0.5 + glow * 0.5);
+  gl_FragColor = vec4(color, 1.0);
+}
+```
+
+3. **Promote the staging scene:**
+
+```bash
+npm run promote-staging
+```
+
+On promotion:
+- Shader files are validated (both `.vert` and `.frag` must exist)
+- Shader files are copied from `shaders/staging/` to `shaders/`
+- The scene is copied to `scene.json`
+- The viewport auto-reloads and fetches shaders at runtime
+
+### API Endpoints
+
+**Read staging shader:**
+```bash
+curl http://localhost:5173/__staging-shader/glow
+# Returns: { "vert": "...", "frag": "..." }
+```
+
+**Write staging shader:**
+```bash
+curl -X POST http://localhost:5173/__staging-shader-write/glow \
+  -H "Content-Type: application/json" \
+  -d '{"vert": "...", "frag": "..."}'
+```
+
+### Inline vs External Shaders
+
+| Approach | When to Use |
+|----------|-------------|
+| **External files** (`shaderName`) | Development workflow, easier to edit, hot reload support |
+| **Inline** (`vertex`/`fragment`) | TSP export, portable files, one-off shaders |
+
+When you use `shaderName`, the viewport loads shaders at runtime. When you export to TSP, shaders are inlined automatically.
+
+### Shader Hot Reload
+
+When you edit files in `shaders/staging/`, the changes are broadcast via WebSocket. The viewport can pick up changes without a full reload (though a promote is still required to update the live scene).
+
 ## Validation Errors
 
 Common validation errors and fixes:
@@ -168,6 +290,7 @@ Common validation errors and fixes:
 | `references non-existent parent` | Check `parent` field points to valid object name |
 | `color: Invalid` | Use hex format: `"#rrggbb"` |
 | `metalness: Number must be <= 1` | Keep metalness/roughness in 0-1 range |
+| `Missing staging shader files: foo.vert` | Create `shaders/staging/foo.vert` and `foo.frag` |
 
 ## Why This Workflow?
 

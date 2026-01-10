@@ -56,7 +56,7 @@ interface SceneState {
 
   // Lifecycle
   loadScene: () => Promise<void>;
-  loadFromTSP: (tspData: TSPFile) => void;
+  loadFromTSP: (tspData: TSPFile) => Promise<void>;
   serializeScene: () => string;
   serializeSceneAsTSP: () => string;
   clearScene: () => void;
@@ -343,9 +343,25 @@ export const useSceneStore = create<SceneState>()(
       }
     },
 
-    loadFromTSP: (tspData: TSPFile) => {
+    loadFromTSP: async (tspData: TSPFile) => {
       const state = get();
-      const newObjects = importFromTSP(tspData);
+      const { objects: newObjects, extractedShaders } = importFromTSP(tspData);
+
+      // Write extracted shaders to files so they can be edited
+      for (const shader of extractedShaders) {
+        try {
+          await fetch(`/__shader-write/${shader.name}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              vert: shader.vertex,
+              frag: shader.fragment,
+            }),
+          });
+        } catch (err) {
+          console.warn(`Failed to write shader ${shader.name}:`, err);
+        }
+      }
 
       // Push current state to history
       const newPast = [...state.history.past, state.objects].slice(

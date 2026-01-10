@@ -25,14 +25,45 @@ function isTSPPhysicalMaterial(mat: TSPMaterial): mat is TSPPhysicalMaterial {
   return mat.type === "physical";
 }
 
-function convertTSPMaterial(tspMat: TSPMaterial): MaterialProps {
+// Extract shader name from material key (e.g., "mat_shader_heart_noise" → "heart_noise")
+function extractShaderName(materialKey: string): string {
+  const prefix = "mat_shader_";
+  if (materialKey.startsWith(prefix)) {
+    return materialKey.slice(prefix.length);
+  }
+  // Fallback: use the material key as-is but make it valid
+  return materialKey.replace(/[^a-zA-Z0-9_-]/g, "_");
+}
+
+// Shader data to be written to files after import
+export interface ExtractedShader {
+  name: string;
+  vertex: string;
+  fragment: string;
+}
+
+function convertTSPMaterial(
+  tspMat: TSPMaterial,
+  materialKey: string,
+  extractedShaders: Map<string, ExtractedShader>,
+): MaterialProps {
   if (isTSPShaderMaterial(tspMat)) {
-    // Shader material - convert to ShaderMaterialProps
-    // Generate a shader name from the material key or use a default
+    // Shader material - extract to external files for editing
+    const shaderName = extractShaderName(materialKey);
+
+    // Store shader data for extraction
+    if (!extractedShaders.has(shaderName)) {
+      extractedShaders.set(shaderName, {
+        name: shaderName,
+        vertex: tspMat.vertex,
+        fragment: tspMat.fragment,
+      });
+    }
+
     const shaderMat: ShaderMaterialProps = {
       type: "shader",
-      shaderName: "imported_shader",
-      vertex: tspMat.vertex,
+      shaderName,
+      vertex: tspMat.vertex, // Keep inline for immediate rendering
       fragment: tspMat.fragment,
       uniforms: tspMat.uniforms,
     };
@@ -130,8 +161,14 @@ function convertTSPMaterial(tspMat: TSPMaterial): MaterialProps {
   return stdMat;
 }
 
-export function importFromTSP(tspData: TSPFile): Record<string, SceneObject> {
+export interface TSPImportResult {
+  objects: Record<string, SceneObject>;
+  extractedShaders: ExtractedShader[];
+}
+
+export function importFromTSP(tspData: TSPFile): TSPImportResult {
   const objects: Record<string, SceneObject> = {};
+  const extractedShaders = new Map<string, ExtractedShader>();
 
   for (const tspObj of tspData.objects) {
     // Get material from materials dictionary
@@ -139,7 +176,11 @@ export function importFromTSP(tspData: TSPFile): Record<string, SceneObject> {
     if (tspObj.material) {
       const tspMat = tspData.materials[tspObj.material];
       if (tspMat) {
-        material = convertTSPMaterial(tspMat);
+        material = convertTSPMaterial(
+          tspMat,
+          tspObj.material,
+          extractedShaders,
+        );
       }
     }
 
@@ -180,5 +221,8 @@ export function importFromTSP(tspData: TSPFile): Record<string, SceneObject> {
     objects[tspObj.id] = sceneObj;
   }
 
-  return objects;
+  return {
+    objects,
+    extractedShaders: Array.from(extractedShaders.values()),
+  };
 }

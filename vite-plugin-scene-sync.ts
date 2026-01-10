@@ -5,6 +5,8 @@ import {
   existsSync,
   mkdirSync,
   copyFileSync,
+  readdirSync,
+  unlinkSync,
 } from "fs";
 import { join, dirname, basename, extname } from "path";
 import chokidar from "chokidar";
@@ -17,6 +19,8 @@ const STAGING_PATH = join(SCENE_DIR, "staging-scene.json");
 const BACKUP_PATH = join(SCENE_DIR, "scene.backup.json");
 const WARNING_PATH = join(SCENE_DIR, "UNAUTHORIZED_EDIT_REVERTED.md");
 const SHADERS_DIR = join(process.cwd(), "shaders");
+const STAGING_SHADERS_DIR = join(SHADERS_DIR, "staging");
+const SHADER_WARNING_PATH = join(SHADERS_DIR, "UNAUTHORIZED_EDIT_REVERTED.md");
 
 const WARNING_CONTENT = `# ⚠️ UNAUTHORIZED EDIT DETECTED AND REVERTED
 
@@ -52,6 +56,37 @@ Your edit to \`scene.json\` was automatically reverted because direct edits are 
 This file was created at: __TIMESTAMP__
 `;
 
+const SHADER_WARNING_CONTENT = `# ⚠️ UNAUTHORIZED SHADER EDIT DETECTED AND REVERTED
+
+**DO NOT EDIT live shader files directly!**
+
+Your edit to a shader file in \`shaders/\` was automatically reverted because direct edits are not allowed.
+
+## Correct Workflow
+
+1. **Edit shaders in \`shaders/staging/\`** (not directly in \`shaders/\`)
+2. **Reference the shader** in \`scene/staging-scene.json\` with \`"shaderName": "yourShader"\`
+3. **Promote** by running:
+   \`\`\`bash
+   npm run promote-staging
+   \`\`\`
+
+## Why?
+
+- Shader files in \`shaders/\` are **live** - used by the viewport
+- Direct edits bypass validation and can break rendering
+- The staging workflow ensures shaders are validated before going live
+
+## Directory Structure
+
+| Directory | Purpose | Who edits it |
+|-----------|---------|--------------|
+| \`shaders/staging/\` | Your working shaders | YOU (AI or human) |
+| \`shaders/\` | Live shaders | Promote only |
+| \`shaders/_template.*\` | Templates | Reference only |
+
+This file was created at: __TIMESTAMP__
+`;
 
 // Simple hash function to compare content
 const hashContent = (content: string): string => {
@@ -64,6 +99,10 @@ export function sceneSyncPlugin(): Plugin {
   // Track content we've written to ignore our own saves
   let lastWrittenHash: string | null = null;
   let ignoreNextChange = false;
+
+  // Track live shader content hashes to detect unauthorized edits
+  const liveShaderHashes = new Map<string, string>();
+  const ignoreNextShaderChange = new Set<string>();
 
   return {
     name: "scene-sync",
@@ -166,9 +205,35 @@ export function sceneSyncPlugin(): Plugin {
         }
       });
 
-      // Ensure shaders directory exists
+      // Ensure shaders directories exist
       if (!existsSync(SHADERS_DIR)) {
         mkdirSync(SHADERS_DIR, { recursive: true });
+      }
+      if (!existsSync(STAGING_SHADERS_DIR)) {
+        mkdirSync(STAGING_SHADERS_DIR, { recursive: true });
+      }
+
+      // Initialize hashes for existing live shader files (excluding templates)
+      try {
+        const files = readdirSync(SHADERS_DIR);
+        for (const file of files) {
+          if (file.startsWith("_")) continue; // Skip templates
+          if (!file.endsWith(".vert") && !file.endsWith(".frag")) continue;
+          const filePath = join(SHADERS_DIR, file);
+          try {
+            const content = readFileSync(filePath, "utf-8");
+            liveShaderHashes.set(file, hashContent(content));
+          } catch {
+            // File might not exist or be readable
+          }
+        }
+        if (liveShaderHashes.size > 0) {
+          console.log(
+            `[scene-sync] Initialized ${liveShaderHashes.size} live shader hashes`
+          );
+        }
+      } catch {
+        // Directory might not exist yet
       }
 
       // Watch shaders directory for .vert and .frag files
@@ -189,23 +254,100 @@ export function sceneSyncPlugin(): Plugin {
         const shaderName = fileName.replace(/\.(vert|frag)$/, "");
         const shaderType = extname(filePath).slice(1) as "vert" | "frag";
 
-        console.log(`[scene-sync] Shader changed: ${shaderName}.${shaderType}`);
+        // Allow template edits without blocking
+        if (fileName.startsWith("_")) {
+          console.log(`[scene-sync] Template shader changed: ${fileName}`);
+          return;
+        }
 
-        try {
-          const content = readFileSync(filePath, "utf-8");
-          if (server) {
-            server.ws.send({
-              type: "custom",
-              event: "shader-changed",
-              data: {
-                shaderName,
-                shaderType,
-                content,
-              },
-            });
+        // Check if this is an authorized change (from promote)
+        if (ignoreNextShaderChange.has(fileName)) {
+          ignoreNextShaderChange.delete(fileName);
+          console.log(`[scene-sync] Shader promoted: ${fileName}`);
+
+          // Update hash and notify clients
+          try {
+            const content = readFileSync(filePath, "utf-8");
+            liveShaderHashes.set(fileName, hashContent(content));
+            if (server) {
+              server.ws.send({
+                type: "custom",
+                event: "shader-changed",
+                data: { shaderName, shaderType, content },
+              });
+            }
+          } catch (err) {
+            console.error("[scene-sync] Error reading shader file:", err);
           }
-        } catch (err) {
-          console.error("[scene-sync] Error reading shader file:", err);
+          return;
+        }
+
+        // Unauthorized edit detected - revert it
+        const storedHash = liveShaderHashes.get(fileName);
+        if (storedHash) {
+          try {
+            const newContent = readFileSync(filePath, "utf-8");
+            const newHash = hashContent(newContent);
+
+            if (newHash !== storedHash) {
+              console.warn(
+                `\x1b[31m[scene-sync] UNAUTHORIZED SHADER EDIT DETECTED!\x1b[0m ${fileName}`
+              );
+              console.warn(
+                "[scene-sync] Use shaders/staging/ + promote-staging workflow instead."
+              );
+
+              // Write warning file
+              const warningWithTimestamp = SHADER_WARNING_CONTENT.replace(
+                "__TIMESTAMP__",
+                new Date().toISOString()
+              );
+              writeFileSync(SHADER_WARNING_PATH, warningWithTimestamp, "utf-8");
+              console.warn(
+                "[scene-sync] Created shaders/UNAUTHORIZED_EDIT_REVERTED.md - READ THIS FILE!"
+              );
+
+              // Find the staged version or use template to revert
+              const stagingPath = join(STAGING_SHADERS_DIR, fileName);
+              if (existsSync(stagingPath)) {
+                const stagingContent = readFileSync(stagingPath, "utf-8");
+                ignoreNextShaderChange.add(fileName);
+                writeFileSync(filePath, stagingContent, "utf-8");
+                liveShaderHashes.set(fileName, hashContent(stagingContent));
+                console.log(`[scene-sync] Reverted ${fileName} to staging version.`);
+              } else {
+                // No staging version - just prevent the notification
+                console.warn(
+                  `[scene-sync] No staging version to revert to. Manual fix required.`
+                );
+              }
+            }
+          } catch (err) {
+            console.error("[scene-sync] Error handling shader change:", err);
+          }
+        } else {
+          // New file added directly - block it
+          console.warn(
+            `\x1b[31m[scene-sync] UNAUTHORIZED SHADER ADDED!\x1b[0m ${fileName}`
+          );
+          console.warn(
+            "[scene-sync] Add shaders via shaders/staging/ + promote-staging workflow."
+          );
+
+          // Write warning file
+          const warningWithTimestamp = SHADER_WARNING_CONTENT.replace(
+            "__TIMESTAMP__",
+            new Date().toISOString()
+          );
+          writeFileSync(SHADER_WARNING_PATH, warningWithTimestamp, "utf-8");
+
+          // Delete the unauthorized file
+          try {
+            unlinkSync(filePath);
+            console.log(`[scene-sync] Removed unauthorized shader: ${fileName}`);
+          } catch (err) {
+            console.error("[scene-sync] Failed to remove unauthorized shader:", err);
+          }
         }
       });
 
@@ -214,14 +356,82 @@ export function sceneSyncPlugin(): Plugin {
         const shaderName = fileName.replace(/\.(vert|frag)$/, "");
         const shaderType = extname(filePath).slice(1) as "vert" | "frag";
 
-        console.log(`[scene-sync] Shader added: ${shaderName}.${shaderType}`);
+        // Allow templates
+        if (fileName.startsWith("_")) {
+          console.log(`[scene-sync] Template shader added: ${fileName}`);
+          return;
+        }
+
+        // Check if this is an authorized add (from promote)
+        if (ignoreNextShaderChange.has(fileName)) {
+          ignoreNextShaderChange.delete(fileName);
+          console.log(`[scene-sync] Shader promoted (new): ${fileName}`);
+
+          try {
+            const content = readFileSync(filePath, "utf-8");
+            liveShaderHashes.set(fileName, hashContent(content));
+            if (server) {
+              server.ws.send({
+                type: "custom",
+                event: "shader-changed",
+                data: { shaderName, shaderType, content },
+              });
+            }
+          } catch (err) {
+            console.error("[scene-sync] Error reading shader file:", err);
+          }
+          return;
+        }
+
+        // Unauthorized add - delete it
+        console.warn(
+          `\x1b[31m[scene-sync] UNAUTHORIZED SHADER ADDED!\x1b[0m ${fileName}`
+        );
+        console.warn(
+          "[scene-sync] Add shaders via shaders/staging/ + promote-staging workflow."
+        );
+
+        const warningWithTimestamp = SHADER_WARNING_CONTENT.replace(
+          "__TIMESTAMP__",
+          new Date().toISOString()
+        );
+        writeFileSync(SHADER_WARNING_PATH, warningWithTimestamp, "utf-8");
+
+        try {
+          unlinkSync(filePath);
+          console.log(`[scene-sync] Removed unauthorized shader: ${fileName}`);
+        } catch (err) {
+          console.error("[scene-sync] Failed to remove unauthorized shader:", err);
+        }
+      });
+
+      // Watch staging shaders directory for .vert and .frag files
+      // These are edited by AI and promoted to production shaders
+      const stagingShaderWatcher = chokidar.watch(
+        [join(STAGING_SHADERS_DIR, "*.vert"), join(STAGING_SHADERS_DIR, "*.frag")],
+        {
+          persistent: true,
+          ignoreInitial: true,
+          awaitWriteFinish: {
+            stabilityThreshold: 100,
+            pollInterval: 50,
+          },
+        }
+      );
+
+      stagingShaderWatcher.on("change", (filePath) => {
+        const fileName = basename(filePath);
+        const shaderName = fileName.replace(/\.(vert|frag)$/, "");
+        const shaderType = extname(filePath).slice(1) as "vert" | "frag";
+
+        console.log(`[scene-sync] Staging shader changed: ${shaderName}.${shaderType}`);
 
         try {
           const content = readFileSync(filePath, "utf-8");
           if (server) {
             server.ws.send({
               type: "custom",
-              event: "shader-changed",
+              event: "staging-shader-changed",
               data: {
                 shaderName,
                 shaderType,
@@ -230,7 +440,32 @@ export function sceneSyncPlugin(): Plugin {
             });
           }
         } catch (err) {
-          console.error("[scene-sync] Error reading shader file:", err);
+          console.error("[scene-sync] Error reading staging shader file:", err);
+        }
+      });
+
+      stagingShaderWatcher.on("add", (filePath) => {
+        const fileName = basename(filePath);
+        const shaderName = fileName.replace(/\.(vert|frag)$/, "");
+        const shaderType = extname(filePath).slice(1) as "vert" | "frag";
+
+        console.log(`[scene-sync] Staging shader added: ${shaderName}.${shaderType}`);
+
+        try {
+          const content = readFileSync(filePath, "utf-8");
+          if (server) {
+            server.ws.send({
+              type: "custom",
+              event: "staging-shader-changed",
+              data: {
+                shaderName,
+                shaderType,
+                content,
+              },
+            });
+          }
+        } catch (err) {
+          console.error("[scene-sync] Error reading staging shader file:", err);
         }
       });
 
@@ -238,6 +473,7 @@ export function sceneSyncPlugin(): Plugin {
       srv.httpServer?.on("close", () => {
         watcher.close();
         shaderWatcher.close();
+        stagingShaderWatcher.close();
       });
 
       // API endpoints
@@ -275,7 +511,7 @@ export function sceneSyncPlugin(): Plugin {
         }
       });
 
-      // Reset all scene json files (scene.json, staging-scene.json, scene.backup.json)
+      // Reset all scene json files and shader files
       // POST /__reset-scene-files
       srv.middlewares.use("/__reset-scene-files", (req, res) => {
         if (req.method !== "POST") {
@@ -293,6 +529,27 @@ export function sceneSyncPlugin(): Plugin {
           writeFileSync(SCENE_PATH, emptyScene, "utf-8");
           writeFileSync(STAGING_PATH, emptyScene, "utf-8");
           writeFileSync(BACKUP_PATH, emptyScene, "utf-8");
+
+          // Clear shader files (except templates)
+          const clearShaderDir = (dir: string) => {
+            if (!existsSync(dir)) return;
+            const files = readdirSync(dir);
+            for (const file of files) {
+              // Keep template files
+              if (file.startsWith("_template")) continue;
+              // Only delete .vert and .frag files
+              if (file.endsWith(".vert") || file.endsWith(".frag")) {
+                try {
+                  unlinkSync(join(dir, file));
+                } catch {
+                  // Ignore errors for individual files
+                }
+              }
+            }
+          };
+
+          clearShaderDir(SHADERS_DIR);
+          clearShaderDir(STAGING_SHADERS_DIR);
 
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ ok: true }));
@@ -346,7 +603,51 @@ export function sceneSyncPlugin(): Plugin {
         res.end(JSON.stringify({ vert, frag }));
       });
 
-      // Create shader files from template - POST /__create-shader with { name }
+      // Staging Shader API endpoint - GET /__staging-shader/:shaderName returns { vert, frag }
+      // For AI preview - reads from shaders/staging/ instead of shaders/
+      srv.middlewares.use("/__staging-shader", (req, res) => {
+        if (req.method !== "GET") {
+          res.writeHead(405);
+          res.end();
+          return;
+        }
+
+        const url = new URL(req.url || "", "http://localhost");
+        const shaderName = url.pathname.slice(1);
+
+        if (!shaderName) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "Shader name required" }));
+          return;
+        }
+
+        const vertPath = join(STAGING_SHADERS_DIR, `${shaderName}.vert`);
+        const fragPath = join(STAGING_SHADERS_DIR, `${shaderName}.frag`);
+
+        let vert = "";
+        let frag = "";
+
+        try {
+          if (existsSync(vertPath)) {
+            vert = readFileSync(vertPath, "utf-8");
+          }
+        } catch {
+          // Vertex shader doesn't exist or can't be read
+        }
+
+        try {
+          if (existsSync(fragPath)) {
+            frag = readFileSync(fragPath, "utf-8");
+          }
+        } catch {
+          // Fragment shader doesn't exist or can't be read
+        }
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ vert, frag }));
+      });
+
+      // Create shader files from template in staging - POST /__create-shader with { name }
       srv.middlewares.use("/__create-shader", (req, res) => {
         if (req.method !== "POST") {
           res.writeHead(405);
@@ -366,8 +667,9 @@ export function sceneSyncPlugin(): Plugin {
               return;
             }
 
-            const vertPath = join(SHADERS_DIR, `${name}.vert`);
-            const fragPath = join(SHADERS_DIR, `${name}.frag`);
+            // Create in staging directory
+            const vertPath = join(STAGING_SHADERS_DIR, `${name}.vert`);
+            const fragPath = join(STAGING_SHADERS_DIR, `${name}.frag`);
 
             // Read template files
             const templateVertPath = join(SHADERS_DIR, "_template.vert");
@@ -391,7 +693,7 @@ void main() {
 `;
               }
               writeFileSync(vertPath, vertContent, "utf-8");
-              console.log(`[scene-sync] Created shader: ${name}.vert`);
+              console.log(`[scene-sync] Created staging shader: ${name}.vert`);
             }
 
             // Create frag file if it doesn't exist
@@ -411,7 +713,7 @@ void main() {
 `;
               }
               writeFileSync(fragPath, fragContent, "utf-8");
-              console.log(`[scene-sync] Created shader: ${name}.frag`);
+              console.log(`[scene-sync] Created staging shader: ${name}.frag`);
             }
 
             res.writeHead(200, { "Content-Type": "application/json" });
@@ -447,13 +749,62 @@ void main() {
             const { vert, frag } = JSON.parse(body);
 
             if (vert !== undefined) {
+              // Mark as authorized before writing
+              ignoreNextShaderChange.add(`${shaderName}.vert`);
               const vertPath = join(SHADERS_DIR, `${shaderName}.vert`);
               writeFileSync(vertPath, vert, "utf-8");
             }
 
             if (frag !== undefined) {
+              // Mark as authorized before writing
+              ignoreNextShaderChange.add(`${shaderName}.frag`);
               const fragPath = join(SHADERS_DIR, `${shaderName}.frag`);
               writeFileSync(fragPath, frag, "utf-8");
+            }
+
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ ok: true }));
+          } catch (err) {
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: String(err) }));
+          }
+        });
+      });
+
+      // Staging shader write API endpoint - POST /__staging-shader-write/:shaderName with { vert, frag }
+      // For AI to write shader files to shaders/staging/
+      srv.middlewares.use("/__staging-shader-write", (req, res) => {
+        if (req.method !== "POST") {
+          res.writeHead(405);
+          res.end();
+          return;
+        }
+
+        const url = new URL(req.url || "", "http://localhost");
+        const shaderName = url.pathname.slice(1);
+
+        if (!shaderName) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "Shader name required" }));
+          return;
+        }
+
+        let body = "";
+        req.on("data", (chunk: string) => (body += chunk));
+        req.on("end", () => {
+          try {
+            const { vert, frag } = JSON.parse(body);
+
+            if (vert !== undefined) {
+              const vertPath = join(STAGING_SHADERS_DIR, `${shaderName}.vert`);
+              writeFileSync(vertPath, vert, "utf-8");
+              console.log(`[scene-sync] Wrote staging shader: ${shaderName}.vert`);
+            }
+
+            if (frag !== undefined) {
+              const fragPath = join(STAGING_SHADERS_DIR, `${shaderName}.frag`);
+              writeFileSync(fragPath, frag, "utf-8");
+              console.log(`[scene-sync] Wrote staging shader: ${shaderName}.frag`);
             }
 
             res.writeHead(200, { "Content-Type": "application/json" });
@@ -529,6 +880,70 @@ void main() {
             return;
           }
 
+          // Validate and collect shader materials that reference external files
+          const shaderNames = new Set<string>();
+          for (const obj of validation.data) {
+            const mat = obj.material;
+            if (mat && mat.type === "shader" && mat.shaderName) {
+              shaderNames.add(mat.shaderName);
+            }
+          }
+
+          // Check that all referenced staging shaders exist
+          const missingShaders: string[] = [];
+          for (const shaderName of shaderNames) {
+            const vertPath = join(STAGING_SHADERS_DIR, `${shaderName}.vert`);
+            const fragPath = join(STAGING_SHADERS_DIR, `${shaderName}.frag`);
+            const missingFiles: string[] = [];
+            if (!existsSync(vertPath)) {
+              missingFiles.push(`${shaderName}.vert`);
+            }
+            if (!existsSync(fragPath)) {
+              missingFiles.push(`${shaderName}.frag`);
+            }
+            if (missingFiles.length > 0) {
+              missingShaders.push(...missingFiles);
+            }
+          }
+
+          if (missingShaders.length > 0) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                ok: false,
+                error: `Missing staging shader files in shaders/staging/: ${missingShaders.join(", ")}`,
+              })
+            );
+            return;
+          }
+
+          // Copy staging shaders to production shaders directory
+          for (const shaderName of shaderNames) {
+            const stagingVertPath = join(STAGING_SHADERS_DIR, `${shaderName}.vert`);
+            const stagingFragPath = join(STAGING_SHADERS_DIR, `${shaderName}.frag`);
+            const prodVertPath = join(SHADERS_DIR, `${shaderName}.vert`);
+            const prodFragPath = join(SHADERS_DIR, `${shaderName}.frag`);
+
+            try {
+              // Mark these files as authorized before writing
+              ignoreNextShaderChange.add(`${shaderName}.vert`);
+              ignoreNextShaderChange.add(`${shaderName}.frag`);
+
+              copyFileSync(stagingVertPath, prodVertPath);
+              copyFileSync(stagingFragPath, prodFragPath);
+              console.log(`[scene-sync] Copied shader: ${shaderName}`);
+            } catch (copyErr) {
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  ok: false,
+                  error: `Failed to copy shader ${shaderName}: ${copyErr}`,
+                })
+              );
+              return;
+            }
+          }
+
           // Backup current scene.json
           if (existsSync(SCENE_PATH)) {
             try {
@@ -553,15 +968,17 @@ void main() {
             });
           }
 
+          const shaderCount = shaderNames.size;
+          const shaderMsg = shaderCount > 0 ? ` and ${shaderCount} shader(s)` : "";
           console.log(
-            `[scene-sync] Promoted ${validation.data.length} objects from staging`
+            `[scene-sync] Promoted ${validation.data.length} objects${shaderMsg} from staging`
           );
 
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
               ok: true,
-              message: `Promoted ${validation.data.length} objects from staging to scene`,
+              message: `Promoted ${validation.data.length} objects${shaderMsg} from staging to scene`,
             })
           );
         } catch (err) {
@@ -605,15 +1022,35 @@ void main() {
             // Non-fatal
           }
 
+          // Copy shaders from production to staging (excluding templates)
+          let shaderCount = 0;
+          if (existsSync(SHADERS_DIR)) {
+            const files = readdirSync(SHADERS_DIR);
+            for (const file of files) {
+              // Skip templates and non-shader files
+              if (file.startsWith("_")) continue;
+              if (!file.endsWith(".vert") && !file.endsWith(".frag")) continue;
+
+              const srcPath = join(SHADERS_DIR, file);
+              const destPath = join(STAGING_SHADERS_DIR, file);
+              copyFileSync(srcPath, destPath);
+
+              // Count unique shaders (each has .vert and .frag)
+              if (file.endsWith(".vert")) shaderCount++;
+            }
+          }
+
+          const shaderMsg =
+            shaderCount > 0 ? ` and ${shaderCount} shader(s)` : "";
           console.log(
-            `[scene-sync] Copied ${objectCount} objects from scene to staging`
+            `[scene-sync] Copied ${objectCount} objects${shaderMsg} from scene to staging`
           );
 
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
               ok: true,
-              message: `Copied ${objectCount} objects from scene.json to staging-scene.json`,
+              message: `Copied ${objectCount} objects${shaderMsg} to staging`,
             })
           );
         } catch (err) {

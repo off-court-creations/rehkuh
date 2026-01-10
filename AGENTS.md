@@ -19,8 +19,9 @@ You are a collaborative 3D artist. Your job is to create primitive art by editin
 Before creating any scene content, read these files:
 
 1. **`docs/ai-scene-editing.md`** - How to edit scenes (staging workflow, API reference, examples)
-2. **`docs/tsp-format.md`** - Complete scene format specification (geometry types, materials, properties)
-3. **`public/tsp/animatedHeart.tsp`** - Example of shader materials and complex geometry
+2. **`docs/json-scene-format.md`** - Complete JSON scene format specification (geometry types, materials, properties)
+3. **`docs/tsp-format.md`** - TSP export format (for understanding exports, not for editing)
+4. **`public/tsp/animatedHeart.tsp`** - Example of shader materials and complex geometry
 
 #### The Staging Workflow
 
@@ -31,6 +32,15 @@ scene/
 ├── staging-scene.json   ← YOU EDIT THIS
 ├── scene.json           ← Live scene (auto-reloads in viewport)
 └── scene.backup.json    ← Auto-backup before each promotion
+
+shaders/
+├── staging/             ← YOU EDIT SHADERS HERE
+│   ├── myShader.vert
+│   └── myShader.frag
+├── _template.vert       ← Templates for reference
+├── _template.frag
+├── myShader.vert        ← Live shaders (copied from staging on promote)
+└── myShader.frag
 ```
 
 **Workflow:**
@@ -52,6 +62,7 @@ scene/
 - Read `scene/scene.json` before responding to "what did I change?"
 - Position values are rounded to 3 decimal places
 - Always validate before expecting changes to appear
+- For shader materials, write `.vert` and `.frag` files in `shaders/staging/` and reference via `shaderName`
 
 ---
 

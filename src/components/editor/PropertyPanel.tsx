@@ -102,7 +102,7 @@ export function PropertyPanel() {
   };
 
   const openInVSCode = (shaderName: string) => {
-    // Open VS Code with the shader files using anchor click (avoids blank tabs)
+    // Open VS Code with the staging shader files (not live)
     const cwd = import.meta.env["VITE_CWD"] || "/home/xbenc/occ/pngwin/rehkuh";
 
     const openUrl = (url: string) => {
@@ -114,14 +114,14 @@ export function PropertyPanel() {
       document.body.removeChild(a);
     };
 
-    openUrl(`vscode://file${cwd}/shaders/${shaderName}.vert`);
+    openUrl(`vscode://file${cwd}/shaders/staging/${shaderName}.vert`);
     setTimeout(() => {
-      openUrl(`vscode://file${cwd}/shaders/${shaderName}.frag`);
+      openUrl(`vscode://file${cwd}/shaders/staging/${shaderName}.frag`);
     }, 100);
   };
 
   const createShaderFilesAndLoad = async (shaderName: string) => {
-    // Create shader files by POSTing to a Vite dev endpoint
+    // Create shader files in staging by POSTing to a Vite dev endpoint
     try {
       await fetch("/__create-shader", {
         method: "POST",
@@ -129,8 +129,8 @@ export function PropertyPanel() {
         body: JSON.stringify({ name: shaderName }),
       });
 
-      // Load the shader content and update the object
-      const res = await fetch(`/__shader/${shaderName}`);
+      // Load the shader content from staging and update the object
+      const res = await fetch(`/__staging-shader/${shaderName}`);
       const { vert, frag } = await res.json();
 
       if (obj && primaryId && isShaderMaterial(obj.material)) {
@@ -189,12 +189,12 @@ export function PropertyPanel() {
     const uniform = mat.uniforms[uniformName];
     const newMaterial: ShaderMaterialProps = {
       type: "shader",
-      shaderName: mat.shaderName,
       uniforms: {
         ...mat.uniforms,
         [uniformName]: { ...uniform, [field]: value } as ShaderUniform,
       },
     };
+    if (mat.shaderName) newMaterial.shaderName = mat.shaderName;
     if (mat.vertex) newMaterial.vertex = mat.vertex;
     if (mat.fragment) newMaterial.fragment = mat.fragment;
     if (mat.transparent !== undefined)
@@ -1027,6 +1027,7 @@ export function PropertyPanel() {
                             marginTop: "2px",
                           }}
                           onClick={async () => {
+                            if (!mat.shaderName) return;
                             await createShaderFilesAndLoad(mat.shaderName);
                             openInVSCode(mat.shaderName);
                           }}
@@ -1193,10 +1194,11 @@ export function PropertyPanel() {
                             onChange={(e) => {
                               const newMat: ShaderMaterialProps = {
                                 type: "shader",
-                                shaderName: mat.shaderName,
                                 uniforms: mat.uniforms,
                                 transparent: e.target.checked,
                               };
+                              if (mat.shaderName)
+                                newMat.shaderName = mat.shaderName;
                               if (mat.vertex) newMat.vertex = mat.vertex;
                               if (mat.fragment) newMat.fragment = mat.fragment;
                               if (mat.side) newMat.side = mat.side;
@@ -1231,13 +1233,14 @@ export function PropertyPanel() {
                             onChange={(e) => {
                               const newMat: ShaderMaterialProps = {
                                 type: "shader",
-                                shaderName: mat.shaderName,
                                 uniforms: mat.uniforms,
                                 side: e.target.value as
                                   | "front"
                                   | "back"
                                   | "double",
                               };
+                              if (mat.shaderName)
+                                newMat.shaderName = mat.shaderName;
                               if (mat.vertex) newMat.vertex = mat.vertex;
                               if (mat.fragment) newMat.fragment = mat.fragment;
                               if (mat.transparent !== undefined)

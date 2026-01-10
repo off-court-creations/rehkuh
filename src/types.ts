@@ -129,11 +129,12 @@ export interface ShaderUniform {
 }
 
 // Shader material (custom GLSL shaders)
+// Either use shaderName (external files) OR inline vertex/fragment
 export interface ShaderMaterialProps {
   type: "shader";
-  shaderName: string; // References shaders/{name}.vert and .frag files
-  vertex?: string; // Cached vertex shader code (loaded from file)
-  fragment?: string; // Cached fragment shader code (loaded from file)
+  shaderName?: string; // References shaders/{name}.vert and .frag files
+  vertex?: string; // Inline or cached vertex shader code
+  fragment?: string; // Inline or cached fragment shader code
   uniforms: Record<string, ShaderUniform>;
   transparent?: boolean;
   side?: "front" | "back" | "double";

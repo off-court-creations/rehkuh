@@ -12,12 +12,14 @@
  */
 
 import "dotenv/config";
-import { copyFileSync, existsSync } from "fs";
+import { copyFileSync, existsSync, readdirSync, mkdirSync } from "fs";
 import { join } from "path";
 
 const SCENE_DIR = join(process.cwd(), "scene");
 const SCENE_PATH = join(SCENE_DIR, "scene.json");
 const STAGING_PATH = join(SCENE_DIR, "staging-scene.json");
+const SHADERS_DIR = join(process.cwd(), "shaders");
+const STAGING_SHADERS_DIR = join(SHADERS_DIR, "staging");
 
 function copyToStaging(): { success: boolean; message: string } {
   if (!existsSync(SCENE_PATH)) {
@@ -29,17 +31,41 @@ function copyToStaging(): { success: boolean; message: string } {
 
   try {
     copyFileSync(SCENE_PATH, STAGING_PATH);
+
+    // Copy shaders from production to staging (excluding templates)
+    let shaderCount = 0;
+    if (existsSync(SHADERS_DIR)) {
+      // Ensure staging shaders directory exists
+      if (!existsSync(STAGING_SHADERS_DIR)) {
+        mkdirSync(STAGING_SHADERS_DIR, { recursive: true });
+      }
+
+      const files = readdirSync(SHADERS_DIR);
+      for (const file of files) {
+        // Skip templates and non-shader files
+        if (file.startsWith("_")) continue;
+        if (!file.endsWith(".vert") && !file.endsWith(".frag")) continue;
+
+        const srcPath = join(SHADERS_DIR, file);
+        const destPath = join(STAGING_SHADERS_DIR, file);
+        copyFileSync(srcPath, destPath);
+
+        // Count unique shaders (each has .vert and .frag)
+        if (file.endsWith(".vert")) shaderCount++;
+      }
+    }
+
+    const shaderMsg = shaderCount > 0 ? ` and ${shaderCount} shader(s)` : "";
+    return {
+      success: true,
+      message: `Copied scene.json${shaderMsg} → staging`,
+    };
   } catch (err) {
     return {
       success: false,
       message: `Failed to copy to staging: ${err}`,
     };
   }
-
-  return {
-    success: true,
-    message: "Copied scene.json → staging-scene.json",
-  };
 }
 
 async function tryApiCopy(): Promise<{

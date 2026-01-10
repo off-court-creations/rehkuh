@@ -21,6 +21,8 @@ const SCENE_DIR = join(process.cwd(), "scene");
 const STAGING_PATH = join(SCENE_DIR, "staging-scene.json");
 const SCENE_PATH = join(SCENE_DIR, "scene.json");
 const BACKUP_PATH = join(SCENE_DIR, "scene.backup.json");
+const SHADERS_DIR = join(process.cwd(), "shaders");
+const STAGING_SHADERS_DIR = join(SHADERS_DIR, "staging");
 
 // Inline validation to avoid module resolution issues in script context
 import { z } from "zod";
@@ -347,6 +349,53 @@ function promoteStaging(): { success: boolean; message: string } {
     };
   }
 
+  // Validate and collect shader materials that reference external files
+  const shaderNames = new Set<string>();
+  for (const obj of validation.data) {
+    const mat = obj.material;
+    if (mat && mat.type === "shader" && mat.shaderName) {
+      shaderNames.add(mat.shaderName);
+    }
+  }
+
+  // Check that all referenced staging shaders exist
+  const missingShaders: string[] = [];
+  for (const shaderName of shaderNames) {
+    const vertPath = join(STAGING_SHADERS_DIR, `${shaderName}.vert`);
+    const fragPath = join(STAGING_SHADERS_DIR, `${shaderName}.frag`);
+    if (!existsSync(vertPath)) {
+      missingShaders.push(`${shaderName}.vert`);
+    }
+    if (!existsSync(fragPath)) {
+      missingShaders.push(`${shaderName}.frag`);
+    }
+  }
+
+  if (missingShaders.length > 0) {
+    return {
+      success: false,
+      message: `Missing staging shader files in shaders/staging/: ${missingShaders.join(", ")}`,
+    };
+  }
+
+  // Copy staging shaders to production shaders directory
+  for (const shaderName of shaderNames) {
+    const stagingVertPath = join(STAGING_SHADERS_DIR, `${shaderName}.vert`);
+    const stagingFragPath = join(STAGING_SHADERS_DIR, `${shaderName}.frag`);
+    const prodVertPath = join(SHADERS_DIR, `${shaderName}.vert`);
+    const prodFragPath = join(SHADERS_DIR, `${shaderName}.frag`);
+
+    try {
+      copyFileSync(stagingVertPath, prodVertPath);
+      copyFileSync(stagingFragPath, prodFragPath);
+    } catch (err) {
+      return {
+        success: false,
+        message: `Failed to copy shader ${shaderName}: ${err}`,
+      };
+    }
+  }
+
   // Backup current scene.json if it exists
   if (existsSync(SCENE_PATH)) {
     try {
@@ -367,9 +416,11 @@ function promoteStaging(): { success: boolean; message: string } {
     };
   }
 
+  const shaderCount = shaderNames.size;
+  const shaderMsg = shaderCount > 0 ? ` and ${shaderCount} shader(s)` : "";
   return {
     success: true,
-    message: `Promoted ${validation.data.length} objects from staging to scene`,
+    message: `Promoted ${validation.data.length} objects${shaderMsg} from staging to scene`,
   };
 }
 

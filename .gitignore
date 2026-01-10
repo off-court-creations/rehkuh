@@ -13,3 +13,11 @@ node_modules
 scene/scene.backup.json
 scene/scene.json
 scene/staging-scene.json
+scene/UNAUTHORIZED_EDIT_REVERTED.md
+
+shaders/staging/
+shaders/*.vert
+shaders/*.frag
+shaders/UNAUTHORIZED_EDIT_REVERTED.md
+!shaders/_template.vert
+!shaders/_template.frag

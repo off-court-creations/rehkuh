@@ -1,7 +1,7 @@
 import { Button, Stack, Tooltip, IconButton, Divider } from "@archway/valet";
 import { useSceneStore } from "@/store/sceneStore";
 import { validateTSPFile } from "@/schemas/tsp";
-import { showError } from "@/store/notificationStore";
+import { showError, showSuccess } from "@/store/notificationStore";
 import type { PrimitiveType, TSPFile } from "@/types";
 
 interface EditorToolbarProps {
@@ -118,6 +118,46 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
     URL.revokeObjectURL(url);
   };
 
+  const handleCopyToStaging = async () => {
+    try {
+      const res = await fetch("/__copy-to-staging", { method: "POST" });
+      const data = (await res.json()) as {
+        ok?: boolean;
+        message?: string;
+        error?: string;
+      };
+      if (data.ok) {
+        showSuccess(data.message || "Copied to staging");
+      } else {
+        showError(data.error || "Copy to staging failed");
+      }
+    } catch (err) {
+      showError(
+        `Copy to staging failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+  };
+
+  const handlePromoteStaging = async () => {
+    try {
+      const res = await fetch("/__promote-staging", { method: "POST" });
+      const data = (await res.json()) as {
+        ok?: boolean;
+        message?: string;
+        error?: string;
+      };
+      if (data.ok) {
+        showSuccess(data.message || "Promoted to live");
+      } else {
+        showError(data.error || "Promote failed");
+      }
+    } catch (err) {
+      showError(
+        `Promote failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+  };
+
   const handleImportTSP = async () => {
     try {
       const picker = (
@@ -216,6 +256,23 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
         <Button size="sm" variant="filled" onClick={handleExportScene}>
           Export
         </Button>
+        <Divider orientation="vertical" />
+        <Tooltip
+          placement="bottom"
+          title="Copy scene + shaders to staging for editing"
+        >
+          <Button size="sm" variant="outlined" onClick={handleCopyToStaging}>
+            To Staging
+          </Button>
+        </Tooltip>
+        <Tooltip
+          placement="bottom"
+          title="Promote staging scene + shaders to live"
+        >
+          <Button size="sm" variant="outlined" onClick={handlePromoteStaging}>
+            Promote
+          </Button>
+        </Tooltip>
       </Stack>
     );
   }
