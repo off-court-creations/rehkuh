@@ -13,7 +13,8 @@
     "format:fix": "prettier --ignore-path .gitignore \"src/**/*.{ts,tsx,js,jsx,json,md,css}\" --write",
     "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json",
     "preview": "vite preview",
-    "promote-staging": "npx tsx scripts/promote-staging.ts"
+    "promote-staging": "npx tsx scripts/promote-staging.ts",
+    "copy-to-staging": "npx tsx scripts/copy-to-staging.ts"
   },
   "dependencies": {
     "@archway/valet": "^0.34.0",
@@ -34,6 +35,7 @@
     "@typescript-eslint/parser": "^8.39.0",
     "@vitejs/plugin-react": "^4.4.1",
     "chokidar": "^5.0.0",
+    "dotenv": "^17.2.3",
     "eslint": "^9.37.0",
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-react": "^7.33.2",

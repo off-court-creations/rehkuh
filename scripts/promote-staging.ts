@@ -12,6 +12,7 @@
  *   2 - File read/write error
  */
 
+import "dotenv/config";
 import { readFileSync, writeFileSync, existsSync, copyFileSync } from "fs";
 import { join } from "path";
 
