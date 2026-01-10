@@ -1,35 +1,47 @@
 import { z } from "zod";
+import {
+  TPJShapePathSchema,
+  TPJCurve3DSchema,
+  TPJExtrudeOptionsSchema,
+  TPJUniformSchema,
+  TPJMaterialSideSchema,
+} from "./tpj";
+import { HexColorSchema, ObjectTypeSchema, Vector3Schema } from "./base";
 
-export const PrimitiveTypeSchema = z.enum([
-  "box",
-  "sphere",
-  "cylinder",
-  "cone",
-  "torus",
-  "plane",
-]);
+// Re-export from base to maintain backwards compatibility
+export {
+  PrimitiveTypeSchema,
+  ObjectTypeSchema,
+  Vector3Schema,
+  HexColorSchema,
+} from "./base";
 
-export const ObjectTypeSchema = z.enum([
-  "box",
-  "sphere",
-  "cylinder",
-  "cone",
-  "torus",
-  "plane",
-  "group",
-]);
-
-export const Vector3Schema = z.tuple([z.number(), z.number(), z.number()]);
-
-export const HexColorSchema = z
-  .string()
-  .regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color format");
-
-export const MaterialPropsSchema = z.object({
+// Standard material schema for scene files
+export const StandardMaterialPropsSchema = z.object({
+  type: z.literal("standard").optional(), // Optional for backwards compatibility
   color: HexColorSchema,
   metalness: z.number().min(0).max(1),
   roughness: z.number().min(0).max(1),
 });
+
+// Shader material schema for scene files
+export const ShaderMaterialPropsSchema = z.object({
+  type: z.literal("shader"),
+  shaderName: z.string(),
+  vertex: z.string().optional(), // Cached from file
+  fragment: z.string().optional(), // Cached from file
+  uniforms: z.record(z.string(), TPJUniformSchema),
+  transparent: z.boolean().optional(),
+  side: TPJMaterialSideSchema.optional(),
+  depthWrite: z.boolean().optional(),
+  depthTest: z.boolean().optional(),
+});
+
+// Union type for all material props
+export const MaterialPropsSchema = z.union([
+  StandardMaterialPropsSchema,
+  ShaderMaterialPropsSchema,
+]);
 
 export const SceneFileObjectSchema = z.object({
   name: z.string().min(1, "Object name cannot be empty"),
@@ -39,6 +51,14 @@ export const SceneFileObjectSchema = z.object({
   rotation: Vector3Schema,
   scale: Vector3Schema,
   material: MaterialPropsSchema.optional(),
+  // Complex geometry data (optional)
+  points: z.array(z.tuple([z.number(), z.number()])).optional(),
+  shape: TPJShapePathSchema.optional(),
+  extrudeOptions: TPJExtrudeOptionsSchema.optional(),
+  path: TPJCurve3DSchema.optional(),
+  sourceGeometry: z.string().optional(),
+  vertices: z.array(z.number()).optional(),
+  indices: z.array(z.number()).optional(),
 });
 
 export const SceneFileSchema = z.array(SceneFileObjectSchema);

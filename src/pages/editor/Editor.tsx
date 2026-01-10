@@ -35,11 +35,57 @@ export default function Editor() {
       reloadScene();
     };
 
-    import.meta.hot.on("scene-changed", handleSceneChanged);
+    const handleShaderChanged = (data: {
+      shaderName: string;
+      shaderType: "vert" | "frag";
+      content: string;
+    }) => {
+      console.log(
+        `[Clay] Shader changed: ${data.shaderName}.${data.shaderType}`,
+      );
 
-    // Cleanup listener on unmount
+      // Update all objects using this shader
+      const state = useSceneStore.getState();
+      const updates: Record<
+        string,
+        { material: (typeof state.objects)[string]["material"] }
+      > = {};
+
+      for (const [id, obj] of Object.entries(state.objects)) {
+        if (
+          obj.material?.type === "shader" &&
+          obj.material.shaderName === data.shaderName
+        ) {
+          const newMaterial = { ...obj.material };
+          if (data.shaderType === "vert") {
+            newMaterial.vertex = data.content;
+          } else {
+            newMaterial.fragment = data.content;
+          }
+          updates[id] = { material: newMaterial };
+        }
+      }
+
+      // Apply all updates
+      if (Object.keys(updates).length > 0) {
+        const newObjects = { ...state.objects };
+        for (const [id, update] of Object.entries(updates)) {
+          const existing = newObjects[id];
+          if (existing) {
+            newObjects[id] = { ...existing, material: update.material };
+          }
+        }
+        useSceneStore.setState({ objects: newObjects });
+      }
+    };
+
+    import.meta.hot.on("scene-changed", handleSceneChanged);
+    import.meta.hot.on("shader-changed", handleShaderChanged);
+
+    // Cleanup listeners on unmount
     return () => {
       import.meta.hot?.off?.("scene-changed", handleSceneChanged);
+      import.meta.hot?.off?.("shader-changed", handleShaderChanged);
     };
   }, [reloadScene]);
   return (

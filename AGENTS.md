@@ -42,12 +42,34 @@ Both you and the user edit **`scene/scene.json`** (in project root, outside src/
 
 **Object properties:**
 - `name`: Unique identifier (required)
-- `type`: `box` | `sphere` | `cylinder` | `cone` | `torus` | `plane` | `group`
+- `type`: Geometry type or `group` (see table below)
 - `parent`: Name of parent object (optional, for hierarchy)
 - `position`: `[x, y, z]` coordinates
 - `rotation`: `[x, y, z]` in radians
 - `scale`: `[x, y, z]` multipliers
 - `material`: `{ color, metalness, roughness }` (omit for groups)
+
+**Supported geometry types:**
+
+| Type | Description |
+|------|-------------|
+| `box` | Cube/rectangular prism |
+| `sphere` | Sphere |
+| `cylinder` | Cylinder |
+| `cone` | Cone |
+| `torus` | Donut/ring shape |
+| `plane` | Flat rectangle |
+| `capsule` | Pill shape (cylinder with rounded ends) |
+| `circle` | Flat disc |
+| `ring` | Flat ring/washer |
+| `dodecahedron` | 12-faced polyhedron |
+| `icosahedron` | 20-faced polyhedron |
+| `octahedron` | 8-faced polyhedron |
+| `tetrahedron` | 4-faced pyramid |
+| `torusKnot` | Knotted torus |
+| `group` | Empty container for hierarchy |
+
+Complex geometry types (`lathe`, `extrude`, `shape`, `tube`, `edges`, `polyhedron`) are supported in TPJ export but require additional data fields. See `docs/tpj-format.md` for details.
 
 #### How It Works
 
