@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   PrimitiveTypeSchema,
   ObjectTypeSchema,
+  Vector2Schema,
   Vector3Schema,
   HexColorSchema,
 } from "./base";
@@ -55,9 +56,64 @@ export const TSPShaderMaterialSchema = z.object({
   depthTest: z.boolean().optional(),
 });
 
+// Physical material schema (MeshPhysicalMaterial)
+export const TSPPhysicalMaterialSchema = z.object({
+  type: z.literal("physical"),
+  color: HexColorSchema,
+  metalness: z.number().min(0).max(1),
+  roughness: z.number().min(0).max(1),
+
+  // Base properties (optional)
+  emissive: HexColorSchema.optional(),
+  emissiveIntensity: z.number().min(0).optional(),
+  opacity: z.number().min(0).max(1).optional(),
+  transparent: z.boolean().optional(),
+  side: TSPMaterialSideSchema.optional(),
+
+  // Clearcoat channel
+  clearcoat: z.number().min(0).max(1).optional(),
+  clearcoatRoughness: z.number().min(0).max(1).optional(),
+
+  // Sheen channel
+  sheen: z.number().min(0).max(1).optional(),
+  sheenRoughness: z.number().min(0).max(1).optional(),
+  sheenColor: HexColorSchema.optional(),
+
+  // Transmission channel
+  transmission: z.number().min(0).max(1).optional(),
+  thickness: z.number().min(0).optional(),
+  attenuationColor: HexColorSchema.optional(),
+  attenuationDistance: z.number().min(0).optional(),
+
+  // IOR
+  ior: z.number().min(1).max(2.333).optional(),
+
+  // Specular channel
+  specularIntensity: z.number().min(0).max(1).optional(),
+  specularColor: HexColorSchema.optional(),
+  reflectivity: z.number().min(0).max(1).optional(),
+
+  // Iridescence channel
+  iridescence: z.number().min(0).max(1).optional(),
+  iridescenceIOR: z.number().min(1).max(2.333).optional(),
+  iridescenceThicknessRange: Vector2Schema.optional(),
+
+  // Anisotropy channel
+  anisotropy: z.number().min(0).max(1).optional(),
+  anisotropyRotation: z.number().optional(),
+
+  // Dispersion
+  dispersion: z.number().min(0).optional(),
+
+  // Other
+  envMapIntensity: z.number().min(0).optional(),
+  flatShading: z.boolean().optional(),
+});
+
 // Union type for all TSP materials
 export const TSPMaterialSchema = z.union([
   TSPStandardMaterialSchema,
+  TSPPhysicalMaterialSchema,
   TSPShaderMaterialSchema,
 ]);
 

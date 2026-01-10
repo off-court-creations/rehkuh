@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+export const Vector2Schema = z.tuple([z.number(), z.number()]);
 export const Vector3Schema = z.tuple([z.number(), z.number(), z.number()]);
 
 export const HexColorSchema = z

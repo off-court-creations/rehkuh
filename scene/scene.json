@@ -1,16 +1,575 @@
 [
   {
-    "name": "heart",
-    "type": "extrude",
+    "name": "base",
+    "type": "group",
     "position": [
+      0,
+      0,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "baseBottom",
+    "type": "cylinder",
+    "parent": "base",
+    "position": [
+      0,
+      0.15,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      2.5,
+      0.3,
+      2.5
+    ],
+    "material": {
+      "color": "#1a0d08",
+      "metalness": 0.15,
+      "roughness": 0.7
+    }
+  },
+  {
+    "name": "baseRing1",
+    "type": "torus",
+    "parent": "base",
+    "position": [
+      0,
+      0.32,
+      0
+    ],
+    "rotation": [
+      1.571,
+      0,
+      0
+    ],
+    "scale": [
+      2.35,
+      2.35,
+      0.15
+    ],
+    "material": {
+      "color": "#b8860b",
+      "metalness": 0.85,
+      "roughness": 0.25
+    }
+  },
+  {
+    "name": "baseMiddle",
+    "type": "cylinder",
+    "parent": "base",
+    "position": [
+      0,
+      0.429,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      2.55,
+      0.18,
+      2.55
+    ],
+    "material": {
+      "color": "#d4af37",
+      "metalness": 0.9,
+      "roughness": 0.2
+    }
+  },
+  {
+    "name": "baseRing2",
+    "type": "torus",
+    "parent": "base",
+    "position": [
+      0,
+      0.518,
+      0
+    ],
+    "rotation": [
+      1.571,
+      0,
+      0
+    ],
+    "scale": [
+      2.35,
+      2.35,
+      0.12
+    ],
+    "material": {
+      "color": "#8b6914",
+      "metalness": 0.8,
+      "roughness": 0.3
+    }
+  },
+  {
+    "name": "baseTop",
+    "type": "cylinder",
+    "parent": "base",
+    "position": [
+      0,
+      0.638,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      2.2,
+      0.2,
+      2.2
+    ],
+    "material": {
+      "color": "#2d1810",
+      "metalness": 0.1,
+      "roughness": 0.75
+    }
+  },
+  {
+    "name": "snowGround",
+    "type": "cylinder",
+    "position": [
+      0,
+      0.783,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      2,
+      0.117,
+      2
+    ],
+    "material": {
+      "color": "#f5f9ff",
+      "metalness": 0,
+      "roughness": 1
+    }
+  },
+  {
+    "name": "snowHill1",
+    "type": "sphere",
+    "position": [
+      -0.5,
+      0.82,
+      0.4
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.5,
+      0.15,
+      0.4
+    ],
+    "material": {
+      "color": "#eef4ff",
+      "metalness": 0,
+      "roughness": 1
+    }
+  },
+  {
+    "name": "snowHill2",
+    "type": "sphere",
+    "position": [
+      0.55,
+      0.82,
+      -0.35
+    ],
+    "rotation": [
       0,
       0.5,
       0
     ],
-    "rotation": [
-      -1.571,
+    "scale": [
+      0.4,
+      0.12,
+      0.35
+    ],
+    "material": {
+      "color": "#e8f0ff",
+      "metalness": 0,
+      "roughness": 1
+    }
+  },
+  {
+    "name": "domeRim",
+    "type": "torus",
+    "position": [
       0,
-      3.142
+      0.832,
+      0
+    ],
+    "rotation": [
+      1.571,
+      0,
+      0
+    ],
+    "scale": [
+      1.92,
+      1.92,
+      0.2
+    ],
+    "material": {
+      "color": "#c9a227",
+      "metalness": 0.95,
+      "roughness": 0.12
+    }
+  },
+  {
+    "name": "glassDome",
+    "type": "sphere",
+    "position": [
+      0,
+      0.88,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      1.85,
+      1.6,
+      1.85
+    ],
+    "material": {
+      "type": "physical",
+      "color": "#f0f8ff",
+      "metalness": 0,
+      "roughness": 0.02,
+      "clearcoat": 1,
+      "clearcoatRoughness": 0,
+      "transmission": 0.98,
+      "thickness": 0.25,
+      "ior": 1.5
+    }
+  },
+  {
+    "name": "cabin",
+    "type": "group",
+    "position": [
+      0.55,
+      0.88,
+      0.35
+    ],
+    "rotation": [
+      0,
+      -0.5,
+      0
+    ],
+    "scale": [
+      0.26,
+      0.26,
+      0.26
+    ]
+  },
+  {
+    "name": "cabinBody",
+    "type": "box",
+    "parent": "cabin",
+    "position": [
+      0,
+      0.22,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.7,
+      0.4,
+      0.55
+    ],
+    "material": {
+      "color": "#8b4513",
+      "metalness": 0,
+      "roughness": 0.9
+    }
+  },
+  {
+    "name": "cabinRoof",
+    "type": "cone",
+    "parent": "cabin",
+    "position": [
+      0,
+      0.55,
+      0
+    ],
+    "rotation": [
+      0,
+      0.785,
+      0
+    ],
+    "scale": [
+      0.7,
+      0.35,
+      0.7
+    ],
+    "material": {
+      "color": "#a0522d",
+      "metalness": 0,
+      "roughness": 0.85
+    }
+  },
+  {
+    "name": "cabinDoor",
+    "type": "box",
+    "parent": "cabin",
+    "position": [
+      0.36,
+      0.15,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.02,
+      0.26,
+      0.18
+    ],
+    "material": {
+      "color": "#5c3317",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "cabinChimney",
+    "type": "box",
+    "parent": "cabin",
+    "position": [
+      -0.15,
+      0.7,
+      0.12
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.12,
+      0.25,
+      0.12
+    ],
+    "material": {
+      "color": "#654321",
+      "metalness": 0,
+      "roughness": 0.9
+    }
+  },
+  {
+    "name": "cabinSnowRoof",
+    "type": "cone",
+    "parent": "cabin",
+    "position": [
+      0,
+      0.62,
+      0
+    ],
+    "rotation": [
+      0,
+      0.785,
+      0
+    ],
+    "scale": [
+      0.72,
+      0.12,
+      0.72
+    ],
+    "material": {
+      "color": "#ffffff",
+      "metalness": 0,
+      "roughness": 1
+    }
+  },
+  {
+    "name": "tree1",
+    "type": "group",
+    "position": [
+      0,
+      0.88,
+      0
+    ],
+    "rotation": [
+      0,
+      0.2,
+      0
+    ],
+    "scale": [
+      0.58,
+      0.58,
+      0.58
+    ]
+  },
+  {
+    "name": "tree1Trunk",
+    "type": "cylinder",
+    "parent": "tree1",
+    "position": [
+      0,
+      0.14,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.08,
+      0.28,
+      0.08
+    ],
+    "material": {
+      "color": "#4a3728",
+      "metalness": 0,
+      "roughness": 0.9
+    }
+  },
+  {
+    "name": "tree1Foliage1",
+    "type": "cone",
+    "parent": "tree1",
+    "position": [
+      0,
+      0.4,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.52,
+      0.36,
+      0.52
+    ],
+    "material": {
+      "color": "#1a472a",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "tree1Foliage2",
+    "type": "cone",
+    "parent": "tree1",
+    "position": [
+      0,
+      0.62,
+      0
+    ],
+    "rotation": [
+      0,
+      0.5,
+      0
+    ],
+    "scale": [
+      0.4,
+      0.32,
+      0.4
+    ],
+    "material": {
+      "color": "#1f5c32",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "tree1Foliage3",
+    "type": "cone",
+    "parent": "tree1",
+    "position": [
+      0,
+      0.82,
+      0
+    ],
+    "rotation": [
+      0,
+      0.3,
+      0
+    ],
+    "scale": [
+      0.28,
+      0.28,
+      0.28
+    ],
+    "material": {
+      "color": "#247038",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "tree1Star",
+    "type": "octahedron",
+    "parent": "tree1",
+    "position": [
+      0,
+      1,
+      0
+    ],
+    "rotation": [
+      0,
+      0.785,
+      0
+    ],
+    "scale": [
+      0.1,
+      0.14,
+      0.1
+    ],
+    "material": {
+      "color": "#ffd700",
+      "metalness": 0.95,
+      "roughness": 0.05
+    }
+  },
+  {
+    "name": "garland1",
+    "type": "tube",
+    "parent": "tree1",
+    "position": [
+      0,
+      0,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
     ],
     "scale": [
       1,
@@ -18,78 +577,1088 @@
       1
     ],
     "material": {
-      "type": "shader",
-      "shaderName": "heart_noise",
-      "vertex": "// Heart noise vertex shader\nvarying vec3 vWorldPosition;\nvarying vec2 vUv;\n\nvoid main() {\n  vUv = uv;\n  vec4 worldPos = modelMatrix * vec4(position, 1.0);\n  vWorldPosition = worldPos.xyz;\n  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n}\n",
-      "fragment": "// Heart noise fragment shader\nuniform vec3 baseColor;\nuniform vec3 accentColor;\nuniform float time;\n\nvarying vec3 vWorldPosition;\nvarying vec2 vUv;\n\n// Simple noise functions\nfloat hash(vec2 p) {\n  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);\n}\n\nfloat noise(vec2 p) {\n  vec2 i = floor(p);\n  vec2 f = fract(p);\n  f = f * f * (3.0 - 2.0 * f);\n\n  float a = hash(i);\n  float b = hash(i + vec2(1.0, 0.0));\n  float c = hash(i + vec2(0.0, 1.0));\n  float d = hash(i + vec2(1.0, 1.0));\n\n  return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);\n}\n\nfloat fbm(vec2 p) {\n  float v = 0.0;\n  float a = 0.5;\n  for (int i = 0; i < 4; i++) {\n    v += a * noise(p);\n    p *= 2.0;\n    a *= 0.5;\n  }\n  return v;\n}\n\nvoid main() {\n  // Animated noise based on UV and time\n  vec2 pos = vUv * 3.0 + time * 0.2;\n  float n = fbm(pos);\n\n  // Boost contrast - remap from [0.3, 0.7] to [0, 1]\n  n = smoothstep(0.25, 0.75, n);\n\n  // Add secondary layer for more detail\n  float detail = noise(vUv * 8.0 - time * 0.5) * 0.3;\n  n = clamp(n + detail, 0.0, 1.0);\n\n  // Pulsing effect\n  float pulse = sin(time * 2.0) * 0.5 + 0.5;\n  n = n * (0.6 + 0.4 * pulse);\n\n  // Mix between dark and light with more range\n  vec3 darkColor = baseColor * 0.4;\n  vec3 lightColor = accentColor * 1.4;\n  vec3 color = mix(darkColor, lightColor, n);\n\n  // Add highlights\n  float highlight = pow(n, 3.0) * 0.3;\n  color += highlight;\n\n  gl_FragColor = vec4(color, 1.0);\n}\n",
-      "uniforms": {
-        "baseColor": {
-          "type": "color",
-          "value": "#ff3366"
-        },
-        "accentColor": {
-          "type": "color",
-          "value": "#9141ac"
-        },
-        "time": {
-          "type": "float",
-          "value": 0,
-          "animated": true
-        }
-      }
+      "color": "#ffd700",
+      "metalness": 0.7,
+      "roughness": 0.3
     },
-    "shape": {
-      "commands": [
-        {
-          "op": "moveTo",
-          "x": 0,
-          "y": 0.8
-        },
-        {
-          "op": "bezierCurveTo",
-          "cp1x": 0,
-          "cp1y": 1.2,
-          "cp2x": 0.8,
-          "cp2y": 1.2,
-          "x": 0.8,
-          "y": 0.6
-        },
-        {
-          "op": "bezierCurveTo",
-          "cp1x": 0.8,
-          "cp1y": 0,
-          "cp2x": 0,
-          "cp2y": -0.2,
-          "x": 0,
-          "y": -1
-        },
-        {
-          "op": "bezierCurveTo",
-          "cp1x": 0,
-          "cp1y": -0.2,
-          "cp2x": -0.8,
-          "cp2y": 0,
-          "x": -0.8,
-          "y": 0.6
-        },
-        {
-          "op": "bezierCurveTo",
-          "cp1x": -0.8,
-          "cp1y": 1.2,
-          "cp2x": 0,
-          "cp2y": 1.2,
-          "x": 0,
-          "y": 0.8
-        }
-      ]
+    "path": {
+      "curveType": "catmullRom",
+      "points": [
+        [
+          0.22,
+          0.42,
+          0
+        ],
+        [
+          0,
+          0.38,
+          0.22
+        ],
+        [
+          -0.22,
+          0.42,
+          0
+        ],
+        [
+          0,
+          0.38,
+          -0.22
+        ],
+        [
+          0.22,
+          0.42,
+          0
+        ]
+      ],
+      "closed": true,
+      "tension": 0.5
     },
-    "extrudeOptions": {
-      "depth": 0.1,
-      "bevelEnabled": true,
-      "bevelThickness": 0.12,
-      "bevelSize": 0.15,
-      "bevelSegments": 8,
-      "steps": 1
+    "tubeRadius": 0.015
+  },
+  {
+    "name": "garland2",
+    "type": "tube",
+    "parent": "tree1",
+    "position": [
+      0,
+      0,
+      0
+    ],
+    "rotation": [
+      0,
+      0.4,
+      0
+    ],
+    "scale": [
+      1,
+      1,
+      1
+    ],
+    "material": {
+      "color": "#c41e3a",
+      "metalness": 0.5,
+      "roughness": 0.4
+    },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [
+        [
+          0.16,
+          0.64,
+          0
+        ],
+        [
+          0,
+          0.6,
+          0.16
+        ],
+        [
+          -0.16,
+          0.64,
+          0
+        ],
+        [
+          0,
+          0.6,
+          -0.16
+        ],
+        [
+          0.16,
+          0.64,
+          0
+        ]
+      ],
+      "closed": true,
+      "tension": 0.5
+    },
+    "tubeRadius": 0.012
+  },
+  {
+    "name": "garland3",
+    "type": "tube",
+    "parent": "tree1",
+    "position": [
+      0,
+      0,
+      0
+    ],
+    "rotation": [
+      0,
+      0.8,
+      0
+    ],
+    "scale": [
+      1,
+      1,
+      1
+    ],
+    "material": {
+      "color": "#ffd700",
+      "metalness": 0.7,
+      "roughness": 0.3
+    },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [
+        [
+          0.11,
+          0.84,
+          0
+        ],
+        [
+          0,
+          0.81,
+          0.11
+        ],
+        [
+          -0.11,
+          0.84,
+          0
+        ],
+        [
+          0,
+          0.81,
+          -0.11
+        ],
+        [
+          0.11,
+          0.84,
+          0
+        ]
+      ],
+      "closed": true,
+      "tension": 0.5
+    },
+    "tubeRadius": 0.01
+  },
+  {
+    "name": "ornament1",
+    "type": "sphere",
+    "parent": "tree1",
+    "position": [
+      0.2,
+      0.45,
+      0.1
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.06,
+      0.06,
+      0.06
+    ],
+    "material": {
+      "color": "#c41e3a",
+      "metalness": 0.95,
+      "roughness": 0.05
+    }
+  },
+  {
+    "name": "ornament2",
+    "type": "sphere",
+    "parent": "tree1",
+    "position": [
+      -0.15,
+      0.42,
+      0.15
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.05,
+      0.05,
+      0.05
+    ],
+    "material": {
+      "color": "#ffd700",
+      "metalness": 0.95,
+      "roughness": 0.05
+    }
+  },
+  {
+    "name": "ornament3",
+    "type": "sphere",
+    "parent": "tree1",
+    "position": [
+      0.05,
+      0.38,
+      -0.2
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.055,
+      0.055,
+      0.055
+    ],
+    "material": {
+      "color": "#e8e8e8",
+      "metalness": 0.98,
+      "roughness": 0.02
+    }
+  },
+  {
+    "name": "ornament4",
+    "type": "sphere",
+    "parent": "tree1",
+    "position": [
+      0.14,
+      0.65,
+      0.08
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.045,
+      0.045,
+      0.045
+    ],
+    "material": {
+      "color": "#b8860b",
+      "metalness": 0.9,
+      "roughness": 0.1
+    }
+  },
+  {
+    "name": "ornament5",
+    "type": "sphere",
+    "parent": "tree1",
+    "position": [
+      -0.12,
+      0.62,
+      -0.08
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.05,
+      0.05,
+      0.05
+    ],
+    "material": {
+      "color": "#8b0000",
+      "metalness": 0.1,
+      "roughness": 0.85
+    }
+  },
+  {
+    "name": "ornament6",
+    "type": "sphere",
+    "parent": "tree1",
+    "position": [
+      0,
+      0.68,
+      0.14
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.04,
+      0.04,
+      0.04
+    ],
+    "material": {
+      "color": "#d4af37",
+      "metalness": 0.2,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "ornament7",
+    "type": "sphere",
+    "parent": "tree1",
+    "position": [
+      0.1,
+      0.85,
+      0.05
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.035,
+      0.035,
+      0.035
+    ],
+    "material": {
+      "color": "#c0c0c0",
+      "metalness": 0.98,
+      "roughness": 0.02
+    }
+  },
+  {
+    "name": "ornament8",
+    "type": "sphere",
+    "parent": "tree1",
+    "position": [
+      -0.08,
+      0.83,
+      -0.06
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.04,
+      0.04,
+      0.04
+    ],
+    "material": {
+      "color": "#cc0000",
+      "metalness": 0.95,
+      "roughness": 0.05
+    }
+  },
+  {
+    "name": "ornament9",
+    "type": "sphere",
+    "parent": "tree1",
+    "position": [
+      -0.18,
+      0.48,
+      -0.12
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.05,
+      0.05,
+      0.05
+    ],
+    "material": {
+      "color": "#228b22",
+      "metalness": 0.15,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "ornament10",
+    "type": "sphere",
+    "parent": "tree1",
+    "position": [
+      0.18,
+      0.58,
+      -0.1
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.045,
+      0.045,
+      0.045
+    ],
+    "material": {
+      "color": "#ffc0cb",
+      "metalness": 0.85,
+      "roughness": 0.15
+    }
+  },
+  {
+    "name": "tree2",
+    "type": "group",
+    "position": [
+      -0.45,
+      0.88,
+      -0.15
+    ],
+    "rotation": [
+      0,
+      0.6,
+      0
+    ],
+    "scale": [
+      0.35,
+      0.35,
+      0.35
+    ]
+  },
+  {
+    "name": "tree2Trunk",
+    "type": "cylinder",
+    "parent": "tree2",
+    "position": [
+      0,
+      0.12,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.06,
+      0.24,
+      0.06
+    ],
+    "material": {
+      "color": "#5c4033",
+      "metalness": 0,
+      "roughness": 0.9
+    }
+  },
+  {
+    "name": "tree2Foliage1",
+    "type": "cone",
+    "parent": "tree2",
+    "position": [
+      0,
+      0.35,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.38,
+      0.3,
+      0.38
+    ],
+    "material": {
+      "color": "#1a472a",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "tree2Foliage2",
+    "type": "cone",
+    "parent": "tree2",
+    "position": [
+      0,
+      0.52,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.25,
+      0.24,
+      0.25
+    ],
+    "material": {
+      "color": "#1f5c32",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "tree3",
+    "type": "group",
+    "position": [
+      0.32,
+      0.88,
+      -0.42
+    ],
+    "rotation": [
+      0,
+      -0.3,
+      0
+    ],
+    "scale": [
+      0.32,
+      0.32,
+      0.32
+    ]
+  },
+  {
+    "name": "tree3Trunk",
+    "type": "cylinder",
+    "parent": "tree3",
+    "position": [
+      0,
+      0.11,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.055,
+      0.22,
+      0.055
+    ],
+    "material": {
+      "color": "#4a3728",
+      "metalness": 0,
+      "roughness": 0.9
+    }
+  },
+  {
+    "name": "tree3Foliage1",
+    "type": "cone",
+    "parent": "tree3",
+    "position": [
+      0,
+      0.32,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.35,
+      0.28,
+      0.35
+    ],
+    "material": {
+      "color": "#154c24",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "tree3Foliage2",
+    "type": "cone",
+    "parent": "tree3",
+    "position": [
+      0,
+      0.48,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.22,
+      0.22,
+      0.22
+    ],
+    "material": {
+      "color": "#1a5c2e",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "tree4",
+    "type": "group",
+    "position": [
+      -0.28,
+      0.88,
+      0.38
+    ],
+    "rotation": [
+      0,
+      1.2,
+      0
+    ],
+    "scale": [
+      0.3,
+      0.3,
+      0.3
+    ]
+  },
+  {
+    "name": "tree4Trunk",
+    "type": "cylinder",
+    "parent": "tree4",
+    "position": [
+      0,
+      0.1,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.05,
+      0.2,
+      0.05
+    ],
+    "material": {
+      "color": "#5c4033",
+      "metalness": 0,
+      "roughness": 0.9
+    }
+  },
+  {
+    "name": "tree4Foliage1",
+    "type": "cone",
+    "parent": "tree4",
+    "position": [
+      0,
+      0.3,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.32,
+      0.26,
+      0.32
+    ],
+    "material": {
+      "color": "#1a472a",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "tree5",
+    "type": "group",
+    "position": [
+      -0.52,
+      0.88,
+      0.32
+    ],
+    "rotation": [
+      0,
+      0.9,
+      0
+    ],
+    "scale": [
+      0.25,
+      0.25,
+      0.25
+    ]
+  },
+  {
+    "name": "tree5Trunk",
+    "type": "cylinder",
+    "parent": "tree5",
+    "position": [
+      0,
+      0.09,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.045,
+      0.18,
+      0.045
+    ],
+    "material": {
+      "color": "#4a3728",
+      "metalness": 0,
+      "roughness": 0.9
+    }
+  },
+  {
+    "name": "tree5Foliage1",
+    "type": "cone",
+    "parent": "tree5",
+    "position": [
+      0,
+      0.26,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.28,
+      0.24,
+      0.28
+    ],
+    "material": {
+      "color": "#1f5c32",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "tree6",
+    "type": "group",
+    "position": [
+      0.22,
+      0.88,
+      0.32
+    ],
+    "rotation": [
+      0,
+      -0.8,
+      0
+    ],
+    "scale": [
+      0.28,
+      0.28,
+      0.28
+    ]
+  },
+  {
+    "name": "tree6Trunk",
+    "type": "cylinder",
+    "parent": "tree6",
+    "position": [
+      0,
+      0.1,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.05,
+      0.2,
+      0.05
+    ],
+    "material": {
+      "color": "#5c4033",
+      "metalness": 0,
+      "roughness": 0.9
+    }
+  },
+  {
+    "name": "tree6Foliage1",
+    "type": "cone",
+    "parent": "tree6",
+    "position": [
+      0,
+      0.28,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.3,
+      0.24,
+      0.3
+    ],
+    "material": {
+      "color": "#154c24",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "tree7",
+    "type": "group",
+    "position": [
+      -0.15,
+      0.88,
+      -0.45
+    ],
+    "rotation": [
+      0,
+      2.1,
+      0
+    ],
+    "scale": [
+      0.26,
+      0.26,
+      0.26
+    ]
+  },
+  {
+    "name": "tree7Trunk",
+    "type": "cylinder",
+    "parent": "tree7",
+    "position": [
+      0,
+      0.09,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.045,
+      0.18,
+      0.045
+    ],
+    "material": {
+      "color": "#4a3728",
+      "metalness": 0,
+      "roughness": 0.9
+    }
+  },
+  {
+    "name": "tree7Foliage1",
+    "type": "cone",
+    "parent": "tree7",
+    "position": [
+      0,
+      0.26,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.28,
+      0.22,
+      0.28
+    ],
+    "material": {
+      "color": "#1a472a",
+      "metalness": 0,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "rock1",
+    "type": "dodecahedron",
+    "position": [
+      -0.72,
+      0.9,
+      -0.1
+    ],
+    "rotation": [
+      0.3,
+      0.5,
+      0.2
+    ],
+    "scale": [
+      0.08,
+      0.06,
+      0.07
+    ],
+    "material": {
+      "color": "#5a5a5a",
+      "metalness": 0.1,
+      "roughness": 0.9
+    }
+  },
+  {
+    "name": "rock2",
+    "type": "dodecahedron",
+    "position": [
+      -0.65,
+      0.88,
+      -0.02
+    ],
+    "rotation": [
+      0.5,
+      0.2,
+      0.4
+    ],
+    "scale": [
+      0.05,
+      0.04,
+      0.05
+    ],
+    "material": {
+      "color": "#6b6b6b",
+      "metalness": 0.1,
+      "roughness": 0.9
+    }
+  },
+  {
+    "name": "rock3",
+    "type": "icosahedron",
+    "position": [
+      0.7,
+      0.89,
+      -0.15
+    ],
+    "rotation": [
+      0.2,
+      0.8,
+      0.1
+    ],
+    "scale": [
+      0.06,
+      0.05,
+      0.06
+    ],
+    "material": {
+      "color": "#4f4f4f",
+      "metalness": 0.1,
+      "roughness": 0.85
+    }
+  },
+  {
+    "name": "snowman",
+    "type": "group",
+    "position": [
+      -0.7,
+      0.88,
+      0.35
+    ],
+    "rotation": [
+      0,
+      0.6,
+      0
+    ],
+    "scale": [
+      0.16,
+      0.16,
+      0.16
+    ]
+  },
+  {
+    "name": "snowmanBody",
+    "type": "sphere",
+    "parent": "snowman",
+    "position": [
+      0,
+      0.2,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.38,
+      0.32,
+      0.38
+    ],
+    "material": {
+      "color": "#ffffff",
+      "metalness": 0,
+      "roughness": 1
+    }
+  },
+  {
+    "name": "snowmanHead",
+    "type": "sphere",
+    "parent": "snowman",
+    "position": [
+      0,
+      0.48,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.24,
+      0.24,
+      0.24
+    ],
+    "material": {
+      "color": "#ffffff",
+      "metalness": 0,
+      "roughness": 1
+    }
+  },
+  {
+    "name": "snowmanNose",
+    "type": "cone",
+    "parent": "snowman",
+    "position": [
+      0.12,
+      0.48,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      -1.571
+    ],
+    "scale": [
+      0.04,
+      0.12,
+      0.04
+    ],
+    "material": {
+      "color": "#ff6600",
+      "metalness": 0,
+      "roughness": 0.7
+    }
+  },
+  {
+    "name": "snowmanHat",
+    "type": "cylinder",
+    "parent": "snowman",
+    "position": [
+      0,
+      0.68,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.16,
+      0.14,
+      0.16
+    ],
+    "material": {
+      "color": "#1a1a1a",
+      "metalness": 0.1,
+      "roughness": 0.8
+    }
+  },
+  {
+    "name": "snowmanHatBrim",
+    "type": "cylinder",
+    "parent": "snowman",
+    "position": [
+      0,
+      0.58,
+      0
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "scale": [
+      0.24,
+      0.03,
+      0.24
+    ],
+    "material": {
+      "color": "#1a1a1a",
+      "metalness": 0.1,
+      "roughness": 0.8
     }
   }
 ]

@@ -61,20 +61,176 @@ Format version string. Currently `"1.0"`.
 
 ### `materials`
 
-Dictionary of deduplicated materials keyed by property hash.
+Dictionary of deduplicated materials. Three material types are supported:
 
-**Key format:** `mat_{color}_{metalness*100}_{roughness*100}`
+#### Standard Material (MeshStandardMaterial)
+
+Basic PBR material. Key format: `mat_{color}_{metalness*100}_{roughness*100}`
+
+```json
+{
+  "mat_ff0000_50_30": {
+    "color": "#ff0000",
+    "metalness": 0.5,
+    "roughness": 0.3
+  }
+}
+```
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
+| `type` | "standard"? | - | Optional type discriminator (omit for backwards compat) |
 | `color` | string | required | Hex color (e.g., "#ff0000") |
 | `metalness` | number | required | 0-1 range |
 | `roughness` | number | required | 0-1 range |
 | `emissive` | string? | "#000000" | Emissive hex color |
-| `emissiveIntensity` | number? | 0 | Emissive intensity, 0-1 |
+| `emissiveIntensity` | number? | 0 | Emissive intensity, 0+ |
 | `opacity` | number? | 1 | Opacity, 0-1 |
 | `transparent` | boolean? | false | Enable transparency |
 | `side` | string? | "front" | Render side: "front", "back", or "double" |
+
+#### Physical Material (MeshPhysicalMaterial)
+
+Advanced PBR material with clearcoat, sheen, transmission, iridescence, anisotropy, and more. Key format: `mat_physical_{hash}`
+
+```json
+{
+  "mat_physical_a1b2c3d4": {
+    "type": "physical",
+    "color": "#ffffff",
+    "metalness": 0,
+    "roughness": 0,
+    "transmission": 1,
+    "thickness": 0.5,
+    "ior": 1.5
+  }
+}
+```
+
+**Base Properties:**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `type` | "physical" | required | Type discriminator |
+| `color` | string | required | Hex color |
+| `metalness` | number | required | 0-1 range |
+| `roughness` | number | required | 0-1 range |
+| `emissive` | string? | "#000000" | Emissive hex color |
+| `emissiveIntensity` | number? | 0 | Emissive intensity |
+| `opacity` | number? | 1 | Opacity, 0-1 |
+| `transparent` | boolean? | false | Enable transparency |
+| `side` | string? | "front" | Render side |
+
+**Clearcoat Channel** (car paint, wet surfaces, varnished wood):
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `clearcoat` | number? | 0 | Intensity of clear coat layer, 0-1 |
+| `clearcoatRoughness` | number? | 0 | Roughness of clear coat, 0-1 |
+
+**Sheen Channel** (velvet, felt, cloth, fabric):
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `sheen` | number? | 0 | Intensity of sheen layer, 0-1 |
+| `sheenRoughness` | number? | 1 | Roughness of sheen, 0-1 |
+| `sheenColor` | string? | "#ffffff" | Sheen tint color |
+
+**Transmission Channel** (glass, water, gems, liquids):
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `transmission` | number? | 0 | Amount of light transmitted, 0-1 |
+| `thickness` | number? | 0 | Thickness for attenuation (world units) |
+| `attenuationColor` | string? | "#ffffff" | Color tint as light passes through |
+| `attenuationDistance` | number? | Infinity | Distance for full attenuation |
+
+**IOR** (index of refraction):
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `ior` | number? | 1.5 | Index of refraction, 1.0-2.333 |
+
+Common IOR values: Air=1.0, Water=1.33, Glass=1.5, Diamond=2.42 (clamped to 2.333)
+
+**Specular Channel** (skin, layered materials):
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `specularIntensity` | number? | 1 | Strength of specular reflection, 0-1 |
+| `specularColor` | string? | "#ffffff" | Tint of specular reflection |
+| `reflectivity` | number? | 0.5 | Controls F0, 0-1 |
+
+**Iridescence Channel** (soap bubbles, oil slicks, beetles):
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `iridescence` | number? | 0 | Intensity of iridescence effect, 0-1 |
+| `iridescenceIOR` | number? | 1.3 | IOR of thin film layer, 1.0-2.333 |
+| `iridescenceThicknessRange` | [min, max]? | [100, 400] | Thickness range in nanometers |
+
+**Anisotropy Channel** (brushed metal, hair, satin):
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `anisotropy` | number? | 0 | Strength of anisotropic effect, 0-1 |
+| `anisotropyRotation` | number? | 0 | Rotation direction in radians |
+
+**Dispersion** (diamonds, prisms, cut glass):
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `dispersion` | number? | 0 | Amount of chromatic dispersion, 0+ |
+
+**Other Properties:**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `envMapIntensity` | number? | 1 | Environment reflection intensity, 0+ |
+| `flatShading` | boolean? | false | Use flat shading instead of smooth |
+
+#### Shader Material (ShaderMaterial)
+
+Custom GLSL shaders. Key format: `mat_shader_{shaderName}`
+
+```json
+{
+  "mat_shader_hologram": {
+    "type": "shader",
+    "vertex": "varying vec2 vUv; void main() { ... }",
+    "fragment": "uniform vec3 baseColor; void main() { ... }",
+    "uniforms": {
+      "baseColor": { "type": "color", "value": "#00ffff" },
+      "time": { "type": "float", "value": 0, "animated": true }
+    }
+  }
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `type` | "shader" | required | Type discriminator |
+| `vertex` | string | required | GLSL vertex shader code |
+| `fragment` | string | required | GLSL fragment shader code |
+| `uniforms` | object | required | Uniform definitions |
+| `transparent` | boolean? | false | Enable transparency |
+| `side` | string? | "front" | Render side |
+| `depthWrite` | boolean? | true | Write to depth buffer |
+| `depthTest` | boolean? | true | Test depth buffer |
+
+**Uniform Types:**
+
+| Type | Value Format | Description |
+|------|--------------|-------------|
+| `float` | number | Floating point value |
+| `int` | number | Integer value |
+| `bool` | boolean | Boolean value |
+| `color` | string | Hex color string |
+| `vec2` | [x, y] | 2D vector |
+| `vec3` | [x, y, z] | 3D vector |
+| `vec4` | [x, y, z, w] | 4D vector |
+
+Uniforms can include `animated: true` for runtime updates (e.g., time).
 
 ### `geometries`
 
@@ -165,6 +321,22 @@ Tube along a 3D curve.
     "points": [[0, 0, 0], [1, 1, 0], [2, 0, 0]],
     "closed": false
   },
+  "tubeRadius": 0.1
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `path` | TSPCurve3D | required | 3D curve defining the tube path |
+| `tubeRadius` | number? | 0.1 | Radius of the tube cross-section |
+
+**Note:** The old `args` format (`[tubularSegments, radius, radialSegments, closed]`) is deprecated. Use `tubeRadius` instead.
+
+```json
+// DEPRECATED - old format
+{
+  "type": "tube",
+  "path": { ... },
   "args": [64, 0.1, 8, false]
 }
 ```
@@ -255,3 +427,4 @@ Array of root object IDs (those with no parent).
 - `src/types.ts` - TypeScript interfaces
 - `src/schemas/tsp.ts` - Zod validation schemas
 - `src/export/tspExporter.ts` - Export logic
+- `src/export/tspImporter.ts` - Import logic

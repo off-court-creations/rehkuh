@@ -53,6 +53,54 @@ export interface StandardMaterialProps {
   roughness: number;
 }
 
+// Physical PBR material (MeshPhysicalMaterial)
+// Extends standard with advanced PBR channels
+export interface PhysicalMaterialProps {
+  type: "physical";
+  color: string;
+  metalness: number;
+  roughness: number;
+
+  // Clearcoat channel (car paint, wet surfaces, varnished wood)
+  clearcoat?: number; // 0-1
+  clearcoatRoughness?: number; // 0-1
+
+  // Sheen channel (velvet, felt, cloth, fabric)
+  sheen?: number; // 0-1
+  sheenRoughness?: number; // 0-1
+  sheenColor?: string; // Hex color
+
+  // Transmission channel (glass, water, gems, liquids)
+  transmission?: number; // 0-1
+  thickness?: number; // World units
+  attenuationColor?: string; // Hex color
+  attenuationDistance?: number; // World units (Infinity = no attenuation)
+
+  // IOR (index of refraction)
+  ior?: number; // 1.0-2.333
+
+  // Specular channel (skin, layered materials)
+  specularIntensity?: number; // 0-1
+  specularColor?: string; // Hex color
+  reflectivity?: number; // 0-1
+
+  // Iridescence channel (soap bubbles, oil slicks, beetles)
+  iridescence?: number; // 0-1
+  iridescenceIOR?: number; // 1.0-2.333
+  iridescenceThicknessRange?: [number, number]; // [min, max] nanometers
+
+  // Anisotropy channel (brushed metal, hair, satin)
+  anisotropy?: number; // 0-1
+  anisotropyRotation?: number; // Radians
+
+  // Dispersion (diamonds, prisms, cut glass)
+  dispersion?: number; // 0+
+
+  // Other
+  envMapIntensity?: number; // 0+
+  flatShading?: boolean;
+}
+
 // Uniform types for shader materials
 export type ShaderUniformType =
   | "float"
@@ -86,13 +134,22 @@ export interface ShaderMaterialProps {
 }
 
 // Union type for all materials
-export type MaterialProps = StandardMaterialProps | ShaderMaterialProps;
+export type MaterialProps =
+  | StandardMaterialProps
+  | PhysicalMaterialProps
+  | ShaderMaterialProps;
 
 // Type guards
 export function isShaderMaterial(
   mat: MaterialProps,
 ): mat is ShaderMaterialProps {
   return mat.type === "shader";
+}
+
+export function isPhysicalMaterial(
+  mat: MaterialProps,
+): mat is PhysicalMaterialProps {
+  return mat.type === "physical";
 }
 
 export function isStandardMaterial(
@@ -117,6 +174,7 @@ export interface SceneObject {
   shape?: TSPShapePath;
   extrudeOptions?: TSPExtrudeOptions;
   path?: TSPCurve3D;
+  tubeRadius?: number;
   sourceGeometry?: string;
   vertices?: number[];
   indices?: number[];
@@ -157,8 +215,65 @@ export interface TSPShaderMaterial {
   depthTest?: boolean;
 }
 
+// Physical PBR material for TSP (MeshPhysicalMaterial)
+export interface TSPPhysicalMaterial {
+  type: "physical";
+  color: string;
+  metalness: number;
+  roughness: number;
+
+  // Base properties (optional, with defaults)
+  emissive?: string;
+  emissiveIntensity?: number;
+  opacity?: number;
+  transparent?: boolean;
+  side?: TSPMaterialSide;
+
+  // Clearcoat channel
+  clearcoat?: number;
+  clearcoatRoughness?: number;
+
+  // Sheen channel
+  sheen?: number;
+  sheenRoughness?: number;
+  sheenColor?: string;
+
+  // Transmission channel
+  transmission?: number;
+  thickness?: number;
+  attenuationColor?: string;
+  attenuationDistance?: number;
+
+  // IOR
+  ior?: number;
+
+  // Specular channel
+  specularIntensity?: number;
+  specularColor?: string;
+  reflectivity?: number;
+
+  // Iridescence channel
+  iridescence?: number;
+  iridescenceIOR?: number;
+  iridescenceThicknessRange?: [number, number];
+
+  // Anisotropy channel
+  anisotropy?: number;
+  anisotropyRotation?: number;
+
+  // Dispersion
+  dispersion?: number;
+
+  // Other
+  envMapIntensity?: number;
+  flatShading?: boolean;
+}
+
 // Union type for TSP materials
-export type TSPMaterial = TSPStandardMaterial | TSPShaderMaterial;
+export type TSPMaterial =
+  | TSPStandardMaterial
+  | TSPPhysicalMaterial
+  | TSPShaderMaterial;
 
 // Shape path command types (mirrors THREE.Path/Shape API)
 export type TSPShapeCommand =
@@ -271,6 +386,8 @@ export interface TSPGeometry {
   extrudeOptions?: TSPExtrudeOptions;
   // TubeGeometry (3D curve path)
   path?: TSPCurve3D;
+  // TubeGeometry radius
+  tubeRadius?: number;
   // EdgesGeometry (reference to source geometry)
   sourceGeometry?: string;
   // PolyhedronGeometry (raw vertex/index data)
