@@ -6,476 +6,909 @@
     "rotation": [0, 0, 0],
     "scale": [1, 1, 1]
   },
+
+  {
+    "name": "terrain",
+    "type": "group",
+    "parent": "oasis",
+    "position": [0, 0, 0],
+    "rotation": [0, 0, 0],
+    "scale": [1, 1, 1]
+  },
   {
     "name": "sandBase",
     "type": "cylinder",
-    "parent": "oasis",
-    "position": [0, 0.1, 0],
+    "parent": "terrain",
+    "position": [0, 0.08, 0],
     "rotation": [0, 0, 0],
-    "scale": [4, 0.2, 4],
+    "scale": [3.5, 0.16, 3.5],
     "material": {
       "type": "shader",
-      "vertex": "varying vec3 vWorldPosition; varying vec2 vUv; void main() { vUv = uv; vec4 worldPos = modelMatrix * vec4(position, 1.0); vWorldPosition = worldPos.xyz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
-      "fragment": "varying vec3 vWorldPosition; varying vec2 vUv; float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); } float noise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f); float a = hash(i); float b = hash(i + vec2(1.0, 0.0)); float c = hash(i + vec2(0.0, 1.0)); float d = hash(i + vec2(1.0, 1.0)); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y); } void main() { vec3 sandLight = vec3(0.96, 0.87, 0.7); vec3 sandDark = vec3(0.85, 0.72, 0.52); vec2 pos = vWorldPosition.xz * 2.0; float n = noise(pos) * 0.5 + noise(pos * 2.0) * 0.25 + noise(pos * 4.0) * 0.125; vec3 color = mix(sandDark, sandLight, n); gl_FragColor = vec4(color, 1.0); }",
+      "vertex": "varying vec3 vWorldPosition; varying vec2 vUv; varying vec3 vNormal; void main() { vUv = uv; vNormal = normalize(normalMatrix * normal); vec4 worldPos = modelMatrix * vec4(position, 1.0); vWorldPosition = worldPos.xyz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      "fragment": "varying vec3 vWorldPosition; varying vec2 vUv; varying vec3 vNormal; float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); } float noise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f); float a = hash(i); float b = hash(i + vec2(1.0, 0.0)); float c = hash(i + vec2(0.0, 1.0)); float d = hash(i + vec2(1.0, 1.0)); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y); } void main() { vec3 sandLight = vec3(0.95, 0.85, 0.65); vec3 sandMid = vec3(0.88, 0.76, 0.55); vec3 sandDark = vec3(0.78, 0.65, 0.45); vec2 pos = vWorldPosition.xz; float n1 = noise(pos * 3.0) * 0.5; float n2 = noise(pos * 6.0) * 0.25; float n3 = noise(pos * 12.0) * 0.125; float n = n1 + n2 + n3; vec3 color = mix(sandDark, sandMid, n); color = mix(color, sandLight, pow(n, 2.0) * 0.6); float sparkle = pow(noise(pos * 50.0), 3.0) * 0.15; color += vec3(sparkle); vec3 lightDir = normalize(vec3(1.0, 1.0, 0.5)); float diff = max(dot(vNormal, lightDir), 0.0) * 0.3 + 0.7; color *= diff; gl_FragColor = vec4(color, 1.0); }",
       "uniforms": {}
     }
   },
   {
-    "name": "sandDune1",
-    "type": "sphere",
-    "parent": "oasis",
-    "position": [2.5, 0.15, 1],
-    "rotation": [0, 0.3, 0],
-    "scale": [1.5, 0.3, 1.2],
+    "name": "sandRim",
+    "type": "torus",
+    "parent": "terrain",
+    "position": [0, 0.1, 0],
+    "rotation": [1.5708, 0, 0],
+    "scale": [3.6, 3.6, 0.8],
     "material": {
-      "color": "#d4b896",
+      "color": "#c4a86a",
       "metalness": 0,
       "roughness": 1
     }
   },
   {
-    "name": "sandDune2",
+    "name": "dune1",
     "type": "sphere",
-    "parent": "oasis",
-    "position": [-2.2, 0.12, -1.5],
+    "parent": "terrain",
+    "position": [2.2, 0.05, 0.8],
+    "rotation": [0, 0.4, 0],
+    "scale": [1.4, 0.35, 1.1],
+    "material": { "color": "#d4b896", "metalness": 0, "roughness": 1 }
+  },
+  {
+    "name": "dune2",
+    "type": "sphere",
+    "parent": "terrain",
+    "position": [-2.0, 0.04, -0.6],
+    "rotation": [0, -0.3, 0],
+    "scale": [1.2, 0.3, 0.9],
+    "material": { "color": "#d9c4a5", "metalness": 0, "roughness": 1 }
+  },
+  {
+    "name": "dune3",
+    "type": "sphere",
+    "parent": "terrain",
+    "position": [0.3, 0.03, -2.3],
+    "rotation": [0, 0.7, 0],
+    "scale": [1.5, 0.25, 1.0],
+    "material": { "color": "#d4b896", "metalness": 0, "roughness": 1 }
+  },
+  {
+    "name": "dune4",
+    "type": "sphere",
+    "parent": "terrain",
+    "position": [-1.0, 0.04, 2.0],
     "rotation": [0, -0.5, 0],
-    "scale": [1.3, 0.25, 1],
-    "material": {
-      "color": "#d9c4a5",
-      "metalness": 0,
-      "roughness": 1
-    }
+    "scale": [1.1, 0.28, 0.85],
+    "material": { "color": "#dac9a8", "metalness": 0, "roughness": 1 }
   },
   {
-    "name": "sandDune3",
+    "name": "dune5",
     "type": "sphere",
+    "parent": "terrain",
+    "position": [1.8, 0.03, -1.5],
+    "rotation": [0, 0.2, 0],
+    "scale": [0.9, 0.22, 0.7],
+    "material": { "color": "#d6bc9a", "metalness": 0, "roughness": 1 }
+  },
+
+  {
+    "name": "pool",
+    "type": "group",
     "parent": "oasis",
-    "position": [0.5, 0.1, -2.8],
-    "rotation": [0, 0.8, 0],
-    "scale": [1.8, 0.2, 1.1],
-    "material": {
-      "color": "#d4b896",
-      "metalness": 0,
-      "roughness": 1
-    }
+    "position": [0, 0.16, 0],
+    "rotation": [0, 0, 0],
+    "scale": [1, 1, 1]
   },
   {
-    "name": "waterPool",
+    "name": "poolBottom",
     "type": "cylinder",
-    "parent": "oasis",
-    "position": [0, 0.22, 0],
+    "parent": "pool",
+    "position": [0, -0.02, 0],
     "rotation": [0, 0, 0],
-    "scale": [1.8, 0.05, 1.8],
+    "scale": [1.3, 0.02, 1.3],
+    "material": { "color": "#1a4a5c", "metalness": 0.1, "roughness": 0.8 }
+  },
+  {
+    "name": "water",
+    "type": "cylinder",
+    "parent": "pool",
+    "position": [0, 0.02, 0],
+    "rotation": [0, 0, 0],
+    "scale": [1.25, 0.04, 1.25],
     "material": {
       "type": "shader",
-      "vertex": "varying vec2 vUv; varying vec3 vWorldPos; void main() { vUv = uv; vec4 worldPos = modelMatrix * vec4(position, 1.0); vWorldPos = worldPos.xyz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
-      "fragment": "uniform float time; varying vec2 vUv; varying vec3 vWorldPos; float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); } float noise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f); float a = hash(i); float b = hash(i + vec2(1.0, 0.0)); float c = hash(i + vec2(0.0, 1.0)); float d = hash(i + vec2(1.0, 1.0)); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y); } void main() { vec3 waterDeep = vec3(0.0, 0.35, 0.5); vec3 waterShallow = vec3(0.2, 0.6, 0.7); vec3 highlight = vec3(0.9, 0.95, 1.0); vec2 pos = vWorldPos.xz; float wave1 = sin(pos.x * 3.0 + time * 1.5) * 0.5 + 0.5; float wave2 = sin(pos.y * 2.5 - time * 1.2) * 0.5 + 0.5; float wave3 = sin((pos.x + pos.y) * 2.0 + time * 0.8) * 0.5 + 0.5; float waves = (wave1 + wave2 + wave3) / 3.0; float n = noise(pos * 4.0 + time * 0.3) * 0.3; float ripple = noise(pos * 8.0 - time * 0.5) * 0.15; float pattern = waves * 0.4 + n + ripple; vec3 color = mix(waterDeep, waterShallow, pattern); float sparkle = pow(max(0.0, sin(pos.x * 20.0 + time * 3.0) * sin(pos.y * 20.0 - time * 2.5)), 8.0) * 0.5; color = mix(color, highlight, sparkle); float edge = 1.0 - smoothstep(0.7, 1.0, length(vUv - 0.5) * 2.0); color = mix(waterDeep * 0.8, color, edge); gl_FragColor = vec4(color, 0.9); }",
-      "uniforms": {
-        "time": { "type": "float", "value": 0, "animated": true }
-      },
+      "vertex": "varying vec2 vUv; varying vec3 vWorldPos; varying vec3 vNormal; void main() { vUv = uv; vNormal = normalize(normalMatrix * normal); vec4 worldPos = modelMatrix * vec4(position, 1.0); vWorldPos = worldPos.xyz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      "fragment": "uniform float time; varying vec2 vUv; varying vec3 vWorldPos; varying vec3 vNormal; float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); } float noise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f); float a = hash(i); float b = hash(i + vec2(1.0, 0.0)); float c = hash(i + vec2(0.0, 1.0)); float d = hash(i + vec2(1.0, 1.0)); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y); } void main() { vec3 deepBlue = vec3(0.0, 0.25, 0.4); vec3 midBlue = vec3(0.1, 0.45, 0.55); vec3 shallowTeal = vec3(0.25, 0.65, 0.7); vec3 highlight = vec3(0.95, 0.98, 1.0); vec2 pos = vWorldPos.xz; float dist = length(vUv - 0.5) * 2.0; float wave1 = sin(pos.x * 4.0 + time * 2.0) * cos(pos.y * 3.0 + time * 1.5) * 0.5 + 0.5; float wave2 = sin((pos.x + pos.y) * 3.0 - time * 1.8) * 0.5 + 0.5; float wave3 = sin(pos.x * 6.0 - time * 2.5) * sin(pos.y * 5.0 + time * 2.0) * 0.5 + 0.5; float waves = (wave1 * 0.4 + wave2 * 0.35 + wave3 * 0.25); float caustic1 = noise(pos * 5.0 + time * 0.4); float caustic2 = noise(pos * 8.0 - time * 0.3); float caustics = (caustic1 * 0.6 + caustic2 * 0.4); float depth = smoothstep(0.0, 0.8, dist); vec3 color = mix(shallowTeal, midBlue, depth * 0.6); color = mix(color, deepBlue, depth * depth * 0.4); color += vec3(caustics * 0.15 * (1.0 - depth)); color = mix(color, shallowTeal, waves * 0.2 * (1.0 - depth * 0.5)); float sparkle = pow(max(0.0, sin(pos.x * 25.0 + time * 4.0) * sin(pos.y * 25.0 - time * 3.5)), 12.0); sparkle *= (1.0 - depth) * 0.6; color = mix(color, highlight, sparkle); float rim = smoothstep(0.85, 1.0, dist); color = mix(color, shallowTeal * 1.2, rim * 0.3); gl_FragColor = vec4(color, 0.92); }",
+      "uniforms": { "time": { "type": "float", "value": 0, "animated": true } },
       "transparent": true
     }
   },
   {
-    "name": "poolRim",
+    "name": "beachRim",
     "type": "torus",
-    "parent": "oasis",
-    "position": [0, 0.22, 0],
+    "parent": "pool",
+    "position": [0, 0, 0],
     "rotation": [1.5708, 0, 0],
-    "scale": [1.85, 1.85, 0.4],
-    "material": {
-      "color": "#c9a86c",
-      "metalness": 0,
-      "roughness": 0.9
-    }
+    "scale": [1.35, 1.35, 0.2],
+    "material": { "color": "#e8d5b5", "metalness": 0, "roughness": 0.95 }
   },
+  {
+    "name": "poolStone1",
+    "type": "dodecahedron",
+    "parent": "pool",
+    "position": [1.1, 0.02, 0.4],
+    "rotation": [0.2, 0.5, 0.1],
+    "scale": [0.18, 0.12, 0.15],
+    "material": { "color": "#8a7b6a", "metalness": 0.05, "roughness": 0.95 }
+  },
+  {
+    "name": "poolStone2",
+    "type": "icosahedron",
+    "parent": "pool",
+    "position": [0.9, 0.01, 0.7],
+    "rotation": [0.3, 0.2, 0.4],
+    "scale": [0.12, 0.08, 0.1],
+    "material": { "color": "#7a6b5a", "metalness": 0.05, "roughness": 0.9 }
+  },
+  {
+    "name": "poolStone3",
+    "type": "dodecahedron",
+    "parent": "pool",
+    "position": [-1.0, 0.02, -0.5],
+    "rotation": [0.4, 0.8, 0.2],
+    "scale": [0.15, 0.1, 0.13],
+    "material": { "color": "#6a5b4a", "metalness": 0.05, "roughness": 0.95 }
+  },
+  {
+    "name": "poolStone4",
+    "type": "icosahedron",
+    "parent": "pool",
+    "position": [-0.7, 0.01, -0.9],
+    "rotation": [0.1, 0.4, 0.3],
+    "scale": [0.1, 0.07, 0.09],
+    "material": { "color": "#8a7b6a", "metalness": 0.05, "roughness": 0.9 }
+  },
+  {
+    "name": "poolStone5",
+    "type": "dodecahedron",
+    "parent": "pool",
+    "position": [0.2, 0.02, 1.2],
+    "rotation": [0.5, 0.1, 0.2],
+    "scale": [0.14, 0.09, 0.12],
+    "material": { "color": "#7a6b5a", "metalness": 0.05, "roughness": 0.95 }
+  },
+
+  {
+    "name": "lilyPad1",
+    "type": "cylinder",
+    "parent": "pool",
+    "position": [0.5, 0.045, 0.3],
+    "rotation": [0, 0.3, 0],
+    "scale": [0.18, 0.01, 0.16],
+    "material": { "color": "#2d5a27", "metalness": 0, "roughness": 0.8 }
+  },
+  {
+    "name": "lilyPad2",
+    "type": "cylinder",
+    "parent": "pool",
+    "position": [-0.4, 0.045, -0.25],
+    "rotation": [0, -0.5, 0],
+    "scale": [0.15, 0.01, 0.13],
+    "material": { "color": "#3a6b32", "metalness": 0, "roughness": 0.8 }
+  },
+  {
+    "name": "lilyPad3",
+    "type": "cylinder",
+    "parent": "pool",
+    "position": [-0.15, 0.045, 0.5],
+    "rotation": [0, 0.8, 0],
+    "scale": [0.12, 0.01, 0.11],
+    "material": { "color": "#2d5a27", "metalness": 0, "roughness": 0.8 }
+  },
+  {
+    "name": "lilyFlower1",
+    "type": "sphere",
+    "parent": "pool",
+    "position": [0.52, 0.07, 0.28],
+    "rotation": [0, 0, 0],
+    "scale": [0.05, 0.03, 0.05],
+    "material": { "color": "#ffb6c1", "metalness": 0.1, "roughness": 0.6 }
+  },
+  {
+    "name": "lilyFlower2",
+    "type": "sphere",
+    "parent": "pool",
+    "position": [-0.38, 0.065, -0.22],
+    "rotation": [0, 0, 0],
+    "scale": [0.04, 0.025, 0.04],
+    "material": { "color": "#fff0f5", "metalness": 0.1, "roughness": 0.6 }
+  },
+
   {
     "name": "palm1",
     "type": "group",
     "parent": "oasis",
-    "position": [-1.2, 0.2, 0.8],
-    "rotation": [0, 0.4, 0],
+    "position": [-1.0, 0.16, 0.7],
+    "rotation": [0, 0.3, 0],
     "scale": [1, 1, 1]
   },
   {
-    "name": "palm1Trunk",
+    "name": "palm1TrunkBase",
     "type": "cylinder",
     "parent": "palm1",
-    "position": [0, 0.8, 0],
-    "rotation": [0.05, 0, 0.08],
-    "scale": [0.15, 1.6, 0.15],
+    "position": [0, 0.25, 0],
+    "rotation": [0.03, 0, 0.05],
+    "scale": [0.14, 0.5, 0.14],
     "material": {
       "type": "shader",
-      "vertex": "varying vec2 vUv; varying vec3 vNormal; void main() { vUv = uv; vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
-      "fragment": "varying vec2 vUv; varying vec3 vNormal; void main() { vec3 trunkDark = vec3(0.35, 0.25, 0.15); vec3 trunkLight = vec3(0.55, 0.4, 0.25); float bands = sin(vUv.y * 40.0) * 0.5 + 0.5; bands = smoothstep(0.3, 0.7, bands); vec3 color = mix(trunkDark, trunkLight, bands); vec3 lightDir = normalize(vec3(1.0, 1.0, 0.5)); float diff = max(dot(vNormal, lightDir), 0.0) * 0.5 + 0.5; color *= diff; gl_FragColor = vec4(color, 1.0); }",
+      "vertex": "varying vec2 vUv; varying vec3 vNormal; varying vec3 vWorldPos; void main() { vUv = uv; vNormal = normalize(normalMatrix * normal); vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      "fragment": "varying vec2 vUv; varying vec3 vNormal; varying vec3 vWorldPos; float hash(float n) { return fract(sin(n) * 43758.5453); } void main() { vec3 darkBrown = vec3(0.25, 0.15, 0.08); vec3 midBrown = vec3(0.4, 0.28, 0.15); vec3 lightBrown = vec3(0.55, 0.4, 0.22); float band = sin(vUv.y * 50.0) * 0.5 + 0.5; band = smoothstep(0.3, 0.7, band); float noise = hash(floor(vUv.y * 25.0)) * 0.2; band += noise; vec3 color = mix(darkBrown, midBrown, band); color = mix(color, lightBrown, pow(band, 2.0) * 0.4); float vert = sin(vUv.x * 30.0 + vUv.y * 5.0) * 0.5 + 0.5; color = mix(color, color * 0.85, vert * 0.2); vec3 lightDir = normalize(vec3(1.0, 1.0, 0.5)); float diff = max(dot(vNormal, lightDir), 0.0) * 0.4 + 0.6; color *= diff; gl_FragColor = vec4(color, 1.0); }",
       "uniforms": {}
     }
   },
   {
+    "name": "palm1TrunkMid",
+    "type": "cylinder",
+    "parent": "palm1",
+    "position": [0.05, 0.75, 0.02],
+    "rotation": [0.05, 0, 0.08],
+    "scale": [0.12, 0.5, 0.12],
+    "material": {
+      "type": "shader",
+      "vertex": "varying vec2 vUv; varying vec3 vNormal; void main() { vUv = uv; vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      "fragment": "varying vec2 vUv; varying vec3 vNormal; float hash(float n) { return fract(sin(n) * 43758.5453); } void main() { vec3 darkBrown = vec3(0.28, 0.18, 0.1); vec3 midBrown = vec3(0.42, 0.3, 0.17); vec3 lightBrown = vec3(0.52, 0.38, 0.2); float band = sin(vUv.y * 45.0) * 0.5 + 0.5; band = smoothstep(0.35, 0.65, band); float noise = hash(floor(vUv.y * 22.0)) * 0.15; band += noise; vec3 color = mix(darkBrown, midBrown, band); color = mix(color, lightBrown, pow(band, 2.0) * 0.35); vec3 lightDir = normalize(vec3(1.0, 1.0, 0.5)); float diff = max(dot(vNormal, lightDir), 0.0) * 0.4 + 0.6; color *= diff; gl_FragColor = vec4(color, 1.0); }",
+      "uniforms": {}
+    }
+  },
+  {
+    "name": "palm1TrunkTop",
+    "type": "cylinder",
+    "parent": "palm1",
+    "position": [0.12, 1.2, 0.05],
+    "rotation": [0.06, 0, 0.1],
+    "scale": [0.1, 0.45, 0.1],
+    "material": {
+      "type": "shader",
+      "vertex": "varying vec2 vUv; varying vec3 vNormal; void main() { vUv = uv; vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      "fragment": "varying vec2 vUv; varying vec3 vNormal; float hash(float n) { return fract(sin(n) * 43758.5453); } void main() { vec3 darkBrown = vec3(0.3, 0.2, 0.12); vec3 midBrown = vec3(0.45, 0.32, 0.18); vec3 lightBrown = vec3(0.5, 0.36, 0.18); float band = sin(vUv.y * 40.0) * 0.5 + 0.5; band = smoothstep(0.4, 0.6, band); float noise = hash(floor(vUv.y * 20.0)) * 0.12; band += noise; vec3 color = mix(darkBrown, midBrown, band); color = mix(color, lightBrown, pow(band, 2.0) * 0.3); vec3 lightDir = normalize(vec3(1.0, 1.0, 0.5)); float diff = max(dot(vNormal, lightDir), 0.0) * 0.4 + 0.6; color *= diff; gl_FragColor = vec4(color, 1.0); }",
+      "uniforms": {}
+    }
+  },
+  {
+    "name": "palm1Crown",
+    "type": "sphere",
+    "parent": "palm1",
+    "position": [0.15, 1.45, 0.06],
+    "rotation": [0, 0, 0],
+    "scale": [0.2, 0.15, 0.2],
+    "material": { "color": "#2a4a20", "metalness": 0, "roughness": 0.9 }
+  },
+  {
     "name": "palm1Frond1",
+    "type": "tube",
+    "parent": "palm1",
+    "position": [0.15, 1.45, 0.06],
+    "rotation": [0, 0, 0],
+    "scale": [1, 1, 1],
+    "material": { "color": "#2d5a27", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.4, 0.15, 0.1], [0.85, 0.05, 0.15], [1.2, -0.25, 0.12], [1.4, -0.5, 0.08]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.025
+  },
+  {
+    "name": "palm1Frond1Leaf",
     "type": "cone",
     "parent": "palm1",
-    "position": [0.6, 1.7, 0],
-    "rotation": [0, 0, -1.2],
-    "scale": [0.15, 1.2, 0.08],
-    "material": {
-      "color": "#2d5a27",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [1.3, 0.95, 0.14],
+    "rotation": [0.3, 0, -1.1],
+    "scale": [0.12, 0.6, 0.03],
+    "material": { "color": "#3a6b32", "metalness": 0, "roughness": 0.8 }
   },
   {
     "name": "palm1Frond2",
+    "type": "tube",
+    "parent": "palm1",
+    "position": [0.15, 1.45, 0.06],
+    "rotation": [0, 1.2, 0],
+    "scale": [1, 1, 1],
+    "material": { "color": "#2d5a27", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.35, 0.18, 0.08], [0.75, 0.1, 0.12], [1.1, -0.15, 0.1], [1.35, -0.4, 0.06]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.025
+  },
+  {
+    "name": "palm1Frond2Leaf",
     "type": "cone",
     "parent": "palm1",
-    "position": [-0.5, 1.7, 0.3],
-    "rotation": [0.3, 0.8, 1.1],
-    "scale": [0.15, 1.1, 0.08],
-    "material": {
-      "color": "#3a6b32",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [-0.45, 1.05, 1.15],
+    "rotation": [1.0, 0.2, 0.9],
+    "scale": [0.12, 0.55, 0.03],
+    "material": { "color": "#3a6b32", "metalness": 0, "roughness": 0.8 }
   },
   {
     "name": "palm1Frond3",
+    "type": "tube",
+    "parent": "palm1",
+    "position": [0.15, 1.45, 0.06],
+    "rotation": [0, 2.4, 0],
+    "scale": [1, 1, 1],
+    "material": { "color": "#2d5a27", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.38, 0.2, 0.05], [0.8, 0.08, 0.1], [1.15, -0.18, 0.08], [1.38, -0.45, 0.05]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.025
+  },
+  {
+    "name": "palm1Frond3Leaf",
     "type": "cone",
     "parent": "palm1",
-    "position": [-0.4, 1.7, -0.4],
-    "rotation": [-0.4, -0.6, 1.0],
-    "scale": [0.15, 1.15, 0.08],
-    "material": {
-      "color": "#2d5a27",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [-1.1, 1.0, -0.6],
+    "rotation": [-0.5, 0.3, 1.1],
+    "scale": [0.12, 0.58, 0.03],
+    "material": { "color": "#3a6b32", "metalness": 0, "roughness": 0.8 }
   },
   {
     "name": "palm1Frond4",
+    "type": "tube",
+    "parent": "palm1",
+    "position": [0.15, 1.45, 0.06],
+    "rotation": [0, 3.6, 0],
+    "scale": [1, 1, 1],
+    "material": { "color": "#2d5a27", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.32, 0.12, 0.06], [0.7, 0.02, 0.1], [1.0, -0.2, 0.08], [1.25, -0.42, 0.05]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.025
+  },
+  {
+    "name": "palm1Frond4Leaf",
     "type": "cone",
     "parent": "palm1",
-    "position": [0.3, 1.7, -0.5],
-    "rotation": [-0.5, -0.3, -0.9],
-    "scale": [0.15, 1.0, 0.08],
-    "material": {
-      "color": "#3a6b32",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [-0.3, 1.02, -1.1],
+    "rotation": [-1.0, 0.1, 0.95],
+    "scale": [0.12, 0.52, 0.03],
+    "material": { "color": "#3a6b32", "metalness": 0, "roughness": 0.8 }
   },
   {
     "name": "palm1Frond5",
-    "type": "cone",
+    "type": "tube",
     "parent": "palm1",
-    "position": [0.4, 1.7, 0.4],
-    "rotation": [0.5, 0.4, -1.0],
-    "scale": [0.15, 1.05, 0.08],
-    "material": {
-      "color": "#2d5a27",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [0.15, 1.45, 0.06],
+    "rotation": [0, 4.8, 0],
+    "scale": [1, 1, 1],
+    "material": { "color": "#2d5a27", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.36, 0.16, 0.07], [0.78, 0.06, 0.11], [1.12, -0.16, 0.09], [1.32, -0.38, 0.06]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.025
   },
   {
-    "name": "palm1Frond6",
+    "name": "palm1Frond5Leaf",
     "type": "cone",
     "parent": "palm1",
-    "position": [0, 1.85, 0],
-    "rotation": [0, 0, 0],
-    "scale": [0.12, 0.6, 0.12],
-    "material": {
-      "color": "#4a7a42",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [0.65, 1.08, -1.0],
+    "rotation": [-0.8, -0.3, -0.95],
+    "scale": [0.12, 0.54, 0.03],
+    "material": { "color": "#3a6b32", "metalness": 0, "roughness": 0.8 }
   },
+  {
+    "name": "palm1Coconut1",
+    "type": "sphere",
+    "parent": "palm1",
+    "position": [0.25, 1.38, 0.12],
+    "rotation": [0, 0, 0],
+    "scale": [0.08, 0.1, 0.08],
+    "material": { "color": "#5a4030", "metalness": 0, "roughness": 0.85 }
+  },
+  {
+    "name": "palm1Coconut2",
+    "type": "sphere",
+    "parent": "palm1",
+    "position": [0.08, 1.36, 0.18],
+    "rotation": [0, 0, 0],
+    "scale": [0.07, 0.09, 0.07],
+    "material": { "color": "#4a3525", "metalness": 0, "roughness": 0.85 }
+  },
+  {
+    "name": "palm1Coconut3",
+    "type": "sphere",
+    "parent": "palm1",
+    "position": [0.2, 1.35, -0.05],
+    "rotation": [0, 0, 0],
+    "scale": [0.075, 0.095, 0.075],
+    "material": { "color": "#5a4030", "metalness": 0, "roughness": 0.85 }
+  },
+
   {
     "name": "palm2",
     "type": "group",
     "parent": "oasis",
-    "position": [1.0, 0.2, -0.9],
-    "rotation": [0, -0.8, 0],
+    "position": [0.9, 0.16, -0.8],
+    "rotation": [0, -0.6, 0],
     "scale": [0.85, 0.85, 0.85]
   },
   {
-    "name": "palm2Trunk",
+    "name": "palm2TrunkBase",
     "type": "cylinder",
     "parent": "palm2",
-    "position": [0, 0.7, 0],
-    "rotation": [-0.06, 0, 0.05],
-    "scale": [0.14, 1.4, 0.14],
-    "material": {
-      "color": "#5c4030",
-      "metalness": 0,
-      "roughness": 0.9
-    }
+    "position": [0, 0.22, 0],
+    "rotation": [-0.04, 0, 0.03],
+    "scale": [0.13, 0.44, 0.13],
+    "material": { "color": "#5c4030", "metalness": 0, "roughness": 0.9 }
+  },
+  {
+    "name": "palm2TrunkMid",
+    "type": "cylinder",
+    "parent": "palm2",
+    "position": [-0.03, 0.65, 0.02],
+    "rotation": [-0.06, 0, 0.06],
+    "scale": [0.11, 0.42, 0.11],
+    "material": { "color": "#5a3d2d", "metalness": 0, "roughness": 0.9 }
+  },
+  {
+    "name": "palm2TrunkTop",
+    "type": "cylinder",
+    "parent": "palm2",
+    "position": [-0.08, 1.05, 0.06],
+    "rotation": [-0.05, 0, 0.08],
+    "scale": [0.09, 0.38, 0.09],
+    "material": { "color": "#584035", "metalness": 0, "roughness": 0.9 }
+  },
+  {
+    "name": "palm2Crown",
+    "type": "sphere",
+    "parent": "palm2",
+    "position": [-0.1, 1.28, 0.08],
+    "rotation": [0, 0, 0],
+    "scale": [0.18, 0.13, 0.18],
+    "material": { "color": "#2a4a20", "metalness": 0, "roughness": 0.9 }
   },
   {
     "name": "palm2Frond1",
-    "type": "cone",
+    "type": "tube",
     "parent": "palm2",
-    "position": [0.5, 1.5, 0],
-    "rotation": [0, 0, -1.1],
-    "scale": [0.14, 1.0, 0.07],
-    "material": {
-      "color": "#2d5a27",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [-0.1, 1.28, 0.08],
+    "rotation": [0, 0.5, 0],
+    "scale": [0.9, 0.9, 0.9],
+    "material": { "color": "#2d5a27", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.35, 0.12, 0.08], [0.7, 0.02, 0.12], [1.0, -0.2, 0.1], [1.2, -0.4, 0.06]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.022
   },
   {
     "name": "palm2Frond2",
-    "type": "cone",
+    "type": "tube",
     "parent": "palm2",
-    "position": [-0.45, 1.5, 0.25],
-    "rotation": [0.3, 0.7, 1.0],
-    "scale": [0.14, 0.95, 0.07],
-    "material": {
-      "color": "#3a6b32",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [-0.1, 1.28, 0.08],
+    "rotation": [0, 1.8, 0],
+    "scale": [0.9, 0.9, 0.9],
+    "material": { "color": "#2d5a27", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.32, 0.15, 0.06], [0.68, 0.05, 0.1], [0.95, -0.15, 0.08], [1.15, -0.35, 0.05]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.022
   },
   {
     "name": "palm2Frond3",
-    "type": "cone",
+    "type": "tube",
     "parent": "palm2",
-    "position": [-0.35, 1.5, -0.35],
-    "rotation": [-0.35, -0.5, 0.95],
-    "scale": [0.14, 1.0, 0.07],
-    "material": {
-      "color": "#2d5a27",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [-0.1, 1.28, 0.08],
+    "rotation": [0, 3.1, 0],
+    "scale": [0.9, 0.9, 0.9],
+    "material": { "color": "#2d5a27", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.3, 0.1, 0.07], [0.65, 0, 0.11], [0.9, -0.18, 0.09], [1.1, -0.38, 0.06]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.022
   },
   {
     "name": "palm2Frond4",
-    "type": "cone",
+    "type": "tube",
     "parent": "palm2",
-    "position": [0.25, 1.5, -0.4],
-    "rotation": [-0.45, -0.25, -0.85],
-    "scale": [0.14, 0.9, 0.07],
-    "material": {
-      "color": "#3a6b32",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [-0.1, 1.28, 0.08],
+    "rotation": [0, 4.4, 0],
+    "scale": [0.9, 0.9, 0.9],
+    "material": { "color": "#2d5a27", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.33, 0.14, 0.05], [0.7, 0.03, 0.09], [0.98, -0.17, 0.07], [1.18, -0.36, 0.04]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.022
   },
   {
     "name": "palm2Frond5",
-    "type": "cone",
+    "type": "tube",
     "parent": "palm2",
-    "position": [0.3, 1.5, 0.35],
-    "rotation": [0.4, 0.35, -0.9],
-    "scale": [0.14, 0.92, 0.07],
-    "material": {
-      "color": "#2d5a27",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [-0.1, 1.28, 0.08],
+    "rotation": [0, 5.7, 0],
+    "scale": [0.9, 0.9, 0.9],
+    "material": { "color": "#2d5a27", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.28, 0.08, 0.06], [0.6, -0.02, 0.1], [0.85, -0.2, 0.08], [1.05, -0.4, 0.05]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.022
   },
+  {
+    "name": "palm2Coconut1",
+    "type": "sphere",
+    "parent": "palm2",
+    "position": [-0.02, 1.22, 0.15],
+    "rotation": [0, 0, 0],
+    "scale": [0.065, 0.08, 0.065],
+    "material": { "color": "#5a4030", "metalness": 0, "roughness": 0.85 }
+  },
+  {
+    "name": "palm2Coconut2",
+    "type": "sphere",
+    "parent": "palm2",
+    "position": [-0.15, 1.2, 0.02],
+    "rotation": [0, 0, 0],
+    "scale": [0.06, 0.075, 0.06],
+    "material": { "color": "#4a3525", "metalness": 0, "roughness": 0.85 }
+  },
+
   {
     "name": "palm3",
     "type": "group",
     "parent": "oasis",
-    "position": [0.3, 0.2, 1.3],
-    "rotation": [0, 1.5, 0],
-    "scale": [0.7, 0.7, 0.7]
+    "position": [0.2, 0.16, 1.2],
+    "rotation": [0, 1.8, 0],
+    "scale": [0.65, 0.65, 0.65]
   },
   {
-    "name": "palm3Trunk",
+    "name": "palm3TrunkBase",
     "type": "cylinder",
     "parent": "palm3",
-    "position": [0, 0.55, 0],
+    "position": [0, 0.18, 0],
+    "rotation": [0.02, 0, -0.04],
+    "scale": [0.11, 0.36, 0.11],
+    "material": { "color": "#5c4030", "metalness": 0, "roughness": 0.9 }
+  },
+  {
+    "name": "palm3TrunkTop",
+    "type": "cylinder",
+    "parent": "palm3",
+    "position": [-0.02, 0.52, 0.01],
     "rotation": [0.04, 0, -0.06],
-    "scale": [0.12, 1.1, 0.12],
-    "material": {
-      "color": "#5c4030",
-      "metalness": 0,
-      "roughness": 0.9
-    }
+    "scale": [0.09, 0.32, 0.09],
+    "material": { "color": "#584035", "metalness": 0, "roughness": 0.9 }
+  },
+  {
+    "name": "palm3Crown",
+    "type": "sphere",
+    "parent": "palm3",
+    "position": [-0.04, 0.72, 0.02],
+    "rotation": [0, 0, 0],
+    "scale": [0.15, 0.11, 0.15],
+    "material": { "color": "#2a4a20", "metalness": 0, "roughness": 0.9 }
   },
   {
     "name": "palm3Frond1",
-    "type": "cone",
+    "type": "tube",
     "parent": "palm3",
-    "position": [0.4, 1.2, 0],
-    "rotation": [0, 0, -1.0],
-    "scale": [0.12, 0.85, 0.06],
-    "material": {
-      "color": "#3a6b32",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [-0.04, 0.72, 0.02],
+    "rotation": [0, 0.3, 0],
+    "scale": [0.8, 0.8, 0.8],
+    "material": { "color": "#3a6b32", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.3, 0.1, 0.06], [0.6, 0, 0.1], [0.85, -0.18, 0.08], [1.0, -0.35, 0.05]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.02
   },
   {
     "name": "palm3Frond2",
-    "type": "cone",
+    "type": "tube",
     "parent": "palm3",
-    "position": [-0.35, 1.2, 0.2],
-    "rotation": [0.25, 0.6, 0.9],
-    "scale": [0.12, 0.8, 0.06],
-    "material": {
-      "color": "#2d5a27",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [-0.04, 0.72, 0.02],
+    "rotation": [0, 1.6, 0],
+    "scale": [0.8, 0.8, 0.8],
+    "material": { "color": "#3a6b32", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.28, 0.12, 0.05], [0.55, 0.02, 0.09], [0.8, -0.15, 0.07], [0.95, -0.32, 0.04]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.02
   },
   {
     "name": "palm3Frond3",
-    "type": "cone",
+    "type": "tube",
     "parent": "palm3",
-    "position": [-0.3, 1.2, -0.3],
-    "rotation": [-0.3, -0.45, 0.85],
-    "scale": [0.12, 0.82, 0.06],
-    "material": {
-      "color": "#3a6b32",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [-0.04, 0.72, 0.02],
+    "rotation": [0, 2.9, 0],
+    "scale": [0.8, 0.8, 0.8],
+    "material": { "color": "#3a6b32", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.25, 0.08, 0.06], [0.52, -0.02, 0.1], [0.75, -0.17, 0.08], [0.9, -0.34, 0.05]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.02
   },
   {
     "name": "palm3Frond4",
-    "type": "cone",
+    "type": "tube",
     "parent": "palm3",
-    "position": [0.2, 1.2, -0.35],
-    "rotation": [-0.4, -0.2, -0.8],
-    "scale": [0.12, 0.78, 0.06],
-    "material": {
-      "color": "#2d5a27",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "position": [-0.04, 0.72, 0.02],
+    "rotation": [0, 4.2, 0],
+    "scale": [0.8, 0.8, 0.8],
+    "material": { "color": "#3a6b32", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.27, 0.1, 0.05], [0.54, 0, 0.09], [0.78, -0.16, 0.07], [0.92, -0.33, 0.04]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.02
   },
   {
-    "name": "rock1",
-    "type": "dodecahedron",
+    "name": "palm3Frond5",
+    "type": "tube",
+    "parent": "palm3",
+    "position": [-0.04, 0.72, 0.02],
+    "rotation": [0, 5.5, 0],
+    "scale": [0.8, 0.8, 0.8],
+    "material": { "color": "#3a6b32", "metalness": 0, "roughness": 0.75 },
+    "path": {
+      "curveType": "catmullRom",
+      "points": [[0, 0, 0], [0.26, 0.09, 0.06], [0.5, -0.01, 0.1], [0.72, -0.18, 0.08], [0.88, -0.35, 0.05]],
+      "tension": 0.4
+    },
+    "tubeRadius": 0.02
+  },
+
+  {
+    "name": "vegetation",
+    "type": "group",
     "parent": "oasis",
-    "position": [1.8, 0.3, 0.5],
-    "rotation": [0.3, 0.5, 0.2],
-    "scale": [0.35, 0.25, 0.3],
-    "material": {
-      "color": "#7a6b5a",
-      "metalness": 0.1,
-      "roughness": 0.95
-    }
+    "position": [0, 0.16, 0],
+    "rotation": [0, 0, 0],
+    "scale": [1, 1, 1]
   },
   {
-    "name": "rock2",
-    "type": "icosahedron",
-    "parent": "oasis",
-    "position": [-1.6, 0.25, -0.6],
-    "rotation": [0.5, 0.2, 0.4],
-    "scale": [0.28, 0.2, 0.25],
-    "material": {
-      "color": "#8a7b6a",
-      "metalness": 0.1,
-      "roughness": 0.9
-    }
+    "name": "bush1",
+    "type": "sphere",
+    "parent": "vegetation",
+    "position": [1.5, 0.12, 0.3],
+    "rotation": [0, 0, 0],
+    "scale": [0.25, 0.2, 0.22],
+    "material": { "color": "#3d6b35", "metalness": 0, "roughness": 0.85 }
   },
   {
-    "name": "rock3",
-    "type": "dodecahedron",
-    "parent": "oasis",
-    "position": [0.6, 0.22, 1.9],
-    "rotation": [0.2, 0.8, 0.1],
-    "scale": [0.22, 0.15, 0.2],
-    "material": {
-      "color": "#6a5b4a",
-      "metalness": 0.1,
-      "roughness": 0.95
-    }
+    "name": "bush1Top",
+    "type": "sphere",
+    "parent": "vegetation",
+    "position": [1.52, 0.22, 0.32],
+    "rotation": [0, 0, 0],
+    "scale": [0.18, 0.15, 0.16],
+    "material": { "color": "#4a7a42", "metalness": 0, "roughness": 0.85 }
+  },
+  {
+    "name": "bush2",
+    "type": "sphere",
+    "parent": "vegetation",
+    "position": [-1.4, 0.1, -0.5],
+    "rotation": [0, 0, 0],
+    "scale": [0.2, 0.16, 0.18],
+    "material": { "color": "#3d6b35", "metalness": 0, "roughness": 0.85 }
+  },
+  {
+    "name": "bush3",
+    "type": "sphere",
+    "parent": "vegetation",
+    "position": [0.8, 0.08, 1.6],
+    "rotation": [0, 0, 0],
+    "scale": [0.18, 0.14, 0.16],
+    "material": { "color": "#4a7a42", "metalness": 0, "roughness": 0.85 }
   },
   {
     "name": "grass1",
     "type": "cone",
-    "parent": "oasis",
-    "position": [1.5, 0.35, -0.3],
-    "rotation": [0.1, 0, 0.15],
-    "scale": [0.08, 0.4, 0.08],
-    "material": {
-      "color": "#4a7a3a",
-      "metalness": 0,
-      "roughness": 0.9
-    }
+    "parent": "vegetation",
+    "position": [1.8, 0.15, -0.2],
+    "rotation": [0.08, 0, 0.12],
+    "scale": [0.04, 0.25, 0.04],
+    "material": { "color": "#5a8a4a", "metalness": 0, "roughness": 0.9 }
   },
   {
     "name": "grass2",
     "type": "cone",
-    "parent": "oasis",
-    "position": [1.55, 0.32, -0.25],
-    "rotation": [-0.08, 0.3, -0.12],
-    "scale": [0.06, 0.35, 0.06],
-    "material": {
-      "color": "#5a8a4a",
-      "metalness": 0,
-      "roughness": 0.9
-    }
+    "parent": "vegetation",
+    "position": [1.82, 0.13, -0.15],
+    "rotation": [-0.06, 0.2, -0.1],
+    "scale": [0.035, 0.22, 0.035],
+    "material": { "color": "#4a7a3a", "metalness": 0, "roughness": 0.9 }
   },
   {
     "name": "grass3",
     "type": "cone",
-    "parent": "oasis",
-    "position": [-1.4, 0.33, 0.4],
-    "rotation": [0.12, 0.5, 0.1],
-    "scale": [0.07, 0.38, 0.07],
-    "material": {
-      "color": "#4a7a3a",
-      "metalness": 0,
-      "roughness": 0.9
-    }
+    "parent": "vegetation",
+    "position": [1.78, 0.14, -0.25],
+    "rotation": [0.1, -0.1, 0.08],
+    "scale": [0.038, 0.2, 0.038],
+    "material": { "color": "#5a8a4a", "metalness": 0, "roughness": 0.9 }
   },
   {
     "name": "grass4",
     "type": "cone",
+    "parent": "vegetation",
+    "position": [-1.6, 0.12, 0.4],
+    "rotation": [0.1, 0.3, 0.1],
+    "scale": [0.04, 0.24, 0.04],
+    "material": { "color": "#4a7a3a", "metalness": 0, "roughness": 0.9 }
+  },
+  {
+    "name": "grass5",
+    "type": "cone",
+    "parent": "vegetation",
+    "position": [-1.55, 0.1, 0.45],
+    "rotation": [-0.08, 0.1, -0.12],
+    "scale": [0.035, 0.2, 0.035],
+    "material": { "color": "#5a8a4a", "metalness": 0, "roughness": 0.9 }
+  },
+  {
+    "name": "grass6",
+    "type": "cone",
+    "parent": "vegetation",
+    "position": [-0.2, 0.11, -1.5],
+    "rotation": [0.12, 0, 0.06],
+    "scale": [0.038, 0.22, 0.038],
+    "material": { "color": "#4a7a3a", "metalness": 0, "roughness": 0.9 }
+  },
+  {
+    "name": "flower1",
+    "type": "sphere",
+    "parent": "vegetation",
+    "position": [1.6, 0.18, 0.5],
+    "rotation": [0, 0, 0],
+    "scale": [0.06, 0.05, 0.06],
+    "material": { "color": "#ff6b8a", "metalness": 0.1, "roughness": 0.7 }
+  },
+  {
+    "name": "flower1Center",
+    "type": "sphere",
+    "parent": "vegetation",
+    "position": [1.6, 0.2, 0.5],
+    "rotation": [0, 0, 0],
+    "scale": [0.025, 0.02, 0.025],
+    "material": { "color": "#ffdd44", "metalness": 0.2, "roughness": 0.6 }
+  },
+  {
+    "name": "flower2",
+    "type": "sphere",
+    "parent": "vegetation",
+    "position": [-1.35, 0.15, -0.35],
+    "rotation": [0, 0, 0],
+    "scale": [0.05, 0.04, 0.05],
+    "material": { "color": "#ff9ecd", "metalness": 0.1, "roughness": 0.7 }
+  },
+  {
+    "name": "flower2Center",
+    "type": "sphere",
+    "parent": "vegetation",
+    "position": [-1.35, 0.17, -0.35],
+    "rotation": [0, 0, 0],
+    "scale": [0.02, 0.015, 0.02],
+    "material": { "color": "#ffee55", "metalness": 0.2, "roughness": 0.6 }
+  },
+  {
+    "name": "flower3",
+    "type": "sphere",
+    "parent": "vegetation",
+    "position": [0.9, 0.14, 1.7],
+    "rotation": [0, 0, 0],
+    "scale": [0.045, 0.035, 0.045],
+    "material": { "color": "#ffb347", "metalness": 0.1, "roughness": 0.7 }
+  },
+
+  {
+    "name": "rocks",
+    "type": "group",
     "parent": "oasis",
-    "position": [-1.35, 0.3, 0.45],
-    "rotation": [-0.1, 0.2, -0.08],
-    "scale": [0.055, 0.32, 0.055],
-    "material": {
-      "color": "#5a8a4a",
-      "metalness": 0,
-      "roughness": 0.9
-    }
+    "position": [0, 0.16, 0],
+    "rotation": [0, 0, 0],
+    "scale": [1, 1, 1]
   },
   {
-    "name": "coconut1",
-    "type": "sphere",
-    "parent": "palm1",
-    "position": [0.12, 1.6, 0.1],
-    "rotation": [0, 0, 0],
-    "scale": [0.1, 0.12, 0.1],
-    "material": {
-      "color": "#5a4030",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "name": "rock1",
+    "type": "dodecahedron",
+    "parent": "rocks",
+    "position": [2.0, 0.08, -0.8],
+    "rotation": [0.3, 0.5, 0.2],
+    "scale": [0.25, 0.18, 0.22],
+    "material": { "color": "#7a6b5a", "metalness": 0.05, "roughness": 0.95 }
   },
   {
-    "name": "coconut2",
-    "type": "sphere",
-    "parent": "palm1",
-    "position": [-0.08, 1.58, -0.1],
-    "rotation": [0, 0, 0],
-    "scale": [0.09, 0.11, 0.09],
-    "material": {
-      "color": "#4a3525",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "name": "rock2",
+    "type": "icosahedron",
+    "parent": "rocks",
+    "position": [2.1, 0.05, -0.6],
+    "rotation": [0.5, 0.2, 0.4],
+    "scale": [0.15, 0.1, 0.13],
+    "material": { "color": "#8a7b6a", "metalness": 0.05, "roughness": 0.9 }
   },
   {
-    "name": "coconut3",
+    "name": "rock3",
+    "type": "dodecahedron",
+    "parent": "rocks",
+    "position": [-1.8, 0.1, 0.9],
+    "rotation": [0.2, 0.8, 0.1],
+    "scale": [0.22, 0.15, 0.2],
+    "material": { "color": "#6a5b4a", "metalness": 0.05, "roughness": 0.95 }
+  },
+  {
+    "name": "rock4",
+    "type": "icosahedron",
+    "parent": "rocks",
+    "position": [-1.7, 0.06, 1.05],
+    "rotation": [0.4, 0.3, 0.5],
+    "scale": [0.12, 0.08, 0.1],
+    "material": { "color": "#7a6b5a", "metalness": 0.05, "roughness": 0.9 }
+  },
+  {
+    "name": "rock5",
+    "type": "dodecahedron",
+    "parent": "rocks",
+    "position": [0.6, 0.07, -2.0],
+    "rotation": [0.1, 0.6, 0.3],
+    "scale": [0.18, 0.12, 0.16],
+    "material": { "color": "#8a7b6a", "metalness": 0.05, "roughness": 0.95 }
+  },
+
+  {
+    "name": "fallenCoconut1",
     "type": "sphere",
-    "parent": "palm2",
-    "position": [0.1, 1.38, 0.08],
-    "rotation": [0, 0, 0],
+    "parent": "oasis",
+    "position": [-0.6, 0.22, 0.9],
+    "rotation": [0.3, 0.5, 0.2],
     "scale": [0.08, 0.1, 0.08],
-    "material": {
-      "color": "#5a4030",
-      "metalness": 0,
-      "roughness": 0.8
-    }
+    "material": { "color": "#5a4030", "metalness": 0, "roughness": 0.85 }
+  },
+  {
+    "name": "fallenCoconut2",
+    "type": "sphere",
+    "parent": "oasis",
+    "position": [-0.8, 0.21, 0.6],
+    "rotation": [0.1, 0.8, 0.4],
+    "scale": [0.07, 0.09, 0.07],
+    "material": { "color": "#4a3525", "metalness": 0, "roughness": 0.85 }
+  },
+  {
+    "name": "fallenLeaf1",
+    "type": "cone",
+    "parent": "oasis",
+    "position": [0.5, 0.18, 0.8],
+    "rotation": [1.4, 0.3, 0.2],
+    "scale": [0.08, 0.4, 0.02],
+    "material": { "color": "#8a7a3a", "metalness": 0, "roughness": 0.9 }
+  },
+  {
+    "name": "fallenLeaf2",
+    "type": "cone",
+    "parent": "oasis",
+    "position": [1.2, 0.18, -0.4],
+    "rotation": [1.5, -0.2, 0.4],
+    "scale": [0.07, 0.35, 0.02],
+    "material": { "color": "#7a6a2a", "metalness": 0, "roughness": 0.9 }
   }
 ]
