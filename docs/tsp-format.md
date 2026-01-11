@@ -10,7 +10,7 @@ Click the **Export** button in the Outliner panel. The file picker will suggest 
 
 ```json
 {
-  "version": "1.0",
+  "version": "0.9.0",
   "metadata": {
     "name": "scene_name",
     "created": "2026-01-09T12:00:00Z",
@@ -49,7 +49,7 @@ Click the **Export** button in the Outliner panel. The file picker will suggest 
 
 ### `version`
 
-Format version string. Currently `"1.0"`.
+Format version string. Currently `"0.9.0"`.
 
 ### `metadata`
 
@@ -242,18 +242,18 @@ Dictionary of geometry definitions. All geometries use unit scale; actual size c
 |------|------|---------|
 | `box` | `[width, height, depth]` | `[1, 1, 1]` |
 | `sphere` | `[radius, widthSegments, heightSegments]` | `[0.5, 32, 32]` |
-| `cylinder` | `[radiusTop, radiusBottom, height, radialSegments]` | `[0.5, 0.5, 1, 32]` |
-| `cone` | `[radius, height, radialSegments]` | `[0.5, 1, 32]` |
-| `torus` | `[radius, tube, radialSegments, tubularSegments]` | `[0.5, 0.2, 16, 32]` |
+| `cylinder` | `[radiusTop, radiusBottom, height, tubeRadialSegments]` | `[0.5, 0.5, 1, 32]` |
+| `cone` | `[radius, height, tubeRadialSegments]` | `[0.5, 1, 32]` |
+| `torus` | `[radius, tube, tubeRadialSegments, tubeTubularSegments]` | `[0.5, 0.2, 16, 32]` |
 | `plane` | `[width, height]` | `[1, 1]` |
-| `capsule` | `[radius, length, capSegments, radialSegments]` | `[0.5, 1, 4, 8]` |
+| `capsule` | `[radius, length, capSegments, tubeRadialSegments]` | `[0.5, 1, 4, 8]` |
 | `circle` | `[radius, segments]` | `[0.5, 32]` |
 | `dodecahedron` | `[radius, detail]` | `[0.5, 0]` |
 | `icosahedron` | `[radius, detail]` | `[0.5, 0]` |
 | `octahedron` | `[radius, detail]` | `[0.5, 0]` |
 | `ring` | `[innerRadius, outerRadius, thetaSegments]` | `[0.25, 0.5, 32]` |
 | `tetrahedron` | `[radius, detail]` | `[0.5, 0]` |
-| `torusKnot` | `[radius, tube, tubularSegments, radialSegments, p, q]` | `[0.5, 0.15, 64, 8, 2, 3]` |
+| `torusKnot` | `[radius, tube, tubeTubularSegments, tubeRadialSegments, p, q]` | `[0.5, 0.15, 64, 8, 2, 3]` |
 
 #### Complex Geometries
 
@@ -321,7 +321,10 @@ Tube along a 3D curve.
     "points": [[0, 0, 0], [1, 1, 0], [2, 0, 0]],
     "closed": false
   },
-  "tubeRadius": 0.1
+  "tubeRadius": 0.1,
+  "tubeTubularSegments": 64,
+  "tubeRadialSegments": 8,
+  "tubeClosed": false
 }
 ```
 
@@ -329,17 +332,9 @@ Tube along a 3D curve.
 |-------|------|---------|-------------|
 | `path` | TSPCurve3D | required | 3D curve defining the tube path |
 | `tubeRadius` | number? | 0.1 | Radius of the tube cross-section |
-
-**Note:** The old `args` format (`[tubularSegments, radius, radialSegments, closed]`) is deprecated. Use `tubeRadius` instead.
-
-```json
-// DEPRECATED - old format
-{
-  "type": "tube",
-  "path": { ... },
-  "args": [64, 0.1, 8, false]
-}
-```
+| `tubeTubularSegments` | number? | 64 | Number of segments along the tube length |
+| `tubeRadialSegments` | number? | 8 | Number of segments around the tube circumference |
+| `tubeClosed` | boolean? | false | Whether the tube forms a closed loop |
 
 ##### PolyhedronGeometry
 

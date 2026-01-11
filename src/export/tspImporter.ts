@@ -206,6 +206,11 @@ export function importFromTSP(tspData: TSPFile): TSPImportResult {
         if (geo.extrudeOptions) sceneObj.extrudeOptions = geo.extrudeOptions;
         if (geo.path) sceneObj.path = geo.path;
         if (geo.tubeRadius !== undefined) sceneObj.tubeRadius = geo.tubeRadius;
+        if (geo.tubeTubularSegments !== undefined)
+          sceneObj.tubeTubularSegments = geo.tubeTubularSegments;
+        if (geo.tubeRadialSegments !== undefined)
+          sceneObj.tubeRadialSegments = geo.tubeRadialSegments;
+        if (geo.tubeClosed !== undefined) sceneObj.tubeClosed = geo.tubeClosed;
         if (geo.vertices) sceneObj.vertices = geo.vertices;
         if (geo.indices) sceneObj.indices = geo.indices;
       }

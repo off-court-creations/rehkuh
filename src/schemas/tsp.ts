@@ -239,6 +239,12 @@ export const TSPGeometrySchema = z.object({
   path: TSPCurve3DSchema.optional(),
   // TubeGeometry radius
   tubeRadius: z.number().optional(),
+  // TubeGeometry tubular segments
+  tubeTubularSegments: z.number().int().min(1).optional(),
+  // TubeGeometry radial segments
+  tubeRadialSegments: z.number().int().min(3).optional(),
+  // TubeGeometry closed
+  tubeClosed: z.boolean().optional(),
   // PolyhedronGeometry (raw vertex/index data)
   vertices: z.array(z.number()).optional(),
   indices: z.array(z.number()).optional(),

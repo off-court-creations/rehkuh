@@ -1,7 +1,7 @@
 # Scope: MeshPhysicalMaterial Advanced Channels for TSP Format
 
 **Status:** Scoping Document
-**Version:** 1.0 (no schema version bump required)
+**Version:** 0.9.0
 **Date:** 2026-01-09
 
 ---
@@ -383,7 +383,7 @@ function isEffectivelyStandardMaterial(mat: PhysicalMaterialProps): boolean {
 
 ```json
 {
-  "version": "1.0",
+  "version": "0.9.0",
   "metadata": {
     "name": "glass_sphere",
     "created": "2026-01-09T12:00:00Z",
@@ -427,7 +427,7 @@ function isEffectivelyStandardMaterial(mat: PhysicalMaterialProps): boolean {
 
 ```json
 {
-  "version": "1.0",
+  "version": "0.9.0",
   "metadata": {
     "name": "car_body",
     "created": "2026-01-09T12:00:00Z",
@@ -468,7 +468,7 @@ function isEffectivelyStandardMaterial(mat: PhysicalMaterialProps): boolean {
 
 ```json
 {
-  "version": "1.0",
+  "version": "0.9.0",
   "metadata": {
     "name": "velvet_cushion",
     "created": "2026-01-09T12:00:00Z",
@@ -510,7 +510,7 @@ function isEffectivelyStandardMaterial(mat: PhysicalMaterialProps): boolean {
 
 ```json
 {
-  "version": "1.0",
+  "version": "0.9.0",
   "metadata": {
     "name": "soap_bubble",
     "created": "2026-01-09T12:00:00Z",
@@ -555,7 +555,7 @@ function isEffectivelyStandardMaterial(mat: PhysicalMaterialProps): boolean {
 
 ```json
 {
-  "version": "1.0",
+  "version": "0.9.0",
   "metadata": {
     "name": "brushed_steel",
     "created": "2026-01-09T12:00:00Z",
@@ -596,7 +596,7 @@ function isEffectivelyStandardMaterial(mat: PhysicalMaterialProps): boolean {
 
 ```json
 {
-  "version": "1.0",
+  "version": "0.9.0",
   "metadata": {
     "name": "diamond",
     "created": "2026-01-09T12:00:00Z",
@@ -682,4 +682,4 @@ This scope document provides a complete specification for adding MeshPhysicalMat
 - No texture/map support (out of scope)
 - Backward compatible (type discriminator, optional properties)
 - ~400 lines of implementation
-- Schema version remains 1.0
+- Schema version is 0.9.0

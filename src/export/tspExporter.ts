@@ -32,14 +32,14 @@ const GEOMETRY_ARGS: Partial<Record<PrimitiveType, number[]>> = {
   torus: [0.5, 0.2, 16, 32],
   plane: [1, 1],
   // New simple geometries
-  capsule: [0.5, 1, 4, 8], // radius, length, capSegments, radialSegments
+  capsule: [0.5, 1, 4, 8], // radius, length, capSegments, tubeRadialSegments
   circle: [0.5, 32], // radius, segments
   dodecahedron: [0.5, 0], // radius, detail
   icosahedron: [0.5, 0], // radius, detail
   octahedron: [0.5, 0], // radius, detail
   ring: [0.25, 0.5, 32], // innerRadius, outerRadius, thetaSegments
   tetrahedron: [0.5, 0], // radius, detail
-  torusKnot: [0.5, 0.15, 64, 8, 2, 3], // radius, tube, tubularSegments, radialSegments, p, q
+  torusKnot: [0.5, 0.15, 64, 8, 2, 3], // radius, tube, tubeTubularSegments, tubeRadialSegments, p, q
 };
 
 // Simple hash function for physical material properties
@@ -251,6 +251,11 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
       if (obj.extrudeOptions) geo.extrudeOptions = obj.extrudeOptions;
       if (obj.path) geo.path = obj.path;
       if (obj.tubeRadius !== undefined) geo.tubeRadius = obj.tubeRadius;
+      if (obj.tubeTubularSegments !== undefined)
+        geo.tubeTubularSegments = obj.tubeTubularSegments;
+      if (obj.tubeRadialSegments !== undefined)
+        geo.tubeRadialSegments = obj.tubeRadialSegments;
+      if (obj.tubeClosed !== undefined) geo.tubeClosed = obj.tubeClosed;
       if (obj.vertices) geo.vertices = obj.vertices;
       if (obj.indices) geo.indices = obj.indices;
 
@@ -308,7 +313,7 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
   const sceneName = firstRoot?.name || "scene";
 
   return {
-    version: "1.0",
+    version: "0.9.0",
     metadata: {
       name: sceneName,
       created: new Date().toISOString(),

@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "0.9.0",
   "metadata": {
     "name": "scene",
     "created": "2026-01-10T01:04:12.037Z",

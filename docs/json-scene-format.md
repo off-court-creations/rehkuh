@@ -87,7 +87,7 @@ These require additional data fields:
 | `lathe` | `points` | Revolved 2D profile |
 | `extrude` | `shape`, `extrudeOptions` | Extruded 2D shape |
 | `shape` | `shape` | Flat 2D shape |
-| `tube` | `path`, `tubeRadius` | 3D tube along a curve |
+| `tube` | `path`, `tubeRadius`, `tubeTubularSegments`, `tubeRadialSegments`, `tubeClosed` | 3D tube along a curve |
 | `polyhedron` | `vertices`, `indices` | Custom mesh |
 
 ## Materials
@@ -263,7 +263,10 @@ On promotion, these are copied to `shaders/` (production).
     "closed": false,
     "tension": 0.5
   },
-  "tubeRadius": 0.1
+  "tubeRadius": 0.1,
+  "tubeTubularSegments": 64,
+  "tubeRadialSegments": 8,
+  "tubeClosed": false
 }
 ```
 

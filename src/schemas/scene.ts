@@ -116,6 +116,9 @@ export const SceneFileObjectSchema = z.object({
   extrudeOptions: TSPExtrudeOptionsSchema.optional(),
   path: TSPCurve3DSchema.optional(),
   tubeRadius: z.number().min(0).optional(), // For tube geometry
+  tubeTubularSegments: z.number().int().min(1).optional(), // For tube geometry
+  tubeRadialSegments: z.number().int().min(3).optional(), // For tube geometry
+  tubeClosed: z.boolean().optional(), // For tube geometry
   vertices: z.array(z.number()).optional(),
   indices: z.array(z.number()).optional(),
 });

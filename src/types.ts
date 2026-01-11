@@ -189,6 +189,9 @@ export interface SceneObject {
   extrudeOptions?: TSPExtrudeOptions;
   path?: TSPCurve3D;
   tubeRadius?: number;
+  tubeTubularSegments?: number;
+  tubeRadialSegments?: number;
+  tubeClosed?: boolean;
   vertices?: number[];
   indices?: number[];
 }
@@ -401,6 +404,12 @@ export interface TSPGeometry {
   path?: TSPCurve3D;
   // TubeGeometry radius
   tubeRadius?: number;
+  // TubeGeometry tubular segments
+  tubeTubularSegments?: number;
+  // TubeGeometry radial segments
+  tubeRadialSegments?: number;
+  // TubeGeometry closed
+  tubeClosed?: boolean;
   // PolyhedronGeometry (raw vertex/index data)
   vertices?: number[];
   indices?: number[];

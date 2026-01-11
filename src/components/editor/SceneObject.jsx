@@ -513,7 +513,16 @@ export function SceneObject({ id }) {
         const curve = buildCurve3D(obj.path);
         if (!curve) return new THREE.BoxGeometry(1, 1, 1);
         const tubeRadius = obj.tubeRadius ?? 0.1;
-        return new THREE.TubeGeometry(curve, 64, tubeRadius, 8, false);
+        const tubeTubularSegments = obj.tubeTubularSegments ?? 64;
+        const tubeRadialSegments = obj.tubeRadialSegments ?? 8;
+        const tubeClosed = obj.tubeClosed ?? false;
+        return new THREE.TubeGeometry(
+          curve,
+          tubeTubularSegments,
+          tubeRadius,
+          tubeRadialSegments,
+          tubeClosed,
+        );
 
       case "polyhedron":
         if (!obj.vertices || !obj.indices)
@@ -530,6 +539,10 @@ export function SceneObject({ id }) {
     obj?.shape,
     obj?.extrudeOptions,
     obj?.path,
+    obj?.tubeRadius,
+    obj?.tubeTubularSegments,
+    obj?.tubeRadialSegments,
+    obj?.tubeClosed,
     obj?.vertices,
     obj?.indices,
   ]);
