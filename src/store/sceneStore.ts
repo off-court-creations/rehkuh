@@ -80,6 +80,13 @@ interface SceneFileObject {
   ringPhiSegments?: number;
   ringThetaStart?: number;
   ringThetaLength?: number;
+  // TorusKnot geometry params
+  torusKnotRadius?: number;
+  torusKnotTube?: number;
+  torusKnotTubularSegments?: number;
+  torusKnotRadialSegments?: number;
+  torusKnotP?: number;
+  torusKnotQ?: number;
   // Complex geometry data
   points?: [number, number][];
   shape?: TSPShapePath;
@@ -308,6 +315,19 @@ function toSceneFileObjects(
       fileObj.ringThetaStart = obj.ringThetaStart;
     if (obj.ringThetaLength !== undefined)
       fileObj.ringThetaLength = obj.ringThetaLength;
+    // TorusKnot geometry params
+    if (obj.torusKnotRadius !== undefined)
+      fileObj.torusKnotRadius = obj.torusKnotRadius;
+    if (obj.torusKnotTube !== undefined)
+      fileObj.torusKnotTube = obj.torusKnotTube;
+    if (obj.torusKnotTubularSegments !== undefined)
+      fileObj.torusKnotTubularSegments = obj.torusKnotTubularSegments;
+    if (obj.torusKnotRadialSegments !== undefined)
+      fileObj.torusKnotRadialSegments = obj.torusKnotRadialSegments;
+    if (obj.torusKnotP !== undefined)
+      fileObj.torusKnotP = obj.torusKnotP;
+    if (obj.torusKnotQ !== undefined)
+      fileObj.torusKnotQ = obj.torusKnotQ;
     // Include complex geometry data if present
     if (obj.points) fileObj.points = obj.points;
     if (obj.shape) fileObj.shape = obj.shape;
@@ -533,6 +553,19 @@ export const useSceneStore = create<SceneState>()(
             sceneObject.ringThetaStart = fo.ringThetaStart;
           if (fo.ringThetaLength !== undefined)
             sceneObject.ringThetaLength = fo.ringThetaLength;
+          // TorusKnot geometry params
+          if (fo.torusKnotRadius !== undefined)
+            sceneObject.torusKnotRadius = fo.torusKnotRadius;
+          if (fo.torusKnotTube !== undefined)
+            sceneObject.torusKnotTube = fo.torusKnotTube;
+          if (fo.torusKnotTubularSegments !== undefined)
+            sceneObject.torusKnotTubularSegments = fo.torusKnotTubularSegments;
+          if (fo.torusKnotRadialSegments !== undefined)
+            sceneObject.torusKnotRadialSegments = fo.torusKnotRadialSegments;
+          if (fo.torusKnotP !== undefined)
+            sceneObject.torusKnotP = fo.torusKnotP;
+          if (fo.torusKnotQ !== undefined)
+            sceneObject.torusKnotQ = fo.torusKnotQ;
           // Complex geometry data - only assign if defined
           if (fo.points) sceneObject.points = fo.points;
           if (fo.shape) sceneObject.shape = fo.shape as TSPShapePath;

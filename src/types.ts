@@ -236,6 +236,13 @@ export interface SceneObject {
   ringPhiSegments?: number;
   ringThetaStart?: number;
   ringThetaLength?: number;
+  // TorusKnot geometry params
+  torusKnotRadius?: number;
+  torusKnotTube?: number;
+  torusKnotTubularSegments?: number;
+  torusKnotRadialSegments?: number;
+  torusKnotP?: number;
+  torusKnotQ?: number;
   // Complex geometry data (optional, for lathe/extrude/shape/tube/polyhedron)
   points?: [number, number][];
   shape?: TSPShapePath;
@@ -500,6 +507,13 @@ export interface TSPGeometry {
   ringPhiSegments?: number;
   ringThetaStart?: number;
   ringThetaLength?: number;
+  // TorusKnotGeometry params
+  torusKnotRadius?: number;
+  torusKnotTube?: number;
+  torusKnotTubularSegments?: number;
+  torusKnotRadialSegments?: number;
+  torusKnotP?: number;
+  torusKnotQ?: number;
   // LatheGeometry (Vector2 points)
   points?: [number, number][];
   // ExtrudeGeometry, ShapeGeometry (shape path)

@@ -282,6 +282,13 @@ export const TSPGeometrySchema = z.object({
   ringPhiSegments: z.number().int().min(1).optional(),
   ringThetaStart: z.number().min(0).optional(),
   ringThetaLength: z.number().min(0).optional(),
+  // TorusKnotGeometry params
+  torusKnotRadius: z.number().min(0).optional(),
+  torusKnotTube: z.number().min(0).optional(),
+  torusKnotTubularSegments: z.number().int().min(3).optional(),
+  torusKnotRadialSegments: z.number().int().min(3).optional(),
+  torusKnotP: z.number().int().min(1).optional(),
+  torusKnotQ: z.number().int().min(1).optional(),
   // LatheGeometry (Vector2 points)
   points: z.array(z.tuple([z.number(), z.number()])).optional(),
   // ExtrudeGeometry, ShapeGeometry (shape path)

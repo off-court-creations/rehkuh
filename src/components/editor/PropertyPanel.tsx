@@ -1810,6 +1810,211 @@ export function PropertyPanel() {
             </>
           )}
 
+          {/* TorusKnot Geometry Options */}
+          {obj.type === "torusKnot" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radius
+                </Typography>
+                <input
+                  type="number"
+                  min="0.01"
+                  max="10"
+                  step="0.01"
+                  value={obj.torusKnotRadius ?? 0.5}
+                  onChange={(e) => {
+                    const val = Math.max(0.01, parseFloat(e.target.value) || 0.5);
+                    updateObject(primaryId, { torusKnotRadius: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Tube
+                </Typography>
+                <input
+                  type="number"
+                  min="0.01"
+                  max="5"
+                  step="0.01"
+                  value={obj.torusKnotTube ?? 0.15}
+                  onChange={(e) => {
+                    const val = Math.max(0.01, parseFloat(e.target.value) || 0.15);
+                    updateObject(primaryId, { torusKnotTube: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Tubular Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="3"
+                  max="256"
+                  step="1"
+                  value={obj.torusKnotTubularSegments ?? 64}
+                  onChange={(e) => {
+                    const val = Math.max(3, parseInt(e.target.value) || 64);
+                    updateObject(primaryId, { torusKnotTubularSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radial Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="3"
+                  max="64"
+                  step="1"
+                  value={obj.torusKnotRadialSegments ?? 8}
+                  onChange={(e) => {
+                    const val = Math.max(3, parseInt(e.target.value) || 8);
+                    updateObject(primaryId, { torusKnotRadialSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  P (winds around axis)
+                </Typography>
+                <input
+                  type="number"
+                  min="1"
+                  max="20"
+                  step="1"
+                  value={obj.torusKnotP ?? 2}
+                  onChange={(e) => {
+                    const val = Math.max(1, parseInt(e.target.value) || 2);
+                    updateObject(primaryId, { torusKnotP: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Q (winds around interior)
+                </Typography>
+                <input
+                  type="number"
+                  min="1"
+                  max="20"
+                  step="1"
+                  value={obj.torusKnotQ ?? 3}
+                  onChange={(e) => {
+                    const val = Math.max(1, parseInt(e.target.value) || 3);
+                    updateObject(primaryId, { torusKnotQ: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
           {/* Tube Geometry Options */}
           {obj.type === "tube" && (
             <>

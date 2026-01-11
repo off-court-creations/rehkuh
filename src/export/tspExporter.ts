@@ -319,6 +319,16 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
         obj.ringThetaStart !== undefined ||
         obj.ringThetaLength !== undefined);
 
+    // Check if torusKnot has custom params (requires unique geometry)
+    const hasCustomTorusKnotParams =
+      obj.type === "torusKnot" &&
+      (obj.torusKnotRadius !== undefined ||
+        obj.torusKnotTube !== undefined ||
+        obj.torusKnotTubularSegments !== undefined ||
+        obj.torusKnotRadialSegments !== undefined ||
+        obj.torusKnotP !== undefined ||
+        obj.torusKnotQ !== undefined);
+
     if (isComplex) {
       // Complex geometry - unique key per object
       const geoKey = `${obj.type}_${obj.id.slice(0, 8)}`;
@@ -491,6 +501,26 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
         geo.ringThetaStart = obj.ringThetaStart;
       if (obj.ringThetaLength !== undefined)
         geo.ringThetaLength = obj.ringThetaLength;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
+    } else if (hasCustomTorusKnotParams) {
+      // TorusKnot with custom params - unique key per object
+      const geoKey = `torusKnot_${obj.id.slice(0, 8)}`;
+      const geo: TSPGeometry = { type: "torusKnot", args: [0.5, 0.15, 64, 8, 2, 3] };
+
+      if (obj.torusKnotRadius !== undefined)
+        geo.torusKnotRadius = obj.torusKnotRadius;
+      if (obj.torusKnotTube !== undefined)
+        geo.torusKnotTube = obj.torusKnotTube;
+      if (obj.torusKnotTubularSegments !== undefined)
+        geo.torusKnotTubularSegments = obj.torusKnotTubularSegments;
+      if (obj.torusKnotRadialSegments !== undefined)
+        geo.torusKnotRadialSegments = obj.torusKnotRadialSegments;
+      if (obj.torusKnotP !== undefined)
+        geo.torusKnotP = obj.torusKnotP;
+      if (obj.torusKnotQ !== undefined)
+        geo.torusKnotQ = obj.torusKnotQ;
 
       geometries[geoKey] = geo;
       geometryKeyMap.set(obj.id, geoKey);

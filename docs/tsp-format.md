@@ -526,6 +526,43 @@ Rings support variable inner/outer radii, segments, and partial arcs:
 
 Rings with custom params get unique geometry keys (e.g., `ring_abc12345`) instead of sharing the default `ring` geometry.
 
+#### TorusKnotGeometry Options
+
+Torus knots support variable radii, segments, and winding parameters (p and q):
+
+```json
+{
+  "type": "torusKnot",
+  "args": [0.5, 0.15, 64, 8, 2, 3],
+  "torusKnotRadius": 0.6,
+  "torusKnotTube": 0.2,
+  "torusKnotTubularSegments": 128,
+  "torusKnotRadialSegments": 16,
+  "torusKnotP": 3,
+  "torusKnotQ": 5
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `torusKnotRadius` | number? | 0.5 | Radius of the torus knot |
+| `torusKnotTube` | number? | 0.15 | Radius of the tube cross-section |
+| `torusKnotTubularSegments` | number? | 64 | Segments along the tube length |
+| `torusKnotRadialSegments` | number? | 8 | Segments around the tube cross-section |
+| `torusKnotP` | number? | 2 | How many times the geometry winds around its axis of rotational symmetry |
+| `torusKnotQ` | number? | 3 | How many times the geometry winds around a circle in the interior of the torus |
+
+**Use cases:**
+- `p=2, q=3` → Classic trefoil knot (default)
+- `p=3, q=2` → Different trefoil variant
+- `p=2, q=5` → More complex winding pattern
+- `p=3, q=4` → Star-like pattern
+- Higher `torusKnotTubularSegments` → Smoother curves
+- Higher `torusKnotRadialSegments` → Smoother tube cross-section
+- `torusKnotTube` close to `torusKnotRadius` → Thick, blobby knot
+
+Torus knots with custom params get unique geometry keys (e.g., `torusKnot_abc12345`) instead of sharing the default `torusKnot` geometry.
+
 #### Complex Geometries
 
 These require additional fields and can be hand-authored in TSP files.

@@ -543,7 +543,14 @@ export function SceneObject({ id }) {
       case "tetrahedron":
         return new THREE.TetrahedronGeometry(0.5, 0);
       case "torusKnot":
-        return new THREE.TorusKnotGeometry(0.5, 0.15, 64, 8, 2, 3);
+        return new THREE.TorusKnotGeometry(
+          obj.torusKnotRadius ?? 0.5,
+          obj.torusKnotTube ?? 0.15,
+          obj.torusKnotTubularSegments ?? 64,
+          obj.torusKnotRadialSegments ?? 8,
+          obj.torusKnotP ?? 2,
+          obj.torusKnotQ ?? 3,
+        );
 
       // Complex geometries
       case "lathe":
@@ -638,6 +645,12 @@ export function SceneObject({ id }) {
     obj?.ringPhiSegments,
     obj?.ringThetaStart,
     obj?.ringThetaLength,
+    obj?.torusKnotRadius,
+    obj?.torusKnotTube,
+    obj?.torusKnotTubularSegments,
+    obj?.torusKnotRadialSegments,
+    obj?.torusKnotP,
+    obj?.torusKnotQ,
     obj?.points,
     obj?.shape,
     obj?.extrudeOptions,
