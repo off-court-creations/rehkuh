@@ -27,6 +27,12 @@ export const StandardMaterialPropsSchema = z.object({
   color: HexColorSchema,
   metalness: z.number().min(0).max(1),
   roughness: z.number().min(0).max(1),
+  // Extended properties
+  emissive: HexColorSchema.optional(),
+  emissiveIntensity: z.number().min(0).max(1).optional(),
+  opacity: z.number().min(0).max(1).optional(),
+  transparent: z.boolean().optional(),
+  side: TSPMaterialSideSchema.optional(),
 });
 
 // Shader material schema for scene files
@@ -104,12 +110,84 @@ export const SceneFileObjectSchema = z.object({
   rotation: Vector3Schema,
   scale: Vector3Schema,
   material: MaterialPropsSchema.optional(),
+  // Box geometry subdivision
+  boxWidthSegments: z.number().int().min(1).optional(),
+  boxHeightSegments: z.number().int().min(1).optional(),
+  boxDepthSegments: z.number().int().min(1).optional(),
+  // Sphere geometry subdivision
+  sphereWidthSegments: z.number().int().min(3).optional(),
+  sphereHeightSegments: z.number().int().min(2).optional(),
+  // Sphere geometry partial sphere params (radians)
+  spherePhiStart: z.number().min(0).optional(),
+  spherePhiLength: z.number().min(0).optional(),
+  sphereThetaStart: z.number().min(0).optional(),
+  sphereThetaLength: z.number().min(0).optional(),
+  // Cylinder geometry params
+  cylinderRadiusTop: z.number().min(0).optional(),
+  cylinderRadiusBottom: z.number().min(0).optional(),
+  cylinderRadialSegments: z.number().int().min(3).optional(),
+  cylinderHeightSegments: z.number().int().min(1).optional(),
+  cylinderOpenEnded: z.boolean().optional(),
+  cylinderThetaStart: z.number().min(0).optional(),
+  cylinderThetaLength: z.number().min(0).optional(),
+  // Cone geometry params
+  coneRadius: z.number().min(0).optional(),
+  coneRadialSegments: z.number().int().min(3).optional(),
+  coneHeightSegments: z.number().int().min(1).optional(),
+  coneOpenEnded: z.boolean().optional(),
+  coneThetaStart: z.number().min(0).optional(),
+  coneThetaLength: z.number().min(0).optional(),
+  // Torus geometry params
+  torusRadius: z.number().min(0).optional(),
+  torusTube: z.number().min(0).optional(),
+  torusRadialSegments: z.number().int().min(3).optional(),
+  torusTubularSegments: z.number().int().min(3).optional(),
+  torusArc: z.number().min(0).optional(),
+  // Plane geometry params
+  planeWidthSegments: z.number().int().min(1).optional(),
+  planeHeightSegments: z.number().int().min(1).optional(),
+  // Capsule geometry params
+  capsuleRadius: z.number().min(0).optional(),
+  capsuleLength: z.number().min(0).optional(),
+  capsuleCapSegments: z.number().int().min(1).optional(),
+  capsuleRadialSegments: z.number().int().min(3).optional(),
+  // Circle geometry params
+  circleRadius: z.number().min(0).optional(),
+  circleSegments: z.number().int().min(3).optional(),
+  circleThetaStart: z.number().min(0).optional(),
+  circleThetaLength: z.number().min(0).optional(),
+  // Ring geometry params
+  ringInnerRadius: z.number().min(0).optional(),
+  ringOuterRadius: z.number().min(0).optional(),
+  ringThetaSegments: z.number().int().min(3).optional(),
+  ringPhiSegments: z.number().int().min(1).optional(),
+  ringThetaStart: z.number().min(0).optional(),
+  ringThetaLength: z.number().min(0).optional(),
+  // TorusKnot geometry params
+  torusKnotRadius: z.number().min(0).optional(),
+  torusKnotTube: z.number().min(0).optional(),
+  torusKnotTubularSegments: z.number().int().min(3).optional(),
+  torusKnotRadialSegments: z.number().int().min(3).optional(),
+  torusKnotP: z.number().int().min(1).optional(),
+  torusKnotQ: z.number().int().min(1).optional(),
+  // Polyhedra geometry params (octahedron, dodecahedron, icosahedron, tetrahedron)
+  octaRadius: z.number().min(0).optional(),
+  octaDetail: z.number().int().min(0).optional(),
+  dodecaRadius: z.number().min(0).optional(),
+  dodecaDetail: z.number().int().min(0).optional(),
+  icosaRadius: z.number().min(0).optional(),
+  icosaDetail: z.number().int().min(0).optional(),
+  tetraRadius: z.number().min(0).optional(),
+  tetraDetail: z.number().int().min(0).optional(),
   // Complex geometry data (optional)
   points: z.array(z.tuple([z.number(), z.number()])).optional(),
   shape: TSPShapePathSchema.optional(),
   extrudeOptions: TSPExtrudeOptionsSchema.optional(),
   path: TSPCurve3DSchema.optional(),
   tubeRadius: z.number().min(0).optional(), // For tube geometry
+  tubeTubularSegments: z.number().int().min(1).optional(), // For tube geometry
+  tubeRadialSegments: z.number().int().min(3).optional(), // For tube geometry
+  tubeClosed: z.boolean().optional(), // For tube geometry
   vertices: z.array(z.number()).optional(),
   indices: z.array(z.number()).optional(),
 });

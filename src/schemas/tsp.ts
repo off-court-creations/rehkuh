@@ -229,6 +229,75 @@ export const TSPGeometrySchema = z.object({
   type: PrimitiveTypeSchema,
   // Simple geometries (numeric args)
   args: z.array(z.number()).optional(),
+  // BoxGeometry subdivision
+  boxWidthSegments: z.number().int().min(1).optional(),
+  boxHeightSegments: z.number().int().min(1).optional(),
+  boxDepthSegments: z.number().int().min(1).optional(),
+  // SphereGeometry subdivision
+  sphereWidthSegments: z.number().int().min(3).optional(),
+  sphereHeightSegments: z.number().int().min(2).optional(),
+  // SphereGeometry partial sphere params (radians)
+  spherePhiStart: z.number().min(0).optional(),
+  spherePhiLength: z.number().min(0).optional(),
+  sphereThetaStart: z.number().min(0).optional(),
+  sphereThetaLength: z.number().min(0).optional(),
+  // CylinderGeometry params
+  cylinderRadiusTop: z.number().min(0).optional(),
+  cylinderRadiusBottom: z.number().min(0).optional(),
+  cylinderRadialSegments: z.number().int().min(3).optional(),
+  cylinderHeightSegments: z.number().int().min(1).optional(),
+  cylinderOpenEnded: z.boolean().optional(),
+  cylinderThetaStart: z.number().min(0).optional(),
+  cylinderThetaLength: z.number().min(0).optional(),
+  // ConeGeometry params
+  coneRadius: z.number().min(0).optional(),
+  coneRadialSegments: z.number().int().min(3).optional(),
+  coneHeightSegments: z.number().int().min(1).optional(),
+  coneOpenEnded: z.boolean().optional(),
+  coneThetaStart: z.number().min(0).optional(),
+  coneThetaLength: z.number().min(0).optional(),
+  // TorusGeometry params
+  torusRadius: z.number().min(0).optional(),
+  torusTube: z.number().min(0).optional(),
+  torusRadialSegments: z.number().int().min(3).optional(),
+  torusTubularSegments: z.number().int().min(3).optional(),
+  torusArc: z.number().min(0).optional(),
+  // PlaneGeometry params
+  planeWidthSegments: z.number().int().min(1).optional(),
+  planeHeightSegments: z.number().int().min(1).optional(),
+  // CapsuleGeometry params
+  capsuleRadius: z.number().min(0).optional(),
+  capsuleLength: z.number().min(0).optional(),
+  capsuleCapSegments: z.number().int().min(1).optional(),
+  capsuleRadialSegments: z.number().int().min(3).optional(),
+  // CircleGeometry params
+  circleRadius: z.number().min(0).optional(),
+  circleSegments: z.number().int().min(3).optional(),
+  circleThetaStart: z.number().min(0).optional(),
+  circleThetaLength: z.number().min(0).optional(),
+  // RingGeometry params
+  ringInnerRadius: z.number().min(0).optional(),
+  ringOuterRadius: z.number().min(0).optional(),
+  ringThetaSegments: z.number().int().min(3).optional(),
+  ringPhiSegments: z.number().int().min(1).optional(),
+  ringThetaStart: z.number().min(0).optional(),
+  ringThetaLength: z.number().min(0).optional(),
+  // TorusKnotGeometry params
+  torusKnotRadius: z.number().min(0).optional(),
+  torusKnotTube: z.number().min(0).optional(),
+  torusKnotTubularSegments: z.number().int().min(3).optional(),
+  torusKnotRadialSegments: z.number().int().min(3).optional(),
+  torusKnotP: z.number().int().min(1).optional(),
+  torusKnotQ: z.number().int().min(1).optional(),
+  // Polyhedra geometry params (octahedron, dodecahedron, icosahedron, tetrahedron)
+  octaRadius: z.number().min(0).optional(),
+  octaDetail: z.number().int().min(0).optional(),
+  dodecaRadius: z.number().min(0).optional(),
+  dodecaDetail: z.number().int().min(0).optional(),
+  icosaRadius: z.number().min(0).optional(),
+  icosaDetail: z.number().int().min(0).optional(),
+  tetraRadius: z.number().min(0).optional(),
+  tetraDetail: z.number().int().min(0).optional(),
   // LatheGeometry (Vector2 points)
   points: z.array(z.tuple([z.number(), z.number()])).optional(),
   // ExtrudeGeometry, ShapeGeometry (shape path)
@@ -239,6 +308,12 @@ export const TSPGeometrySchema = z.object({
   path: TSPCurve3DSchema.optional(),
   // TubeGeometry radius
   tubeRadius: z.number().optional(),
+  // TubeGeometry tubular segments
+  tubeTubularSegments: z.number().int().min(1).optional(),
+  // TubeGeometry radial segments
+  tubeRadialSegments: z.number().int().min(3).optional(),
+  // TubeGeometry closed
+  tubeClosed: z.boolean().optional(),
   // PolyhedronGeometry (raw vertex/index data)
   vertices: z.array(z.number()).optional(),
   indices: z.array(z.number()).optional(),

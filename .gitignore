@@ -1,45 +1,23 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-
-#AI
 .claude
-
-build/Release
-
-node_modules/
-
-*.tsbuildinfo
-
-.npm
-
-.eslintcache
-
-.stylelintcache
-
-*.tgz
-
-.env
-.env.*
-!.env.example
+.tmp
+.valet-mcp
 
 dist
 
-.temp
-.cache
+node_modules
 
-# Valet MCP working directory
-.valet-mcp/
+.env
 
-**/.vitepress/dist
-**/.vitepress/cache
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
+*.tsbuildinfo
 
-# Stores VSCode versions used for testing VSCode extensions
-.vscode-test
-
-# Scene sync transient files
-scene/UNAUTHORIZED_EDIT_REVERTED.md
 scene/scene.backup.json
+scene/scene.json
+scene/staging-scene.json
+scene/UNAUTHORIZED_EDIT_REVERTED.md
+
+shaders/staging/
+shaders/*.vert
+shaders/*.frag
+shaders/UNAUTHORIZED_EDIT_REVERTED.md
+!shaders/_template.vert
+!shaders/_template.frag

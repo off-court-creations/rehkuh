@@ -31,6 +31,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: true,
+      port: env.VITE_PORT ? Number(env.VITE_PORT) : undefined,
       ...(allowedHosts.length ? { allowedHosts } : {}),
       ...(hmr ? { hmr } : {}),
     },

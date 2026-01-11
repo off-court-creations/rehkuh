@@ -129,11 +129,12 @@ export interface ShaderUniform {
 }
 
 // Shader material (custom GLSL shaders)
+// Either use shaderName (external files) OR inline vertex/fragment
 export interface ShaderMaterialProps {
   type: "shader";
-  shaderName: string; // References shaders/{name}.vert and .frag files
-  vertex?: string; // Cached vertex shader code (loaded from file)
-  fragment?: string; // Cached fragment shader code (loaded from file)
+  shaderName?: string; // References shaders/{name}.vert and .frag files
+  vertex?: string; // Inline or cached vertex shader code
+  fragment?: string; // Inline or cached fragment shader code
   uniforms: Record<string, ShaderUniform>;
   transparent?: boolean;
   side?: "front" | "back" | "double";
@@ -182,12 +183,84 @@ export interface SceneObject {
   receiveShadow?: boolean;
   // Custom properties
   userData?: Record<string, unknown>;
+  // Box geometry subdivision
+  boxWidthSegments?: number;
+  boxHeightSegments?: number;
+  boxDepthSegments?: number;
+  // Sphere geometry subdivision
+  sphereWidthSegments?: number;
+  sphereHeightSegments?: number;
+  // Sphere geometry partial sphere params (radians)
+  spherePhiStart?: number;
+  spherePhiLength?: number;
+  sphereThetaStart?: number;
+  sphereThetaLength?: number;
+  // Cylinder geometry params
+  cylinderRadiusTop?: number;
+  cylinderRadiusBottom?: number;
+  cylinderRadialSegments?: number;
+  cylinderHeightSegments?: number;
+  cylinderOpenEnded?: boolean;
+  cylinderThetaStart?: number;
+  cylinderThetaLength?: number;
+  // Cone geometry params
+  coneRadius?: number;
+  coneRadialSegments?: number;
+  coneHeightSegments?: number;
+  coneOpenEnded?: boolean;
+  coneThetaStart?: number;
+  coneThetaLength?: number;
+  // Torus geometry params
+  torusRadius?: number;
+  torusTube?: number;
+  torusRadialSegments?: number;
+  torusTubularSegments?: number;
+  torusArc?: number;
+  // Plane geometry params
+  planeWidthSegments?: number;
+  planeHeightSegments?: number;
+  // Capsule geometry params
+  capsuleRadius?: number;
+  capsuleLength?: number;
+  capsuleCapSegments?: number;
+  capsuleRadialSegments?: number;
+  // Circle geometry params
+  circleRadius?: number;
+  circleSegments?: number;
+  circleThetaStart?: number;
+  circleThetaLength?: number;
+  // Ring geometry params
+  ringInnerRadius?: number;
+  ringOuterRadius?: number;
+  ringThetaSegments?: number;
+  ringPhiSegments?: number;
+  ringThetaStart?: number;
+  ringThetaLength?: number;
+  // TorusKnot geometry params
+  torusKnotRadius?: number;
+  torusKnotTube?: number;
+  torusKnotTubularSegments?: number;
+  torusKnotRadialSegments?: number;
+  torusKnotP?: number;
+  torusKnotQ?: number;
+  // Polyhedra geometry params (shared: radius, detail)
+  octaRadius?: number;
+  octaDetail?: number;
+  dodecaRadius?: number;
+  dodecaDetail?: number;
+  icosaRadius?: number;
+  icosaDetail?: number;
+  tetraRadius?: number;
+  tetraDetail?: number;
   // Complex geometry data (optional, for lathe/extrude/shape/tube/polyhedron)
   points?: [number, number][];
   shape?: TSPShapePath;
   extrudeOptions?: TSPExtrudeOptions;
   path?: TSPCurve3D;
   tubeRadius?: number;
+  tubeTubularSegments?: number;
+  tubeRadialSegments?: number;
+  tubeClosed?: boolean;
   vertices?: number[];
   indices?: number[];
 }
@@ -390,6 +463,75 @@ export interface TSPGeometry {
   type: PrimitiveType;
   // Simple geometries (numeric args)
   args?: number[];
+  // BoxGeometry subdivision
+  boxWidthSegments?: number;
+  boxHeightSegments?: number;
+  boxDepthSegments?: number;
+  // SphereGeometry subdivision
+  sphereWidthSegments?: number;
+  sphereHeightSegments?: number;
+  // SphereGeometry partial sphere params (radians)
+  spherePhiStart?: number;
+  spherePhiLength?: number;
+  sphereThetaStart?: number;
+  sphereThetaLength?: number;
+  // CylinderGeometry params
+  cylinderRadiusTop?: number;
+  cylinderRadiusBottom?: number;
+  cylinderRadialSegments?: number;
+  cylinderHeightSegments?: number;
+  cylinderOpenEnded?: boolean;
+  cylinderThetaStart?: number;
+  cylinderThetaLength?: number;
+  // ConeGeometry params
+  coneRadius?: number;
+  coneRadialSegments?: number;
+  coneHeightSegments?: number;
+  coneOpenEnded?: boolean;
+  coneThetaStart?: number;
+  coneThetaLength?: number;
+  // TorusGeometry params
+  torusRadius?: number;
+  torusTube?: number;
+  torusRadialSegments?: number;
+  torusTubularSegments?: number;
+  torusArc?: number;
+  // PlaneGeometry params
+  planeWidthSegments?: number;
+  planeHeightSegments?: number;
+  // CapsuleGeometry params
+  capsuleRadius?: number;
+  capsuleLength?: number;
+  capsuleCapSegments?: number;
+  capsuleRadialSegments?: number;
+  // CircleGeometry params
+  circleRadius?: number;
+  circleSegments?: number;
+  circleThetaStart?: number;
+  circleThetaLength?: number;
+  // RingGeometry params
+  ringInnerRadius?: number;
+  ringOuterRadius?: number;
+  ringThetaSegments?: number;
+  ringPhiSegments?: number;
+  ringThetaStart?: number;
+  ringThetaLength?: number;
+  // TorusKnotGeometry params
+  torusKnotRadius?: number;
+  torusKnotTube?: number;
+  torusKnotTubularSegments?: number;
+  torusKnotRadialSegments?: number;
+  torusKnotP?: number;
+  torusKnotQ?: number;
+  // Polyhedra geometry params (shared: radius, detail)
+  octaRadius?: number;
+  octaDetail?: number;
+  dodecaRadius?: number;
+  dodecaDetail?: number;
+  icosaRadius?: number;
+  icosaDetail?: number;
+  tetraRadius?: number;
+  tetraDetail?: number;
   // LatheGeometry (Vector2 points)
   points?: [number, number][];
   // ExtrudeGeometry, ShapeGeometry (shape path)
@@ -400,6 +542,12 @@ export interface TSPGeometry {
   path?: TSPCurve3D;
   // TubeGeometry radius
   tubeRadius?: number;
+  // TubeGeometry tubular segments
+  tubeTubularSegments?: number;
+  // TubeGeometry radial segments
+  tubeRadialSegments?: number;
+  // TubeGeometry closed
+  tubeClosed?: boolean;
   // PolyhedronGeometry (raw vertex/index data)
   vertices?: number[];
   indices?: number[];

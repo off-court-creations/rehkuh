@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Typography } from "@archway/valet";
 import { useSceneStore } from "@/store/sceneStore";
 import { OutlinerNode } from "./OutlinerNode";
 
@@ -50,12 +51,13 @@ export function Outliner() {
           flexShrink: 0,
           padding: "8px 12px",
           borderBottom: "1px solid rgba(255,255,255,0.08)",
-          fontSize: "12px",
           opacity: 0.9,
           userSelect: "none",
         }}
       >
-        Scene Outliner
+        <Typography variant="body" sx={{ fontSize: "12px" }}>
+          Scene Outliner
+        </Typography>
       </div>
 
       {/* Scrollable content */}

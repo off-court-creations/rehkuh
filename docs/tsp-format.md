@@ -10,7 +10,7 @@ Click the **Export** button in the Outliner panel. The file picker will suggest 
 
 ```json
 {
-  "version": "1.0",
+  "version": "0.9.0",
   "metadata": {
     "name": "scene_name",
     "created": "2026-01-09T12:00:00Z",
@@ -49,7 +49,7 @@ Click the **Export** button in the Outliner panel. The file picker will suggest 
 
 ### `version`
 
-Format version string. Currently `"1.0"`.
+Format version string. Currently `"0.9.0"`.
 
 ### `metadata`
 
@@ -242,18 +242,425 @@ Dictionary of geometry definitions. All geometries use unit scale; actual size c
 |------|------|---------|
 | `box` | `[width, height, depth]` | `[1, 1, 1]` |
 | `sphere` | `[radius, widthSegments, heightSegments]` | `[0.5, 32, 32]` |
-| `cylinder` | `[radiusTop, radiusBottom, height, radialSegments]` | `[0.5, 0.5, 1, 32]` |
-| `cone` | `[radius, height, radialSegments]` | `[0.5, 1, 32]` |
-| `torus` | `[radius, tube, radialSegments, tubularSegments]` | `[0.5, 0.2, 16, 32]` |
+| `cylinder` | `[radiusTop, radiusBottom, height, tubeRadialSegments]` | `[0.5, 0.5, 1, 32]` |
+| `cone` | `[radius, height, tubeRadialSegments]` | `[0.5, 1, 32]` |
+| `torus` | `[radius, tube, tubeRadialSegments, tubeTubularSegments]` | `[0.5, 0.2, 16, 32]` |
 | `plane` | `[width, height]` | `[1, 1]` |
-| `capsule` | `[radius, length, capSegments, radialSegments]` | `[0.5, 1, 4, 8]` |
+| `capsule` | `[radius, length, capSegments, tubeRadialSegments]` | `[0.5, 1, 4, 8]` |
 | `circle` | `[radius, segments]` | `[0.5, 32]` |
 | `dodecahedron` | `[radius, detail]` | `[0.5, 0]` |
 | `icosahedron` | `[radius, detail]` | `[0.5, 0]` |
 | `octahedron` | `[radius, detail]` | `[0.5, 0]` |
 | `ring` | `[innerRadius, outerRadius, thetaSegments]` | `[0.25, 0.5, 32]` |
 | `tetrahedron` | `[radius, detail]` | `[0.5, 0]` |
-| `torusKnot` | `[radius, tube, tubularSegments, radialSegments, p, q]` | `[0.5, 0.15, 64, 8, 2, 3]` |
+| `torusKnot` | `[radius, tube, tubeTubularSegments, tubeRadialSegments, p, q]` | `[0.5, 0.15, 64, 8, 2, 3]` |
+
+#### BoxGeometry Options
+
+Boxes support optional subdivision segments for smoother lighting and displacement:
+
+```json
+{
+  "type": "box",
+  "args": [1, 1, 1],
+  "boxWidthSegments": 4,
+  "boxHeightSegments": 2,
+  "boxDepthSegments": 2
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `boxWidthSegments` | number? | 1 | Segments along X axis |
+| `boxHeightSegments` | number? | 1 | Segments along Y axis |
+| `boxDepthSegments` | number? | 1 | Segments along Z axis |
+
+Boxes with custom segments get unique geometry keys (e.g., `box_abc12345`) instead of sharing the default `box` geometry.
+
+#### SphereGeometry Options
+
+Spheres support subdivision segments and partial sphere angles:
+
+```json
+{
+  "type": "sphere",
+  "args": [0.5, 32, 32],
+  "sphereWidthSegments": 16,
+  "sphereHeightSegments": 12,
+  "spherePhiStart": 0,
+  "spherePhiLength": 3.14159,
+  "sphereThetaStart": 0,
+  "sphereThetaLength": 1.5708
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `sphereWidthSegments` | number? | 32 | Horizontal segments (longitude) |
+| `sphereHeightSegments` | number? | 32 | Vertical segments (latitude) |
+| `spherePhiStart` | number? | 0 | Horizontal start angle in radians |
+| `spherePhiLength` | number? | 2π | Horizontal sweep angle in radians |
+| `sphereThetaStart` | number? | 0 | Vertical start angle in radians |
+| `sphereThetaLength` | number? | π | Vertical sweep angle in radians |
+
+**Use cases:**
+- `spherePhiLength < 2π` → Vertical slice (like an orange wedge)
+- `sphereThetaLength < π` → Dome or bowl shape
+- Combine both → Partial dome sections
+
+#### CylinderGeometry Options
+
+Cylinders support variable radii, segments, and partial angles:
+
+```json
+{
+  "type": "cylinder",
+  "args": [0.5, 0.5, 1, 32],
+  "cylinderRadiusTop": 0.3,
+  "cylinderRadiusBottom": 0.5,
+  "cylinderRadialSegments": 6,
+  "cylinderHeightSegments": 4,
+  "cylinderOpenEnded": true,
+  "cylinderThetaStart": 0,
+  "cylinderThetaLength": 3.14159
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `cylinderRadiusTop` | number? | 0.5 | Radius at the top |
+| `cylinderRadiusBottom` | number? | 0.5 | Radius at the bottom |
+| `cylinderRadialSegments` | number? | 32 | Number of faces around circumference |
+| `cylinderHeightSegments` | number? | 1 | Number of rows of faces along height |
+| `cylinderOpenEnded` | boolean? | false | Whether ends are open (no caps) |
+| `cylinderThetaStart` | number? | 0 | Start angle in radians |
+| `cylinderThetaLength` | number? | 2π | Sweep angle in radians |
+
+**Use cases:**
+- `cylinderRadiusTop ≠ cylinderRadiusBottom` → Tapered cylinder / frustum
+- `cylinderRadiusTop = 0` → Cone (use cone type instead)
+- `cylinderOpenEnded = true` → Tube/pipe
+- `cylinderThetaLength < 2π` → Partial cylinder (pac-man shape from above)
+- `cylinderRadialSegments = 6` → Hexagonal prism
+
+#### ConeGeometry Options
+
+Cones support variable radius, segments, and partial angles:
+
+```json
+{
+  "type": "cone",
+  "args": [0.5, 1, 32],
+  "coneRadius": 0.4,
+  "coneRadialSegments": 8,
+  "coneHeightSegments": 4,
+  "coneOpenEnded": true,
+  "coneThetaStart": 0,
+  "coneThetaLength": 4.71239
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `coneRadius` | number? | 0.5 | Base radius |
+| `coneRadialSegments` | number? | 32 | Number of faces around circumference |
+| `coneHeightSegments` | number? | 1 | Number of rows of faces along height |
+| `coneOpenEnded` | boolean? | false | Whether base is open (no cap) |
+| `coneThetaStart` | number? | 0 | Start angle in radians |
+| `coneThetaLength` | number? | 2π | Sweep angle in radians |
+
+**Use cases:**
+- `coneOpenEnded = true` → Hollow cone / funnel
+- `coneThetaLength < 2π` → Partial cone (pie slice shape)
+- `coneRadialSegments = 4` → Pyramid
+
+#### TorusGeometry Options
+
+Toruses support variable radii, segments, and partial arcs:
+
+```json
+{
+  "type": "torus",
+  "args": [0.5, 0.2, 16, 32],
+  "torusRadius": 0.6,
+  "torusTube": 0.15,
+  "torusRadialSegments": 24,
+  "torusTubularSegments": 48,
+  "torusArc": 4.71239
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `torusRadius` | number? | 0.5 | Distance from center to center of tube |
+| `torusTube` | number? | 0.2 | Radius of the tube cross-section |
+| `torusRadialSegments` | number? | 16 | Segments around tube cross-section |
+| `torusTubularSegments` | number? | 32 | Segments around the torus ring |
+| `torusArc` | number? | 2π | Arc angle in radians |
+
+**Use cases:**
+- `torusArc < 2π` → Partial torus (C-shape, horseshoe)
+- `torusTube > torusRadius` → Thick donut / blob shape
+- `torusRadialSegments = 3` → Triangular cross-section
+- `torusRadialSegments = 4` → Square cross-section tube
+
+#### PlaneGeometry Options
+
+Planes support subdivision segments for vertex displacement and smoother shading:
+
+```json
+{
+  "type": "plane",
+  "args": [1, 1],
+  "planeWidthSegments": 10,
+  "planeHeightSegments": 10
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `planeWidthSegments` | number? | 1 | Segments along width (X axis) |
+| `planeHeightSegments` | number? | 1 | Segments along height (Y axis) |
+
+**Use cases:**
+- Higher segments for vertex displacement shaders
+- Smoother shading on large planes with point lights
+- Grid-based terrain or water surfaces
+
+Planes with custom segments get unique geometry keys (e.g., `plane_abc12345`) instead of sharing the default `plane` geometry.
+
+#### CapsuleGeometry Options
+
+Capsules support variable radius, length, and segment counts:
+
+```json
+{
+  "type": "capsule",
+  "args": [0.5, 1, 4, 8],
+  "capsuleRadius": 0.3,
+  "capsuleLength": 2,
+  "capsuleCapSegments": 8,
+  "capsuleRadialSegments": 16
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `capsuleRadius` | number? | 0.5 | Radius of the capsule |
+| `capsuleLength` | number? | 1 | Length of the middle cylindrical section |
+| `capsuleCapSegments` | number? | 4 | Number of curve segments for the caps |
+| `capsuleRadialSegments` | number? | 8 | Number of segments around the circumference |
+
+**Use cases:**
+- `capsuleLength = 0` → Sphere-like shape (just the caps)
+- Higher `capsuleCapSegments` → Smoother cap hemispheres
+- Higher `capsuleRadialSegments` → Smoother cylindrical section
+- `capsuleRadialSegments = 6` → Hexagonal cross-section
+
+Capsules with custom params get unique geometry keys (e.g., `capsule_abc12345`) instead of sharing the default `capsule` geometry.
+
+#### CircleGeometry Options
+
+Circles support variable radius, segments, and partial arcs:
+
+```json
+{
+  "type": "circle",
+  "args": [0.5, 32],
+  "circleRadius": 0.8,
+  "circleSegments": 64,
+  "circleThetaStart": 0,
+  "circleThetaLength": 3.14159
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `circleRadius` | number? | 0.5 | Radius of the circle |
+| `circleSegments` | number? | 32 | Number of segments (triangles) |
+| `circleThetaStart` | number? | 0 | Start angle in radians |
+| `circleThetaLength` | number? | 2π | Central angle (arc length) in radians |
+
+**Use cases:**
+- `circleThetaLength < 2π` → Partial circle / pie slice / pac-man
+- `circleSegments = 3` → Triangle
+- `circleSegments = 4` → Diamond/square
+- `circleSegments = 6` → Hexagon
+- Higher `circleSegments` → Smoother circle
+
+Circles with custom params get unique geometry keys (e.g., `circle_abc12345`) instead of sharing the default `circle` geometry.
+
+#### RingGeometry Options
+
+Rings support variable inner/outer radii, segments, and partial arcs:
+
+```json
+{
+  "type": "ring",
+  "args": [0.25, 0.5, 32],
+  "ringInnerRadius": 0.3,
+  "ringOuterRadius": 0.8,
+  "ringThetaSegments": 64,
+  "ringPhiSegments": 4,
+  "ringThetaStart": 0,
+  "ringThetaLength": 4.71239
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `ringInnerRadius` | number? | 0.25 | Inner radius (hole size) |
+| `ringOuterRadius` | number? | 0.5 | Outer radius (ring size) |
+| `ringThetaSegments` | number? | 32 | Number of segments around the ring |
+| `ringPhiSegments` | number? | 1 | Number of segments across the ring thickness |
+| `ringThetaStart` | number? | 0 | Start angle in radians |
+| `ringThetaLength` | number? | 2π | Central angle (arc length) in radians |
+
+**Use cases:**
+- `ringInnerRadius = 0` → Filled disc (like circle but facing camera)
+- `ringThetaLength < 2π` → Partial ring / arc segment / pac-man ring
+- `ringThetaSegments = 3` → Triangular ring
+- `ringThetaSegments = 6` → Hexagonal ring
+- Higher `ringPhiSegments` → Smoother lighting across ring thickness
+- `ringInnerRadius` close to `ringOuterRadius` → Thin ring / halo
+
+Rings with custom params get unique geometry keys (e.g., `ring_abc12345`) instead of sharing the default `ring` geometry.
+
+#### TorusKnotGeometry Options
+
+Torus knots support variable radii, segments, and winding parameters (p and q):
+
+```json
+{
+  "type": "torusKnot",
+  "args": [0.5, 0.15, 64, 8, 2, 3],
+  "torusKnotRadius": 0.6,
+  "torusKnotTube": 0.2,
+  "torusKnotTubularSegments": 128,
+  "torusKnotRadialSegments": 16,
+  "torusKnotP": 3,
+  "torusKnotQ": 5
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `torusKnotRadius` | number? | 0.5 | Radius of the torus knot |
+| `torusKnotTube` | number? | 0.15 | Radius of the tube cross-section |
+| `torusKnotTubularSegments` | number? | 64 | Segments along the tube length |
+| `torusKnotRadialSegments` | number? | 8 | Segments around the tube cross-section |
+| `torusKnotP` | number? | 2 | How many times the geometry winds around its axis of rotational symmetry |
+| `torusKnotQ` | number? | 3 | How many times the geometry winds around a circle in the interior of the torus |
+
+**Use cases:**
+- `p=2, q=3` → Classic trefoil knot (default)
+- `p=3, q=2` → Different trefoil variant
+- `p=2, q=5` → More complex winding pattern
+- `p=3, q=4` → Star-like pattern
+- Higher `torusKnotTubularSegments` → Smoother curves
+- Higher `torusKnotRadialSegments` → Smoother tube cross-section
+- `torusKnotTube` close to `torusKnotRadius` → Thick, blobby knot
+
+Torus knots with custom params get unique geometry keys (e.g., `torusKnot_abc12345`) instead of sharing the default `torusKnot` geometry.
+
+#### OctahedronGeometry Options
+
+Octahedra support variable radius and subdivision detail:
+
+```json
+{
+  "type": "octahedron",
+  "args": [0.5, 0],
+  "octaRadius": 0.75,
+  "octaDetail": 1
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `octaRadius` | number? | 0.5 | Radius of the octahedron |
+| `octaDetail` | number? | 0 | Subdivision level (0 = 8 faces, 1 = 32 faces, 2 = 128 faces) |
+
+**Use cases:**
+- `octaDetail=0` → Sharp, geometric look (8 triangular faces)
+- `octaDetail=1+` → Smoother, more spherical appearance
+- Higher detail is rarely needed for low-poly aesthetic
+
+Octahedra with custom params get unique geometry keys (e.g., `octahedron_abc12345`) instead of sharing the default `octahedron` geometry.
+
+#### DodecahedronGeometry Options
+
+Dodecahedra support variable radius and subdivision detail:
+
+```json
+{
+  "type": "dodecahedron",
+  "args": [0.5, 0],
+  "dodecaRadius": 0.75,
+  "dodecaDetail": 1
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `dodecaRadius` | number? | 0.5 | Radius of the dodecahedron |
+| `dodecaDetail` | number? | 0 | Subdivision level (0 = 12 pentagonal faces) |
+
+**Use cases:**
+- `dodecaDetail=0` → Sharp, D12 die shape (12 pentagonal faces)
+- `dodecaDetail=1+` → Smoother, more spherical appearance
+
+Dodecahedra with custom params get unique geometry keys (e.g., `dodecahedron_abc12345`) instead of sharing the default `dodecahedron` geometry.
+
+#### IcosahedronGeometry Options
+
+Icosahedra support variable radius and subdivision detail:
+
+```json
+{
+  "type": "icosahedron",
+  "args": [0.5, 0],
+  "icosaRadius": 0.75,
+  "icosaDetail": 2
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `icosaRadius` | number? | 0.5 | Radius of the icosahedron |
+| `icosaDetail` | number? | 0 | Subdivision level (0 = 20 faces, higher = geodesic sphere) |
+
+**Use cases:**
+- `icosaDetail=0` → D20 die shape (20 triangular faces)
+- `icosaDetail=1+` → Geodesic sphere approximation
+- Common base for procedural planet/sphere generation
+
+Icosahedra with custom params get unique geometry keys (e.g., `icosahedron_abc12345`) instead of sharing the default `icosahedron` geometry.
+
+#### TetrahedronGeometry Options
+
+Tetrahedra support variable radius and subdivision detail:
+
+```json
+{
+  "type": "tetrahedron",
+  "args": [0.5, 0],
+  "tetraRadius": 0.75,
+  "tetraDetail": 1
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `tetraRadius` | number? | 0.5 | Radius of the tetrahedron |
+| `tetraDetail` | number? | 0 | Subdivision level (0 = 4 faces) |
+
+**Use cases:**
+- `tetraDetail=0` → Sharp, D4 die shape (4 triangular faces)
+- `tetraDetail=1+` → Smoother appearance
+- Simplest Platonic solid
+
+Tetrahedra with custom params get unique geometry keys (e.g., `tetrahedron_abc12345`) instead of sharing the default `tetrahedron` geometry.
 
 #### Complex Geometries
 
@@ -321,7 +728,10 @@ Tube along a 3D curve.
     "points": [[0, 0, 0], [1, 1, 0], [2, 0, 0]],
     "closed": false
   },
-  "tubeRadius": 0.1
+  "tubeRadius": 0.1,
+  "tubeTubularSegments": 64,
+  "tubeRadialSegments": 8,
+  "tubeClosed": false
 }
 ```
 
@@ -329,17 +739,9 @@ Tube along a 3D curve.
 |-------|------|---------|-------------|
 | `path` | TSPCurve3D | required | 3D curve defining the tube path |
 | `tubeRadius` | number? | 0.1 | Radius of the tube cross-section |
-
-**Note:** The old `args` format (`[tubularSegments, radius, radialSegments, closed]`) is deprecated. Use `tubeRadius` instead.
-
-```json
-// DEPRECATED - old format
-{
-  "type": "tube",
-  "path": { ... },
-  "args": [64, 0.1, 8, false]
-}
-```
+| `tubeTubularSegments` | number? | 64 | Number of segments along the tube length |
+| `tubeRadialSegments` | number? | 8 | Number of segments around the tube circumference |
+| `tubeClosed` | boolean? | false | Whether the tube forms a closed loop |
 
 ##### PolyhedronGeometry
 
