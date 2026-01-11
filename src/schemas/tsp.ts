@@ -229,6 +229,10 @@ export const TSPGeometrySchema = z.object({
   type: PrimitiveTypeSchema,
   // Simple geometries (numeric args)
   args: z.array(z.number()).optional(),
+  // BoxGeometry subdivision
+  boxWidthSegments: z.number().int().min(1).optional(),
+  boxHeightSegments: z.number().int().min(1).optional(),
+  boxDepthSegments: z.number().int().min(1).optional(),
   // LatheGeometry (Vector2 points)
   points: z.array(z.tuple([z.number(), z.number()])).optional(),
   // ExtrudeGeometry, ShapeGeometry (shape path)

@@ -183,6 +183,10 @@ export interface SceneObject {
   receiveShadow?: boolean;
   // Custom properties
   userData?: Record<string, unknown>;
+  // Box geometry subdivision
+  boxWidthSegments?: number;
+  boxHeightSegments?: number;
+  boxDepthSegments?: number;
   // Complex geometry data (optional, for lathe/extrude/shape/tube/polyhedron)
   points?: [number, number][];
   shape?: TSPShapePath;
@@ -394,6 +398,10 @@ export interface TSPGeometry {
   type: PrimitiveType;
   // Simple geometries (numeric args)
   args?: number[];
+  // BoxGeometry subdivision
+  boxWidthSegments?: number;
+  boxHeightSegments?: number;
+  boxDepthSegments?: number;
   // LatheGeometry (Vector2 points)
   points?: [number, number][];
   // ExtrudeGeometry, ShapeGeometry (shape path)

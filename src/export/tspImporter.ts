@@ -201,6 +201,14 @@ export function importFromTSP(tspData: TSPFile): TSPImportResult {
     if (tspObj.geometry) {
       const geo = tspData.geometries[tspObj.geometry];
       if (geo) {
+        // Box geometry subdivision
+        if (geo.boxWidthSegments !== undefined)
+          sceneObj.boxWidthSegments = geo.boxWidthSegments;
+        if (geo.boxHeightSegments !== undefined)
+          sceneObj.boxHeightSegments = geo.boxHeightSegments;
+        if (geo.boxDepthSegments !== undefined)
+          sceneObj.boxDepthSegments = geo.boxDepthSegments;
+        // Complex geometry data
         if (geo.points) sceneObj.points = geo.points;
         if (geo.shape) sceneObj.shape = geo.shape;
         if (geo.extrudeOptions) sceneObj.extrudeOptions = geo.extrudeOptions;

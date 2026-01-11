@@ -302,6 +302,265 @@ export function PropertyPanel() {
             </Stack>
           </Stack>
 
+          {/* Box Geometry Options */}
+          {obj.type === "box" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Width Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value={obj.boxWidthSegments ?? 1}
+                  onChange={(e) => {
+                    const val = Math.max(1, parseInt(e.target.value) || 1);
+                    updateObject(primaryId, { boxWidthSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Height Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value={obj.boxHeightSegments ?? 1}
+                  onChange={(e) => {
+                    const val = Math.max(1, parseInt(e.target.value) || 1);
+                    updateObject(primaryId, { boxHeightSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Depth Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value={obj.boxDepthSegments ?? 1}
+                  onChange={(e) => {
+                    const val = Math.max(1, parseInt(e.target.value) || 1);
+                    updateObject(primaryId, { boxDepthSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
+          {/* Tube Geometry Options */}
+          {obj.type === "tube" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radius
+                </Typography>
+                <input
+                  type="number"
+                  min="0.01"
+                  max="10"
+                  step="0.01"
+                  value={obj.tubeRadius ?? 0.1}
+                  onChange={(e) => {
+                    const val = Math.max(0.01, parseFloat(e.target.value) || 0.1);
+                    updateObject(primaryId, { tubeRadius: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Tubular Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="1"
+                  max="200"
+                  step="1"
+                  value={obj.tubeTubularSegments ?? 64}
+                  onChange={(e) => {
+                    const val = Math.max(1, parseInt(e.target.value) || 64);
+                    updateObject(primaryId, { tubeTubularSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radial Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="3"
+                  max="64"
+                  step="1"
+                  value={obj.tubeRadialSegments ?? 8}
+                  onChange={(e) => {
+                    const val = Math.max(3, parseInt(e.target.value) || 8);
+                    updateObject(primaryId, { tubeRadialSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack
+                gap={0}
+                sx={{
+                  padding: "0 4px 4px 4px",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={obj.tubeClosed ?? false}
+                  onChange={(e) => {
+                    updateObject(primaryId, { tubeClosed: e.target.checked });
+                  }}
+                  style={{
+                    width: "12px",
+                    height: "12px",
+                    margin: 0,
+                    marginRight: "6px",
+                  }}
+                />
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Closed
+                </Typography>
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
           {!isGroup && (
             <>
               {/* Material Type Toggle */}

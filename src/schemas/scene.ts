@@ -110,6 +110,10 @@ export const SceneFileObjectSchema = z.object({
   rotation: Vector3Schema,
   scale: Vector3Schema,
   material: MaterialPropsSchema.optional(),
+  // Box geometry subdivision
+  boxWidthSegments: z.number().int().min(1).optional(),
+  boxHeightSegments: z.number().int().min(1).optional(),
+  boxDepthSegments: z.number().int().min(1).optional(),
   // Complex geometry data (optional)
   points: z.array(z.tuple([z.number(), z.number()])).optional(),
   shape: TSPShapePathSchema.optional(),

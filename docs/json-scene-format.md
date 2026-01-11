@@ -57,7 +57,7 @@ These use default unit dimensions and scale:
 
 | Type | Description | Default Args |
 |------|-------------|--------------|
-| `box` | Box/cube | 1x1x1 |
+| `box` | Box/cube | 1x1x1 (optional subdivision via `boxWidthSegments`, `boxHeightSegments`, `boxDepthSegments`) |
 | `sphere` | Sphere | radius 0.5, 32x32 segments |
 | `cylinder` | Cylinder | radius 0.5, height 1, 32 segments |
 | `cone` | Cone | radius 0.5, height 1, 32 segments |
@@ -77,6 +77,32 @@ These use default unit dimensions and scale:
 | Type | Description |
 |------|-------------|
 | `group` | Container with no geometry (for hierarchy) |
+
+### Box Geometry Options
+
+Boxes support optional subdivision segments for smoother lighting and displacement:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `boxWidthSegments` | number? | 1 | Segments along X axis |
+| `boxHeightSegments` | number? | 1 | Segments along Y axis |
+| `boxDepthSegments` | number? | 1 | Segments along Z axis |
+
+Example with subdivision:
+
+```json
+{
+  "name": "subdividedBox",
+  "type": "box",
+  "position": [0, 0.5, 0],
+  "rotation": [0, 0, 0],
+  "scale": [2, 1, 1],
+  "boxWidthSegments": 4,
+  "boxHeightSegments": 2,
+  "boxDepthSegments": 2,
+  "material": { "color": "#ff0000", "metalness": 0.5, "roughness": 0.5 }
+}
+```
 
 ### Complex Geometries
 

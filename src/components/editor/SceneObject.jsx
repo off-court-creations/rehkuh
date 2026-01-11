@@ -457,7 +457,14 @@ export function SceneObject({ id }) {
     switch (type) {
       // Simple geometries
       case "box":
-        return new THREE.BoxGeometry(1, 1, 1);
+        return new THREE.BoxGeometry(
+          1,
+          1,
+          1,
+          obj.boxWidthSegments ?? 1,
+          obj.boxHeightSegments ?? 1,
+          obj.boxDepthSegments ?? 1,
+        );
       case "sphere":
         return new THREE.SphereGeometry(0.5, 32, 32);
       case "cylinder":
@@ -535,6 +542,9 @@ export function SceneObject({ id }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only recreate geometry when geometry-related props change
   }, [
     obj?.type,
+    obj?.boxWidthSegments,
+    obj?.boxHeightSegments,
+    obj?.boxDepthSegments,
     obj?.points,
     obj?.shape,
     obj?.extrudeOptions,

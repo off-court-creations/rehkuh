@@ -240,6 +240,13 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
 
     const isComplex = COMPLEX_GEOMETRY_TYPES.includes(obj.type);
 
+    // Check if box has custom segments (requires unique geometry)
+    const hasCustomBoxSegments =
+      obj.type === "box" &&
+      (obj.boxWidthSegments !== undefined ||
+        obj.boxHeightSegments !== undefined ||
+        obj.boxDepthSegments !== undefined);
+
     if (isComplex) {
       // Complex geometry - unique key per object
       const geoKey = `${obj.type}_${obj.id.slice(0, 8)}`;
@@ -258,6 +265,20 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
       if (obj.tubeClosed !== undefined) geo.tubeClosed = obj.tubeClosed;
       if (obj.vertices) geo.vertices = obj.vertices;
       if (obj.indices) geo.indices = obj.indices;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
+    } else if (hasCustomBoxSegments) {
+      // Box with custom segments - unique key per object
+      const geoKey = `box_${obj.id.slice(0, 8)}`;
+      const geo: TSPGeometry = { type: "box", args: [1, 1, 1] };
+
+      if (obj.boxWidthSegments !== undefined)
+        geo.boxWidthSegments = obj.boxWidthSegments;
+      if (obj.boxHeightSegments !== undefined)
+        geo.boxHeightSegments = obj.boxHeightSegments;
+      if (obj.boxDepthSegments !== undefined)
+        geo.boxDepthSegments = obj.boxDepthSegments;
 
       geometries[geoKey] = geo;
       geometryKeyMap.set(obj.id, geoKey);

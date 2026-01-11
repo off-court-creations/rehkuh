@@ -255,6 +255,28 @@ Dictionary of geometry definitions. All geometries use unit scale; actual size c
 | `tetrahedron` | `[radius, detail]` | `[0.5, 0]` |
 | `torusKnot` | `[radius, tube, tubeTubularSegments, tubeRadialSegments, p, q]` | `[0.5, 0.15, 64, 8, 2, 3]` |
 
+#### BoxGeometry Options
+
+Boxes support optional subdivision segments for smoother lighting and displacement:
+
+```json
+{
+  "type": "box",
+  "args": [1, 1, 1],
+  "boxWidthSegments": 4,
+  "boxHeightSegments": 2,
+  "boxDepthSegments": 2
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `boxWidthSegments` | number? | 1 | Segments along X axis |
+| `boxHeightSegments` | number? | 1 | Segments along Y axis |
+| `boxDepthSegments` | number? | 1 | Segments along Z axis |
+
+Boxes with custom segments get unique geometry keys (e.g., `box_abc12345`) instead of sharing the default `box` geometry.
+
 #### Complex Geometries
 
 These require additional fields and can be hand-authored in TSP files.
