@@ -243,6 +243,15 @@ export interface SceneObject {
   torusKnotRadialSegments?: number;
   torusKnotP?: number;
   torusKnotQ?: number;
+  // Polyhedra geometry params (shared: radius, detail)
+  octaRadius?: number;
+  octaDetail?: number;
+  dodecaRadius?: number;
+  dodecaDetail?: number;
+  icosaRadius?: number;
+  icosaDetail?: number;
+  tetraRadius?: number;
+  tetraDetail?: number;
   // Complex geometry data (optional, for lathe/extrude/shape/tube/polyhedron)
   points?: [number, number][];
   shape?: TSPShapePath;
@@ -514,6 +523,15 @@ export interface TSPGeometry {
   torusKnotRadialSegments?: number;
   torusKnotP?: number;
   torusKnotQ?: number;
+  // Polyhedra geometry params (shared: radius, detail)
+  octaRadius?: number;
+  octaDetail?: number;
+  dodecaRadius?: number;
+  dodecaDetail?: number;
+  icosaRadius?: number;
+  icosaDetail?: number;
+  tetraRadius?: number;
+  tetraDetail?: number;
   // LatheGeometry (Vector2 points)
   points?: [number, number][];
   // ExtrudeGeometry, ShapeGeometry (shape path)

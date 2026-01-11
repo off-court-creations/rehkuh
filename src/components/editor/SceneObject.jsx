@@ -526,11 +526,20 @@ export function SceneObject({ id }) {
           obj.circleThetaLength ?? Math.PI * 2,
         );
       case "dodecahedron":
-        return new THREE.DodecahedronGeometry(0.5, 0);
+        return new THREE.DodecahedronGeometry(
+          obj.dodecaRadius ?? 0.5,
+          obj.dodecaDetail ?? 0,
+        );
       case "icosahedron":
-        return new THREE.IcosahedronGeometry(0.5, 0);
+        return new THREE.IcosahedronGeometry(
+          obj.icosaRadius ?? 0.5,
+          obj.icosaDetail ?? 0,
+        );
       case "octahedron":
-        return new THREE.OctahedronGeometry(0.5, 0);
+        return new THREE.OctahedronGeometry(
+          obj.octaRadius ?? 0.5,
+          obj.octaDetail ?? 0,
+        );
       case "ring":
         return new THREE.RingGeometry(
           obj.ringInnerRadius ?? 0.25,
@@ -541,7 +550,10 @@ export function SceneObject({ id }) {
           obj.ringThetaLength ?? Math.PI * 2,
         );
       case "tetrahedron":
-        return new THREE.TetrahedronGeometry(0.5, 0);
+        return new THREE.TetrahedronGeometry(
+          obj.tetraRadius ?? 0.5,
+          obj.tetraDetail ?? 0,
+        );
       case "torusKnot":
         return new THREE.TorusKnotGeometry(
           obj.torusKnotRadius ?? 0.5,
@@ -651,6 +663,14 @@ export function SceneObject({ id }) {
     obj?.torusKnotRadialSegments,
     obj?.torusKnotP,
     obj?.torusKnotQ,
+    obj?.octaRadius,
+    obj?.octaDetail,
+    obj?.dodecaRadius,
+    obj?.dodecaDetail,
+    obj?.icosaRadius,
+    obj?.icosaDetail,
+    obj?.tetraRadius,
+    obj?.tetraDetail,
     obj?.points,
     obj?.shape,
     obj?.extrudeOptions,

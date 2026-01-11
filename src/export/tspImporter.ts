@@ -250,7 +250,8 @@ export function importFromTSP(tspData: TSPFile): TSPImportResult {
         if (geo.coneThetaLength !== undefined)
           sceneObj.coneThetaLength = geo.coneThetaLength;
         // Torus geometry params
-        if (geo.torusRadius !== undefined) sceneObj.torusRadius = geo.torusRadius;
+        if (geo.torusRadius !== undefined)
+          sceneObj.torusRadius = geo.torusRadius;
         if (geo.torusTube !== undefined) sceneObj.torusTube = geo.torusTube;
         if (geo.torusRadialSegments !== undefined)
           sceneObj.torusRadialSegments = geo.torusRadialSegments;
@@ -302,10 +303,23 @@ export function importFromTSP(tspData: TSPFile): TSPImportResult {
           sceneObj.torusKnotTubularSegments = geo.torusKnotTubularSegments;
         if (geo.torusKnotRadialSegments !== undefined)
           sceneObj.torusKnotRadialSegments = geo.torusKnotRadialSegments;
-        if (geo.torusKnotP !== undefined)
-          sceneObj.torusKnotP = geo.torusKnotP;
-        if (geo.torusKnotQ !== undefined)
-          sceneObj.torusKnotQ = geo.torusKnotQ;
+        if (geo.torusKnotP !== undefined) sceneObj.torusKnotP = geo.torusKnotP;
+        if (geo.torusKnotQ !== undefined) sceneObj.torusKnotQ = geo.torusKnotQ;
+        // Polyhedra geometry params
+        if (geo.octaRadius !== undefined) sceneObj.octaRadius = geo.octaRadius;
+        if (geo.octaDetail !== undefined) sceneObj.octaDetail = geo.octaDetail;
+        if (geo.dodecaRadius !== undefined)
+          sceneObj.dodecaRadius = geo.dodecaRadius;
+        if (geo.dodecaDetail !== undefined)
+          sceneObj.dodecaDetail = geo.dodecaDetail;
+        if (geo.icosaRadius !== undefined)
+          sceneObj.icosaRadius = geo.icosaRadius;
+        if (geo.icosaDetail !== undefined)
+          sceneObj.icosaDetail = geo.icosaDetail;
+        if (geo.tetraRadius !== undefined)
+          sceneObj.tetraRadius = geo.tetraRadius;
+        if (geo.tetraDetail !== undefined)
+          sceneObj.tetraDetail = geo.tetraDetail;
         // Complex geometry data
         if (geo.points) sceneObj.points = geo.points;
         if (geo.shape) sceneObj.shape = geo.shape;

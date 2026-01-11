@@ -563,6 +563,105 @@ Torus knots support variable radii, segments, and winding parameters (p and q):
 
 Torus knots with custom params get unique geometry keys (e.g., `torusKnot_abc12345`) instead of sharing the default `torusKnot` geometry.
 
+#### OctahedronGeometry Options
+
+Octahedra support variable radius and subdivision detail:
+
+```json
+{
+  "type": "octahedron",
+  "args": [0.5, 0],
+  "octaRadius": 0.75,
+  "octaDetail": 1
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `octaRadius` | number? | 0.5 | Radius of the octahedron |
+| `octaDetail` | number? | 0 | Subdivision level (0 = 8 faces, 1 = 32 faces, 2 = 128 faces) |
+
+**Use cases:**
+- `octaDetail=0` → Sharp, geometric look (8 triangular faces)
+- `octaDetail=1+` → Smoother, more spherical appearance
+- Higher detail is rarely needed for low-poly aesthetic
+
+Octahedra with custom params get unique geometry keys (e.g., `octahedron_abc12345`) instead of sharing the default `octahedron` geometry.
+
+#### DodecahedronGeometry Options
+
+Dodecahedra support variable radius and subdivision detail:
+
+```json
+{
+  "type": "dodecahedron",
+  "args": [0.5, 0],
+  "dodecaRadius": 0.75,
+  "dodecaDetail": 1
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `dodecaRadius` | number? | 0.5 | Radius of the dodecahedron |
+| `dodecaDetail` | number? | 0 | Subdivision level (0 = 12 pentagonal faces) |
+
+**Use cases:**
+- `dodecaDetail=0` → Sharp, D12 die shape (12 pentagonal faces)
+- `dodecaDetail=1+` → Smoother, more spherical appearance
+
+Dodecahedra with custom params get unique geometry keys (e.g., `dodecahedron_abc12345`) instead of sharing the default `dodecahedron` geometry.
+
+#### IcosahedronGeometry Options
+
+Icosahedra support variable radius and subdivision detail:
+
+```json
+{
+  "type": "icosahedron",
+  "args": [0.5, 0],
+  "icosaRadius": 0.75,
+  "icosaDetail": 2
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `icosaRadius` | number? | 0.5 | Radius of the icosahedron |
+| `icosaDetail` | number? | 0 | Subdivision level (0 = 20 faces, higher = geodesic sphere) |
+
+**Use cases:**
+- `icosaDetail=0` → D20 die shape (20 triangular faces)
+- `icosaDetail=1+` → Geodesic sphere approximation
+- Common base for procedural planet/sphere generation
+
+Icosahedra with custom params get unique geometry keys (e.g., `icosahedron_abc12345`) instead of sharing the default `icosahedron` geometry.
+
+#### TetrahedronGeometry Options
+
+Tetrahedra support variable radius and subdivision detail:
+
+```json
+{
+  "type": "tetrahedron",
+  "args": [0.5, 0],
+  "tetraRadius": 0.75,
+  "tetraDetail": 1
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `tetraRadius` | number? | 0.5 | Radius of the tetrahedron |
+| `tetraDetail` | number? | 0 | Subdivision level (0 = 4 faces) |
+
+**Use cases:**
+- `tetraDetail=0` → Sharp, D4 die shape (4 triangular faces)
+- `tetraDetail=1+` → Smoother appearance
+- Simplest Platonic solid
+
+Tetrahedra with custom params get unique geometry keys (e.g., `tetrahedron_abc12345`) instead of sharing the default `tetrahedron` geometry.
+
 #### Complex Geometries
 
 These require additional fields and can be hand-authored in TSP files.

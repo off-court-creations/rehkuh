@@ -1106,7 +1106,10 @@ export function PropertyPanel() {
                   step="0.01"
                   value={obj.torusTube ?? 0.2}
                   onChange={(e) => {
-                    const val = Math.max(0.01, parseFloat(e.target.value) || 0.2);
+                    const val = Math.max(
+                      0.01,
+                      parseFloat(e.target.value) || 0.2,
+                    );
                     updateObject(primaryId, { torusTube: val });
                   }}
                   style={{
@@ -1577,7 +1580,10 @@ export function PropertyPanel() {
                   step="0.1"
                   value={obj.circleThetaLength ?? 6.28319}
                   onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 6.28319);
+                    const val = Math.max(
+                      0,
+                      parseFloat(e.target.value) || 6.28319,
+                    );
                     updateObject(primaryId, { circleThetaLength: val });
                   }}
                   style={{
@@ -1785,7 +1791,10 @@ export function PropertyPanel() {
                   step="0.1"
                   value={obj.ringThetaLength ?? 6.28319}
                   onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 6.28319);
+                    const val = Math.max(
+                      0,
+                      parseFloat(e.target.value) || 6.28319,
+                    );
                     updateObject(primaryId, { ringThetaLength: val });
                   }}
                   style={{
@@ -1840,7 +1849,10 @@ export function PropertyPanel() {
                   step="0.01"
                   value={obj.torusKnotRadius ?? 0.5}
                   onChange={(e) => {
-                    const val = Math.max(0.01, parseFloat(e.target.value) || 0.5);
+                    const val = Math.max(
+                      0.01,
+                      parseFloat(e.target.value) || 0.5,
+                    );
                     updateObject(primaryId, { torusKnotRadius: val });
                   }}
                   style={{
@@ -1870,7 +1882,10 @@ export function PropertyPanel() {
                   step="0.01"
                   value={obj.torusKnotTube ?? 0.15}
                   onChange={(e) => {
-                    const val = Math.max(0.01, parseFloat(e.target.value) || 0.15);
+                    const val = Math.max(
+                      0.01,
+                      parseFloat(e.target.value) || 0.15,
+                    );
                     updateObject(primaryId, { torusKnotTube: val });
                   }}
                   style={{
@@ -1992,6 +2007,358 @@ export function PropertyPanel() {
                   onChange={(e) => {
                     const val = Math.max(1, parseInt(e.target.value) || 3);
                     updateObject(primaryId, { torusKnotQ: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
+          {/* Octahedron Geometry Options */}
+          {obj.type === "octahedron" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radius
+                </Typography>
+                <input
+                  type="number"
+                  min="0.01"
+                  max="10"
+                  step="0.01"
+                  value={obj.octaRadius ?? 0.5}
+                  onChange={(e) => {
+                    const val = Math.max(
+                      0.01,
+                      parseFloat(e.target.value) || 0.5,
+                    );
+                    updateObject(primaryId, { octaRadius: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Detail
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="5"
+                  step="1"
+                  value={obj.octaDetail ?? 0}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseInt(e.target.value) || 0);
+                    updateObject(primaryId, { octaDetail: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
+          {/* Dodecahedron Geometry Options */}
+          {obj.type === "dodecahedron" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radius
+                </Typography>
+                <input
+                  type="number"
+                  min="0.01"
+                  max="10"
+                  step="0.01"
+                  value={obj.dodecaRadius ?? 0.5}
+                  onChange={(e) => {
+                    const val = Math.max(
+                      0.01,
+                      parseFloat(e.target.value) || 0.5,
+                    );
+                    updateObject(primaryId, { dodecaRadius: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Detail
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="5"
+                  step="1"
+                  value={obj.dodecaDetail ?? 0}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseInt(e.target.value) || 0);
+                    updateObject(primaryId, { dodecaDetail: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
+          {/* Icosahedron Geometry Options */}
+          {obj.type === "icosahedron" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radius
+                </Typography>
+                <input
+                  type="number"
+                  min="0.01"
+                  max="10"
+                  step="0.01"
+                  value={obj.icosaRadius ?? 0.5}
+                  onChange={(e) => {
+                    const val = Math.max(
+                      0.01,
+                      parseFloat(e.target.value) || 0.5,
+                    );
+                    updateObject(primaryId, { icosaRadius: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Detail
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="5"
+                  step="1"
+                  value={obj.icosaDetail ?? 0}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseInt(e.target.value) || 0);
+                    updateObject(primaryId, { icosaDetail: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
+          {/* Tetrahedron Geometry Options */}
+          {obj.type === "tetrahedron" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radius
+                </Typography>
+                <input
+                  type="number"
+                  min="0.01"
+                  max="10"
+                  step="0.01"
+                  value={obj.tetraRadius ?? 0.5}
+                  onChange={(e) => {
+                    const val = Math.max(
+                      0.01,
+                      parseFloat(e.target.value) || 0.5,
+                    );
+                    updateObject(primaryId, { tetraRadius: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Detail
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="5"
+                  step="1"
+                  value={obj.tetraDetail ?? 0}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseInt(e.target.value) || 0);
+                    updateObject(primaryId, { tetraDetail: val });
                   }}
                   style={{
                     width: "60px",

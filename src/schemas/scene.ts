@@ -170,6 +170,15 @@ export const SceneFileObjectSchema = z.object({
   torusKnotRadialSegments: z.number().int().min(3).optional(),
   torusKnotP: z.number().int().min(1).optional(),
   torusKnotQ: z.number().int().min(1).optional(),
+  // Polyhedra geometry params (octahedron, dodecahedron, icosahedron, tetrahedron)
+  octaRadius: z.number().min(0).optional(),
+  octaDetail: z.number().int().min(0).optional(),
+  dodecaRadius: z.number().min(0).optional(),
+  dodecaDetail: z.number().int().min(0).optional(),
+  icosaRadius: z.number().min(0).optional(),
+  icosaDetail: z.number().int().min(0).optional(),
+  tetraRadius: z.number().min(0).optional(),
+  tetraDetail: z.number().int().min(0).optional(),
   // Complex geometry data (optional)
   points: z.array(z.tuple([z.number(), z.number()])).optional(),
   shape: TSPShapePathSchema.optional(),

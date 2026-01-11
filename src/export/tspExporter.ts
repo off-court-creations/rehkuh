@@ -329,6 +329,26 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
         obj.torusKnotP !== undefined ||
         obj.torusKnotQ !== undefined);
 
+    // Check if octahedron has custom params (requires unique geometry)
+    const hasCustomOctaParams =
+      obj.type === "octahedron" &&
+      (obj.octaRadius !== undefined || obj.octaDetail !== undefined);
+
+    // Check if dodecahedron has custom params (requires unique geometry)
+    const hasCustomDodecaParams =
+      obj.type === "dodecahedron" &&
+      (obj.dodecaRadius !== undefined || obj.dodecaDetail !== undefined);
+
+    // Check if icosahedron has custom params (requires unique geometry)
+    const hasCustomIcosaParams =
+      obj.type === "icosahedron" &&
+      (obj.icosaRadius !== undefined || obj.icosaDetail !== undefined);
+
+    // Check if tetrahedron has custom params (requires unique geometry)
+    const hasCustomTetraParams =
+      obj.type === "tetrahedron" &&
+      (obj.tetraRadius !== undefined || obj.tetraDetail !== undefined);
+
     if (isComplex) {
       // Complex geometry - unique key per object
       const geoKey = `${obj.type}_${obj.id.slice(0, 8)}`;
@@ -473,8 +493,7 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
       const geoKey = `circle_${obj.id.slice(0, 8)}`;
       const geo: TSPGeometry = { type: "circle", args: [0.5, 32] };
 
-      if (obj.circleRadius !== undefined)
-        geo.circleRadius = obj.circleRadius;
+      if (obj.circleRadius !== undefined) geo.circleRadius = obj.circleRadius;
       if (obj.circleSegments !== undefined)
         geo.circleSegments = obj.circleSegments;
       if (obj.circleThetaStart !== undefined)
@@ -507,7 +526,10 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
     } else if (hasCustomTorusKnotParams) {
       // TorusKnot with custom params - unique key per object
       const geoKey = `torusKnot_${obj.id.slice(0, 8)}`;
-      const geo: TSPGeometry = { type: "torusKnot", args: [0.5, 0.15, 64, 8, 2, 3] };
+      const geo: TSPGeometry = {
+        type: "torusKnot",
+        args: [0.5, 0.15, 64, 8, 2, 3],
+      };
 
       if (obj.torusKnotRadius !== undefined)
         geo.torusKnotRadius = obj.torusKnotRadius;
@@ -517,10 +539,48 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
         geo.torusKnotTubularSegments = obj.torusKnotTubularSegments;
       if (obj.torusKnotRadialSegments !== undefined)
         geo.torusKnotRadialSegments = obj.torusKnotRadialSegments;
-      if (obj.torusKnotP !== undefined)
-        geo.torusKnotP = obj.torusKnotP;
-      if (obj.torusKnotQ !== undefined)
-        geo.torusKnotQ = obj.torusKnotQ;
+      if (obj.torusKnotP !== undefined) geo.torusKnotP = obj.torusKnotP;
+      if (obj.torusKnotQ !== undefined) geo.torusKnotQ = obj.torusKnotQ;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
+    } else if (hasCustomOctaParams) {
+      // Octahedron with custom params - unique key per object
+      const geoKey = `octahedron_${obj.id.slice(0, 8)}`;
+      const geo: TSPGeometry = { type: "octahedron", args: [0.5, 0] };
+
+      if (obj.octaRadius !== undefined) geo.octaRadius = obj.octaRadius;
+      if (obj.octaDetail !== undefined) geo.octaDetail = obj.octaDetail;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
+    } else if (hasCustomDodecaParams) {
+      // Dodecahedron with custom params - unique key per object
+      const geoKey = `dodecahedron_${obj.id.slice(0, 8)}`;
+      const geo: TSPGeometry = { type: "dodecahedron", args: [0.5, 0] };
+
+      if (obj.dodecaRadius !== undefined) geo.dodecaRadius = obj.dodecaRadius;
+      if (obj.dodecaDetail !== undefined) geo.dodecaDetail = obj.dodecaDetail;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
+    } else if (hasCustomIcosaParams) {
+      // Icosahedron with custom params - unique key per object
+      const geoKey = `icosahedron_${obj.id.slice(0, 8)}`;
+      const geo: TSPGeometry = { type: "icosahedron", args: [0.5, 0] };
+
+      if (obj.icosaRadius !== undefined) geo.icosaRadius = obj.icosaRadius;
+      if (obj.icosaDetail !== undefined) geo.icosaDetail = obj.icosaDetail;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
+    } else if (hasCustomTetraParams) {
+      // Tetrahedron with custom params - unique key per object
+      const geoKey = `tetrahedron_${obj.id.slice(0, 8)}`;
+      const geo: TSPGeometry = { type: "tetrahedron", args: [0.5, 0] };
+
+      if (obj.tetraRadius !== undefined) geo.tetraRadius = obj.tetraRadius;
+      if (obj.tetraDetail !== undefined) geo.tetraDetail = obj.tetraDetail;
 
       geometries[geoKey] = geo;
       geometryKeyMap.set(obj.id, geoKey);

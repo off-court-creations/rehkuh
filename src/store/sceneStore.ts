@@ -87,6 +87,15 @@ interface SceneFileObject {
   torusKnotRadialSegments?: number;
   torusKnotP?: number;
   torusKnotQ?: number;
+  // Polyhedra geometry params
+  octaRadius?: number;
+  octaDetail?: number;
+  dodecaRadius?: number;
+  dodecaDetail?: number;
+  icosaRadius?: number;
+  icosaDetail?: number;
+  tetraRadius?: number;
+  tetraDetail?: number;
   // Complex geometry data
   points?: [number, number][];
   shape?: TSPShapePath;
@@ -294,8 +303,7 @@ function toSceneFileObjects(
     if (obj.capsuleRadialSegments !== undefined)
       fileObj.capsuleRadialSegments = obj.capsuleRadialSegments;
     // Circle geometry params
-    if (obj.circleRadius !== undefined)
-      fileObj.circleRadius = obj.circleRadius;
+    if (obj.circleRadius !== undefined) fileObj.circleRadius = obj.circleRadius;
     if (obj.circleSegments !== undefined)
       fileObj.circleSegments = obj.circleSegments;
     if (obj.circleThetaStart !== undefined)
@@ -324,10 +332,17 @@ function toSceneFileObjects(
       fileObj.torusKnotTubularSegments = obj.torusKnotTubularSegments;
     if (obj.torusKnotRadialSegments !== undefined)
       fileObj.torusKnotRadialSegments = obj.torusKnotRadialSegments;
-    if (obj.torusKnotP !== undefined)
-      fileObj.torusKnotP = obj.torusKnotP;
-    if (obj.torusKnotQ !== undefined)
-      fileObj.torusKnotQ = obj.torusKnotQ;
+    if (obj.torusKnotP !== undefined) fileObj.torusKnotP = obj.torusKnotP;
+    if (obj.torusKnotQ !== undefined) fileObj.torusKnotQ = obj.torusKnotQ;
+    // Polyhedra geometry params
+    if (obj.octaRadius !== undefined) fileObj.octaRadius = obj.octaRadius;
+    if (obj.octaDetail !== undefined) fileObj.octaDetail = obj.octaDetail;
+    if (obj.dodecaRadius !== undefined) fileObj.dodecaRadius = obj.dodecaRadius;
+    if (obj.dodecaDetail !== undefined) fileObj.dodecaDetail = obj.dodecaDetail;
+    if (obj.icosaRadius !== undefined) fileObj.icosaRadius = obj.icosaRadius;
+    if (obj.icosaDetail !== undefined) fileObj.icosaDetail = obj.icosaDetail;
+    if (obj.tetraRadius !== undefined) fileObj.tetraRadius = obj.tetraRadius;
+    if (obj.tetraDetail !== undefined) fileObj.tetraDetail = obj.tetraDetail;
     // Include complex geometry data if present
     if (obj.points) fileObj.points = obj.points;
     if (obj.shape) fileObj.shape = obj.shape;
@@ -566,6 +581,23 @@ export const useSceneStore = create<SceneState>()(
             sceneObject.torusKnotP = fo.torusKnotP;
           if (fo.torusKnotQ !== undefined)
             sceneObject.torusKnotQ = fo.torusKnotQ;
+          // Polyhedra geometry params
+          if (fo.octaRadius !== undefined)
+            sceneObject.octaRadius = fo.octaRadius;
+          if (fo.octaDetail !== undefined)
+            sceneObject.octaDetail = fo.octaDetail;
+          if (fo.dodecaRadius !== undefined)
+            sceneObject.dodecaRadius = fo.dodecaRadius;
+          if (fo.dodecaDetail !== undefined)
+            sceneObject.dodecaDetail = fo.dodecaDetail;
+          if (fo.icosaRadius !== undefined)
+            sceneObject.icosaRadius = fo.icosaRadius;
+          if (fo.icosaDetail !== undefined)
+            sceneObject.icosaDetail = fo.icosaDetail;
+          if (fo.tetraRadius !== undefined)
+            sceneObject.tetraRadius = fo.tetraRadius;
+          if (fo.tetraDetail !== undefined)
+            sceneObject.tetraDetail = fo.tetraDetail;
           // Complex geometry data - only assign if defined
           if (fo.points) sceneObject.points = fo.points;
           if (fo.shape) sceneObject.shape = fo.shape as TSPShapePath;
