@@ -1,7 +1,116 @@
 import { useMemo, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { useSceneStore } from "@/store/sceneStore";
+
+// Bounding box visualization for selected groups
+function GroupBoundingBox({ id }) {
+  const { scene } = useThree();
+  const getDescendants = useSceneStore((state) => state.getDescendants);
+
+  // Calculate bounding box and edges from all descendant meshes
+  const { edgesGeometry, boundsMin, boundsMax } = useMemo(() => {
+    const descendants = getDescendants(id);
+    if (descendants.length === 0)
+      return { edgesGeometry: null, boundsMin: null, boundsMax: null };
+
+    const descendantIds = new Set(descendants.map((d) => d.id));
+    const bounds = new THREE.Box3();
+    const tmp = new THREE.Box3();
+    let hasAny = false;
+
+    scene.traverse((obj) => {
+      const objectId = obj?.userData?.objectId;
+      if (!objectId || !descendantIds.has(objectId)) return;
+      if (!obj.isMesh) return;
+
+      tmp.setFromObject(obj);
+      if (tmp.isEmpty()) return;
+
+      if (!hasAny) {
+        bounds.copy(tmp);
+        hasAny = true;
+      } else {
+        bounds.union(tmp);
+      }
+    });
+
+    if (!hasAny || bounds.isEmpty())
+      return { edgesGeometry: null, boundsMin: null, boundsMax: null };
+
+    // Create box geometry from bounds
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    bounds.getSize(size);
+    bounds.getCenter(center);
+
+    const geo = new THREE.BoxGeometry(size.x, size.y, size.z);
+    geo.translate(center.x, center.y, center.z);
+
+    return {
+      edgesGeometry: new THREE.EdgesGeometry(geo),
+      boundsMin: bounds.min.clone(),
+      boundsMax: bounds.max.clone(),
+    };
+  }, [id, getDescendants, scene]);
+
+  const edgesMaterial = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        vertexShader: `
+          varying vec3 vLocalPosition;
+          void main() {
+            vLocalPosition = position;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 colorA;
+          uniform vec3 colorB;
+          uniform vec3 boundsMin;
+          uniform vec3 boundsMax;
+          varying vec3 vLocalPosition;
+          void main() {
+            // Normalize position within bounds for consistent gradient
+            vec3 range = boundsMax - boundsMin;
+            float t = ((vLocalPosition.x - boundsMin.x) + (vLocalPosition.y - boundsMin.y) + (vLocalPosition.z - boundsMin.z)) / (range.x + range.y + range.z);
+            t = clamp(t, 0.0, 1.0);
+            vec3 color = mix(colorA, colorB, t);
+            gl_FragColor = vec4(color, 0.9);
+          }
+        `,
+        uniforms: {
+          colorA: { value: new THREE.Color("#00ffd5") },
+          colorB: { value: new THREE.Color("#ff00ff") },
+          boundsMin: { value: new THREE.Vector3(-1, -1, -1) },
+          boundsMax: { value: new THREE.Vector3(1, 1, 1) },
+        },
+        transparent: true,
+        depthTest: true,
+      }),
+    [],
+  );
+
+  // Update uniforms when bounds change
+  if (boundsMin && boundsMax) {
+    edgesMaterial.uniforms.boundsMin.value.copy(boundsMin);
+    edgesMaterial.uniforms.boundsMax.value.copy(boundsMax);
+  }
+
+  if (!edgesGeometry) return null;
+
+  return (
+    <lineSegments
+      geometry={edgesGeometry}
+      material={edgesMaterial}
+      raycast={() => null}
+      renderOrder={1000}
+      position={[0, 0, 0]}
+      rotation={[0, 0, 0]}
+      scale={[1, 1, 1]}
+    />
+  );
+}
 
 // Build THREE.Shape from shape path commands
 function buildShapeFromPath(shapePath) {
@@ -184,49 +293,37 @@ export function SceneObject({ id }) {
   const meshRef = useRef();
   const materialRef = useRef();
 
-  const outlineMaterial = useMemo(() => {
-    const material = new THREE.ShaderMaterial({
-      uniforms: {
-        colorA: { value: new THREE.Color("#00ffd5") }, // teal
-        colorB: { value: new THREE.Color("#ff00ff") }, // magenta
-        stripeDensity: { value: 18.0 },
-        time: { value: 0.0 },
-        speed: { value: 0.35 },
-      },
-      vertexShader: `
-        varying vec2 vUv;
-        void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform vec3 colorA;
-        uniform vec3 colorB;
-        uniform float stripeDensity;
-        uniform float time;
-        uniform float speed;
-        varying vec2 vUv;
-
-        void main() {
-          float drift = time * speed;
-          float t = fract((vUv.x + vUv.y + drift) * stripeDensity);
-          float stripe = step(0.5, t);
-          vec3 color = mix(colorA, colorB, stripe);
-          gl_FragColor = vec4(color, 1.0);
-        }
-      `,
-      side: THREE.BackSide,
-      toneMapped: false,
-      depthWrite: false,
-    });
-
-    material.polygonOffset = true;
-    material.polygonOffsetFactor = 1;
-    material.polygonOffsetUnits = 1;
-
-    return material;
-  }, []);
+  const selectionMaterial = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        vertexShader: `
+          varying vec3 vLocalPosition;
+          void main() {
+            vLocalPosition = position;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 colorA;
+          uniform vec3 colorB;
+          varying vec3 vLocalPosition;
+          void main() {
+            // Gradient based on local position (diagonal across object)
+            float t = (vLocalPosition.x + vLocalPosition.y + vLocalPosition.z + 1.5) / 3.0;
+            t = clamp(t, 0.0, 1.0);
+            vec3 color = mix(colorA, colorB, t);
+            gl_FragColor = vec4(color, 0.9);
+          }
+        `,
+        uniforms: {
+          colorA: { value: new THREE.Color("#00ffd5") }, // teal
+          colorB: { value: new THREE.Color("#ff00ff") }, // magenta
+        },
+        transparent: true,
+        depthTest: true,
+      }),
+    [],
+  );
 
   // Create object material (standard, physical, or shader)
   const objectMaterial = useMemo(() => {
@@ -331,15 +428,9 @@ export function SceneObject({ id }) {
   materialRef.current = objectMaterial;
 
   useFrame(({ clock }) => {
-    const elapsed = clock.getElapsedTime();
-
-    // Animate outline material when selected
-    if (isSelected) {
-      outlineMaterial.uniforms.time.value = elapsed;
-    }
-
     // Animate shader material uniforms
     if (obj?.material?.type === "shader" && materialRef.current) {
+      const elapsed = clock.getElapsedTime();
       const mat = obj.material;
       for (const [name, def] of Object.entries(mat.uniforms || {})) {
         if (def.animated && materialRef.current.uniforms?.[name]) {
@@ -443,43 +534,52 @@ export function SceneObject({ id }) {
     obj?.indices,
   ]);
 
+  // Edges geometry for selection wireframe
+  const edgesGeometry = useMemo(() => {
+    if (!geometry) return null;
+    return new THREE.EdgesGeometry(geometry);
+  }, [geometry]);
+
   if (!obj || !obj.visible) return null;
 
   return (
-    <group
-      position={obj.position}
-      rotation={obj.rotation}
-      scale={obj.scale}
-      userData={{ objectId: id }}
-    >
-      {obj.type !== "group" && geometry && objectMaterial && (
-        <>
-          <mesh
-            ref={meshRef}
-            onClick={handleClick}
-            userData={{ objectId: id }}
-            castShadow={obj.castShadow ?? true}
-            receiveShadow={obj.receiveShadow ?? true}
-            geometry={geometry}
-            material={objectMaterial}
-          />
-
-          {isSelected && (
+    <>
+      <group
+        position={obj.position}
+        rotation={obj.rotation}
+        scale={obj.scale}
+        userData={{ objectId: id }}
+      >
+        {obj.type !== "group" && geometry && objectMaterial && (
+          <>
             <mesh
-              scale={[1.15, 1.15, 1.15]}
-              raycast={() => null}
-              renderOrder={999}
+              ref={meshRef}
+              onClick={handleClick}
+              userData={{ objectId: id }}
+              castShadow={obj.castShadow ?? true}
+              receiveShadow={obj.receiveShadow ?? true}
               geometry={geometry}
-            >
-              <primitive object={outlineMaterial} attach="material" />
-            </mesh>
-          )}
-        </>
-      )}
+              material={objectMaterial}
+            />
 
-      {children.map((child) => (
-        <SceneObject key={child.id} id={child.id} />
-      ))}
-    </group>
+            {isSelected && edgesGeometry && (
+              <lineSegments
+                raycast={() => null}
+                renderOrder={999}
+                geometry={edgesGeometry}
+                material={selectionMaterial}
+              />
+            )}
+          </>
+        )}
+
+        {children.map((child) => (
+          <SceneObject key={child.id} id={child.id} />
+        ))}
+      </group>
+
+      {/* Bounding box for selected groups - rendered outside group transform */}
+      {isSelected && obj.type === "group" && <GroupBoundingBox id={id} />}
+    </>
   );
 }
