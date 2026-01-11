@@ -187,6 +187,43 @@ export interface SceneObject {
   boxWidthSegments?: number;
   boxHeightSegments?: number;
   boxDepthSegments?: number;
+  // Sphere geometry subdivision
+  sphereWidthSegments?: number;
+  sphereHeightSegments?: number;
+  // Sphere geometry partial sphere params (radians)
+  spherePhiStart?: number;
+  spherePhiLength?: number;
+  sphereThetaStart?: number;
+  sphereThetaLength?: number;
+  // Cylinder geometry params
+  cylinderRadiusTop?: number;
+  cylinderRadiusBottom?: number;
+  cylinderRadialSegments?: number;
+  cylinderHeightSegments?: number;
+  cylinderOpenEnded?: boolean;
+  cylinderThetaStart?: number;
+  cylinderThetaLength?: number;
+  // Cone geometry params
+  coneRadius?: number;
+  coneRadialSegments?: number;
+  coneHeightSegments?: number;
+  coneOpenEnded?: boolean;
+  coneThetaStart?: number;
+  coneThetaLength?: number;
+  // Torus geometry params
+  torusRadius?: number;
+  torusTube?: number;
+  torusRadialSegments?: number;
+  torusTubularSegments?: number;
+  torusArc?: number;
+  // Plane geometry params
+  planeWidthSegments?: number;
+  planeHeightSegments?: number;
+  // Capsule geometry params
+  capsuleRadius?: number;
+  capsuleLength?: number;
+  capsuleCapSegments?: number;
+  capsuleRadialSegments?: number;
   // Complex geometry data (optional, for lathe/extrude/shape/tube/polyhedron)
   points?: [number, number][];
   shape?: TSPShapePath;
@@ -402,6 +439,43 @@ export interface TSPGeometry {
   boxWidthSegments?: number;
   boxHeightSegments?: number;
   boxDepthSegments?: number;
+  // SphereGeometry subdivision
+  sphereWidthSegments?: number;
+  sphereHeightSegments?: number;
+  // SphereGeometry partial sphere params (radians)
+  spherePhiStart?: number;
+  spherePhiLength?: number;
+  sphereThetaStart?: number;
+  sphereThetaLength?: number;
+  // CylinderGeometry params
+  cylinderRadiusTop?: number;
+  cylinderRadiusBottom?: number;
+  cylinderRadialSegments?: number;
+  cylinderHeightSegments?: number;
+  cylinderOpenEnded?: boolean;
+  cylinderThetaStart?: number;
+  cylinderThetaLength?: number;
+  // ConeGeometry params
+  coneRadius?: number;
+  coneRadialSegments?: number;
+  coneHeightSegments?: number;
+  coneOpenEnded?: boolean;
+  coneThetaStart?: number;
+  coneThetaLength?: number;
+  // TorusGeometry params
+  torusRadius?: number;
+  torusTube?: number;
+  torusRadialSegments?: number;
+  torusTubularSegments?: number;
+  torusArc?: number;
+  // PlaneGeometry params
+  planeWidthSegments?: number;
+  planeHeightSegments?: number;
+  // CapsuleGeometry params
+  capsuleRadius?: number;
+  capsuleLength?: number;
+  capsuleCapSegments?: number;
+  capsuleRadialSegments?: number;
   // LatheGeometry (Vector2 points)
   points?: [number, number][];
   // ExtrudeGeometry, ShapeGeometry (shape path)

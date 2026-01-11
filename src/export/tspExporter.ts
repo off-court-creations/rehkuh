@@ -247,6 +247,60 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
         obj.boxHeightSegments !== undefined ||
         obj.boxDepthSegments !== undefined);
 
+    // Check if sphere has custom params (requires unique geometry)
+    const hasCustomSphereParams =
+      obj.type === "sphere" &&
+      (obj.sphereWidthSegments !== undefined ||
+        obj.sphereHeightSegments !== undefined ||
+        obj.spherePhiStart !== undefined ||
+        obj.spherePhiLength !== undefined ||
+        obj.sphereThetaStart !== undefined ||
+        obj.sphereThetaLength !== undefined);
+
+    // Check if cylinder has custom params (requires unique geometry)
+    const hasCustomCylinderParams =
+      obj.type === "cylinder" &&
+      (obj.cylinderRadiusTop !== undefined ||
+        obj.cylinderRadiusBottom !== undefined ||
+        obj.cylinderRadialSegments !== undefined ||
+        obj.cylinderHeightSegments !== undefined ||
+        obj.cylinderOpenEnded !== undefined ||
+        obj.cylinderThetaStart !== undefined ||
+        obj.cylinderThetaLength !== undefined);
+
+    // Check if cone has custom params (requires unique geometry)
+    const hasCustomConeParams =
+      obj.type === "cone" &&
+      (obj.coneRadius !== undefined ||
+        obj.coneRadialSegments !== undefined ||
+        obj.coneHeightSegments !== undefined ||
+        obj.coneOpenEnded !== undefined ||
+        obj.coneThetaStart !== undefined ||
+        obj.coneThetaLength !== undefined);
+
+    // Check if torus has custom params (requires unique geometry)
+    const hasCustomTorusParams =
+      obj.type === "torus" &&
+      (obj.torusRadius !== undefined ||
+        obj.torusTube !== undefined ||
+        obj.torusRadialSegments !== undefined ||
+        obj.torusTubularSegments !== undefined ||
+        obj.torusArc !== undefined);
+
+    // Check if plane has custom params (requires unique geometry)
+    const hasCustomPlaneParams =
+      obj.type === "plane" &&
+      (obj.planeWidthSegments !== undefined ||
+        obj.planeHeightSegments !== undefined);
+
+    // Check if capsule has custom params (requires unique geometry)
+    const hasCustomCapsuleParams =
+      obj.type === "capsule" &&
+      (obj.capsuleRadius !== undefined ||
+        obj.capsuleLength !== undefined ||
+        obj.capsuleCapSegments !== undefined ||
+        obj.capsuleRadialSegments !== undefined);
+
     if (isComplex) {
       // Complex geometry - unique key per object
       const geoKey = `${obj.type}_${obj.id.slice(0, 8)}`;
@@ -279,6 +333,110 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
         geo.boxHeightSegments = obj.boxHeightSegments;
       if (obj.boxDepthSegments !== undefined)
         geo.boxDepthSegments = obj.boxDepthSegments;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
+    } else if (hasCustomSphereParams) {
+      // Sphere with custom params - unique key per object
+      const geoKey = `sphere_${obj.id.slice(0, 8)}`;
+      const geo: TSPGeometry = { type: "sphere", args: [0.5, 32, 32] };
+
+      if (obj.sphereWidthSegments !== undefined)
+        geo.sphereWidthSegments = obj.sphereWidthSegments;
+      if (obj.sphereHeightSegments !== undefined)
+        geo.sphereHeightSegments = obj.sphereHeightSegments;
+      if (obj.spherePhiStart !== undefined)
+        geo.spherePhiStart = obj.spherePhiStart;
+      if (obj.spherePhiLength !== undefined)
+        geo.spherePhiLength = obj.spherePhiLength;
+      if (obj.sphereThetaStart !== undefined)
+        geo.sphereThetaStart = obj.sphereThetaStart;
+      if (obj.sphereThetaLength !== undefined)
+        geo.sphereThetaLength = obj.sphereThetaLength;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
+    } else if (hasCustomCylinderParams) {
+      // Cylinder with custom params - unique key per object
+      const geoKey = `cylinder_${obj.id.slice(0, 8)}`;
+      const geo: TSPGeometry = { type: "cylinder", args: [0.5, 0.5, 1, 32] };
+
+      if (obj.cylinderRadiusTop !== undefined)
+        geo.cylinderRadiusTop = obj.cylinderRadiusTop;
+      if (obj.cylinderRadiusBottom !== undefined)
+        geo.cylinderRadiusBottom = obj.cylinderRadiusBottom;
+      if (obj.cylinderRadialSegments !== undefined)
+        geo.cylinderRadialSegments = obj.cylinderRadialSegments;
+      if (obj.cylinderHeightSegments !== undefined)
+        geo.cylinderHeightSegments = obj.cylinderHeightSegments;
+      if (obj.cylinderOpenEnded !== undefined)
+        geo.cylinderOpenEnded = obj.cylinderOpenEnded;
+      if (obj.cylinderThetaStart !== undefined)
+        geo.cylinderThetaStart = obj.cylinderThetaStart;
+      if (obj.cylinderThetaLength !== undefined)
+        geo.cylinderThetaLength = obj.cylinderThetaLength;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
+    } else if (hasCustomConeParams) {
+      // Cone with custom params - unique key per object
+      const geoKey = `cone_${obj.id.slice(0, 8)}`;
+      const geo: TSPGeometry = { type: "cone", args: [0.5, 1, 32] };
+
+      if (obj.coneRadius !== undefined) geo.coneRadius = obj.coneRadius;
+      if (obj.coneRadialSegments !== undefined)
+        geo.coneRadialSegments = obj.coneRadialSegments;
+      if (obj.coneHeightSegments !== undefined)
+        geo.coneHeightSegments = obj.coneHeightSegments;
+      if (obj.coneOpenEnded !== undefined)
+        geo.coneOpenEnded = obj.coneOpenEnded;
+      if (obj.coneThetaStart !== undefined)
+        geo.coneThetaStart = obj.coneThetaStart;
+      if (obj.coneThetaLength !== undefined)
+        geo.coneThetaLength = obj.coneThetaLength;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
+    } else if (hasCustomTorusParams) {
+      // Torus with custom params - unique key per object
+      const geoKey = `torus_${obj.id.slice(0, 8)}`;
+      const geo: TSPGeometry = { type: "torus", args: [0.5, 0.2, 16, 32] };
+
+      if (obj.torusRadius !== undefined) geo.torusRadius = obj.torusRadius;
+      if (obj.torusTube !== undefined) geo.torusTube = obj.torusTube;
+      if (obj.torusRadialSegments !== undefined)
+        geo.torusRadialSegments = obj.torusRadialSegments;
+      if (obj.torusTubularSegments !== undefined)
+        geo.torusTubularSegments = obj.torusTubularSegments;
+      if (obj.torusArc !== undefined) geo.torusArc = obj.torusArc;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
+    } else if (hasCustomPlaneParams) {
+      // Plane with custom params - unique key per object
+      const geoKey = `plane_${obj.id.slice(0, 8)}`;
+      const geo: TSPGeometry = { type: "plane", args: [1, 1] };
+
+      if (obj.planeWidthSegments !== undefined)
+        geo.planeWidthSegments = obj.planeWidthSegments;
+      if (obj.planeHeightSegments !== undefined)
+        geo.planeHeightSegments = obj.planeHeightSegments;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
+    } else if (hasCustomCapsuleParams) {
+      // Capsule with custom params - unique key per object
+      const geoKey = `capsule_${obj.id.slice(0, 8)}`;
+      const geo: TSPGeometry = { type: "capsule", args: [0.5, 1, 4, 8] };
+
+      if (obj.capsuleRadius !== undefined)
+        geo.capsuleRadius = obj.capsuleRadius;
+      if (obj.capsuleLength !== undefined)
+        geo.capsuleLength = obj.capsuleLength;
+      if (obj.capsuleCapSegments !== undefined)
+        geo.capsuleCapSegments = obj.capsuleCapSegments;
+      if (obj.capsuleRadialSegments !== undefined)
+        geo.capsuleRadialSegments = obj.capsuleRadialSegments;
 
       geometries[geoKey] = geo;
       geometryKeyMap.set(obj.id, geoKey);

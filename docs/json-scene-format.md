@@ -58,7 +58,7 @@ These use default unit dimensions and scale:
 | Type | Description | Default Args |
 |------|-------------|--------------|
 | `box` | Box/cube | 1x1x1 (optional subdivision via `boxWidthSegments`, `boxHeightSegments`, `boxDepthSegments`) |
-| `sphere` | Sphere | radius 0.5, 32x32 segments |
+| `sphere` | Sphere | radius 0.5, 32x32 segments (optional params for segments and partial spheres) |
 | `cylinder` | Cylinder | radius 0.5, height 1, 32 segments |
 | `cone` | Cone | radius 0.5, height 1, 32 segments |
 | `torus` | Torus (donut) | radius 0.5, tube 0.2 |
@@ -101,6 +101,43 @@ Example with subdivision:
   "boxHeightSegments": 2,
   "boxDepthSegments": 2,
   "material": { "color": "#ff0000", "metalness": 0.5, "roughness": 0.5 }
+}
+```
+
+### Sphere Geometry Options
+
+Spheres support subdivision and partial sphere parameters:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `sphereWidthSegments` | number? | 32 | Horizontal segments (min 3) |
+| `sphereHeightSegments` | number? | 32 | Vertical segments (min 2) |
+| `spherePhiStart` | number? | 0 | Horizontal start angle (radians) |
+| `spherePhiLength` | number? | 2π | Horizontal sweep angle (radians) |
+| `sphereThetaStart` | number? | 0 | Vertical start angle (radians) |
+| `sphereThetaLength` | number? | π | Vertical sweep angle (radians) |
+
+**Common recipes:**
+
+| Shape | Parameters |
+|-------|------------|
+| Dome (top half) | `sphereThetaLength: 1.571` |
+| Bowl (bottom half) | `sphereThetaStart: 1.571, sphereThetaLength: 1.571` |
+| Half sphere (vertical cut) | `spherePhiLength: 3.142` |
+| Quarter sphere | `spherePhiLength: 1.571, sphereThetaLength: 1.571` |
+| Low-poly sphere | `sphereWidthSegments: 8, sphereHeightSegments: 6` |
+
+Example dome:
+
+```json
+{
+  "name": "dome",
+  "type": "sphere",
+  "position": [0, 0, 0],
+  "rotation": [0, 0, 0],
+  "scale": [1, 1, 1],
+  "sphereThetaLength": 1.571,
+  "material": { "color": "#44ff88", "metalness": 0.3, "roughness": 0.5 }
 }
 ```
 

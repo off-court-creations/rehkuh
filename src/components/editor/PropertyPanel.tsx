@@ -417,6 +417,1043 @@ export function PropertyPanel() {
             </>
           )}
 
+          {/* Sphere Geometry Options */}
+          {obj.type === "sphere" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Width Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="3"
+                  max="128"
+                  step="1"
+                  value={obj.sphereWidthSegments ?? 32}
+                  onChange={(e) => {
+                    const val = Math.max(3, parseInt(e.target.value) || 32);
+                    updateObject(primaryId, { sphereWidthSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Height Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="2"
+                  max="128"
+                  step="1"
+                  value={obj.sphereHeightSegments ?? 32}
+                  onChange={(e) => {
+                    const val = Math.max(2, parseInt(e.target.value) || 32);
+                    updateObject(primaryId, { sphereHeightSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Phi Start
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="6.283"
+                  step="0.1"
+                  value={obj.spherePhiStart ?? 0}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0);
+                    updateObject(primaryId, { spherePhiStart: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Phi Length
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="6.283"
+                  step="0.1"
+                  value={obj.spherePhiLength ?? Math.PI * 2}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0);
+                    updateObject(primaryId, { spherePhiLength: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Theta Start
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="3.142"
+                  step="0.1"
+                  value={obj.sphereThetaStart ?? 0}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0);
+                    updateObject(primaryId, { sphereThetaStart: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Theta Length
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="3.142"
+                  step="0.1"
+                  value={obj.sphereThetaLength ?? Math.PI}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0);
+                    updateObject(primaryId, { sphereThetaLength: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
+          {/* Cylinder Geometry Options */}
+          {obj.type === "cylinder" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radius Top
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                  value={obj.cylinderRadiusTop ?? 0.5}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0.5);
+                    updateObject(primaryId, { cylinderRadiusTop: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radius Bottom
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                  value={obj.cylinderRadiusBottom ?? 0.5}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0.5);
+                    updateObject(primaryId, { cylinderRadiusBottom: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radial Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="3"
+                  max="128"
+                  step="1"
+                  value={obj.cylinderRadialSegments ?? 32}
+                  onChange={(e) => {
+                    const val = Math.max(3, parseInt(e.target.value) || 32);
+                    updateObject(primaryId, { cylinderRadialSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Height Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="1"
+                  max="128"
+                  step="1"
+                  value={obj.cylinderHeightSegments ?? 1}
+                  onChange={(e) => {
+                    const val = Math.max(1, parseInt(e.target.value) || 1);
+                    updateObject(primaryId, { cylinderHeightSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Open Ended
+                </Typography>
+                <input
+                  type="checkbox"
+                  checked={obj.cylinderOpenEnded ?? false}
+                  onChange={(e) => {
+                    updateObject(primaryId, {
+                      cylinderOpenEnded: e.target.checked,
+                    });
+                  }}
+                  style={{
+                    width: "16px",
+                    height: "16px",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Theta Start
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="6.283"
+                  step="0.1"
+                  value={obj.cylinderThetaStart ?? 0}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0);
+                    updateObject(primaryId, { cylinderThetaStart: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Theta Length
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="6.283"
+                  step="0.1"
+                  value={obj.cylinderThetaLength ?? Math.PI * 2}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0);
+                    updateObject(primaryId, { cylinderThetaLength: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
+          {/* Cone Geometry Options */}
+          {obj.type === "cone" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radius
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                  value={obj.coneRadius ?? 0.5}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0.5);
+                    updateObject(primaryId, { coneRadius: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radial Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="3"
+                  max="128"
+                  step="1"
+                  value={obj.coneRadialSegments ?? 32}
+                  onChange={(e) => {
+                    const val = Math.max(3, parseInt(e.target.value) || 32);
+                    updateObject(primaryId, { coneRadialSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Height Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="1"
+                  max="128"
+                  step="1"
+                  value={obj.coneHeightSegments ?? 1}
+                  onChange={(e) => {
+                    const val = Math.max(1, parseInt(e.target.value) || 1);
+                    updateObject(primaryId, { coneHeightSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Open Ended
+                </Typography>
+                <input
+                  type="checkbox"
+                  checked={obj.coneOpenEnded ?? false}
+                  onChange={(e) => {
+                    updateObject(primaryId, {
+                      coneOpenEnded: e.target.checked,
+                    });
+                  }}
+                  style={{
+                    width: "16px",
+                    height: "16px",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Theta Start
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="6.283"
+                  step="0.1"
+                  value={obj.coneThetaStart ?? 0}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0);
+                    updateObject(primaryId, { coneThetaStart: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Theta Length
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="6.283"
+                  step="0.1"
+                  value={obj.coneThetaLength ?? Math.PI * 2}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0);
+                    updateObject(primaryId, { coneThetaLength: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
+          {/* Torus Geometry Options */}
+          {obj.type === "torus" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radius
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                  value={obj.torusRadius ?? 0.5}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0.5);
+                    updateObject(primaryId, { torusRadius: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Tube
+                </Typography>
+                <input
+                  type="number"
+                  min="0.01"
+                  max="5"
+                  step="0.01"
+                  value={obj.torusTube ?? 0.2}
+                  onChange={(e) => {
+                    const val = Math.max(0.01, parseFloat(e.target.value) || 0.2);
+                    updateObject(primaryId, { torusTube: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radial Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="3"
+                  max="64"
+                  step="1"
+                  value={obj.torusRadialSegments ?? 16}
+                  onChange={(e) => {
+                    const val = Math.max(3, parseInt(e.target.value) || 16);
+                    updateObject(primaryId, { torusRadialSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Tubular Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="3"
+                  max="200"
+                  step="1"
+                  value={obj.torusTubularSegments ?? 32}
+                  onChange={(e) => {
+                    const val = Math.max(3, parseInt(e.target.value) || 32);
+                    updateObject(primaryId, { torusTubularSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Arc
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="6.283"
+                  step="0.1"
+                  value={obj.torusArc ?? Math.PI * 2}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0);
+                    updateObject(primaryId, { torusArc: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
+          {/* Plane Geometry Options */}
+          {obj.type === "plane" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Width Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value={obj.planeWidthSegments ?? 1}
+                  onChange={(e) => {
+                    const val = Math.max(1, parseInt(e.target.value) || 1);
+                    updateObject(primaryId, { planeWidthSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Height Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value={obj.planeHeightSegments ?? 1}
+                  onChange={(e) => {
+                    const val = Math.max(1, parseInt(e.target.value) || 1);
+                    updateObject(primaryId, { planeHeightSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
+          {/* Capsule Geometry Options */}
+          {obj.type === "capsule" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radius
+                </Typography>
+                <input
+                  type="number"
+                  min="0.01"
+                  max="10"
+                  step="0.01"
+                  value={obj.capsuleRadius ?? 0.5}
+                  onChange={(e) => {
+                    const val = Math.max(
+                      0.01,
+                      parseFloat(e.target.value) || 0.5,
+                    );
+                    updateObject(primaryId, { capsuleRadius: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Length
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  step="0.1"
+                  value={obj.capsuleLength ?? 1}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 1);
+                    updateObject(primaryId, { capsuleLength: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Cap Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="1"
+                  max="32"
+                  step="1"
+                  value={obj.capsuleCapSegments ?? 4}
+                  onChange={(e) => {
+                    const val = Math.max(1, parseInt(e.target.value) || 4);
+                    updateObject(primaryId, { capsuleCapSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radial Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="3"
+                  max="64"
+                  step="1"
+                  value={obj.capsuleRadialSegments ?? 8}
+                  onChange={(e) => {
+                    const val = Math.max(3, parseInt(e.target.value) || 8);
+                    updateObject(primaryId, { capsuleRadialSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
           {/* Tube Geometry Options */}
           {obj.type === "tube" && (
             <>
@@ -447,7 +1484,10 @@ export function PropertyPanel() {
                   step="0.01"
                   value={obj.tubeRadius ?? 0.1}
                   onChange={(e) => {
-                    const val = Math.max(0.01, parseFloat(e.target.value) || 0.1);
+                    const val = Math.max(
+                      0.01,
+                      parseFloat(e.target.value) || 0.1,
+                    );
                     updateObject(primaryId, { tubeRadius: val });
                   }}
                   style={{

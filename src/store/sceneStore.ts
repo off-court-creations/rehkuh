@@ -28,12 +28,55 @@ interface SceneFileObject {
   rotation: [number, number, number];
   scale: [number, number, number];
   material?: MaterialProps | undefined;
+  // Box geometry params
+  boxWidthSegments?: number;
+  boxHeightSegments?: number;
+  boxDepthSegments?: number;
+  // Sphere geometry params
+  sphereWidthSegments?: number;
+  sphereHeightSegments?: number;
+  spherePhiStart?: number;
+  spherePhiLength?: number;
+  sphereThetaStart?: number;
+  sphereThetaLength?: number;
+  // Cylinder geometry params
+  cylinderRadiusTop?: number;
+  cylinderRadiusBottom?: number;
+  cylinderRadialSegments?: number;
+  cylinderHeightSegments?: number;
+  cylinderOpenEnded?: boolean;
+  cylinderThetaStart?: number;
+  cylinderThetaLength?: number;
+  // Cone geometry params
+  coneRadius?: number;
+  coneRadialSegments?: number;
+  coneHeightSegments?: number;
+  coneOpenEnded?: boolean;
+  coneThetaStart?: number;
+  coneThetaLength?: number;
+  // Torus geometry params
+  torusRadius?: number;
+  torusTube?: number;
+  torusRadialSegments?: number;
+  torusTubularSegments?: number;
+  torusArc?: number;
+  // Plane geometry params
+  planeWidthSegments?: number;
+  planeHeightSegments?: number;
+  // Capsule geometry params
+  capsuleRadius?: number;
+  capsuleLength?: number;
+  capsuleCapSegments?: number;
+  capsuleRadialSegments?: number;
   // Complex geometry data
   points?: [number, number][];
   shape?: TSPShapePath;
   extrudeOptions?: TSPExtrudeOptions;
   path?: TSPCurve3D;
   tubeRadius?: number;
+  tubeTubularSegments?: number;
+  tubeRadialSegments?: number;
+  tubeClosed?: boolean;
   vertices?: number[];
   indices?: number[];
 }
@@ -162,12 +205,86 @@ function toSceneFileObjects(
       ],
       material: obj.type !== "group" ? obj.material : undefined,
     };
+    // Box geometry params
+    if (obj.boxWidthSegments !== undefined)
+      fileObj.boxWidthSegments = obj.boxWidthSegments;
+    if (obj.boxHeightSegments !== undefined)
+      fileObj.boxHeightSegments = obj.boxHeightSegments;
+    if (obj.boxDepthSegments !== undefined)
+      fileObj.boxDepthSegments = obj.boxDepthSegments;
+    // Sphere geometry params
+    if (obj.sphereWidthSegments !== undefined)
+      fileObj.sphereWidthSegments = obj.sphereWidthSegments;
+    if (obj.sphereHeightSegments !== undefined)
+      fileObj.sphereHeightSegments = obj.sphereHeightSegments;
+    if (obj.spherePhiStart !== undefined)
+      fileObj.spherePhiStart = obj.spherePhiStart;
+    if (obj.spherePhiLength !== undefined)
+      fileObj.spherePhiLength = obj.spherePhiLength;
+    if (obj.sphereThetaStart !== undefined)
+      fileObj.sphereThetaStart = obj.sphereThetaStart;
+    if (obj.sphereThetaLength !== undefined)
+      fileObj.sphereThetaLength = obj.sphereThetaLength;
+    // Cylinder geometry params
+    if (obj.cylinderRadiusTop !== undefined)
+      fileObj.cylinderRadiusTop = obj.cylinderRadiusTop;
+    if (obj.cylinderRadiusBottom !== undefined)
+      fileObj.cylinderRadiusBottom = obj.cylinderRadiusBottom;
+    if (obj.cylinderRadialSegments !== undefined)
+      fileObj.cylinderRadialSegments = obj.cylinderRadialSegments;
+    if (obj.cylinderHeightSegments !== undefined)
+      fileObj.cylinderHeightSegments = obj.cylinderHeightSegments;
+    if (obj.cylinderOpenEnded !== undefined)
+      fileObj.cylinderOpenEnded = obj.cylinderOpenEnded;
+    if (obj.cylinderThetaStart !== undefined)
+      fileObj.cylinderThetaStart = obj.cylinderThetaStart;
+    if (obj.cylinderThetaLength !== undefined)
+      fileObj.cylinderThetaLength = obj.cylinderThetaLength;
+    // Cone geometry params
+    if (obj.coneRadius !== undefined) fileObj.coneRadius = obj.coneRadius;
+    if (obj.coneRadialSegments !== undefined)
+      fileObj.coneRadialSegments = obj.coneRadialSegments;
+    if (obj.coneHeightSegments !== undefined)
+      fileObj.coneHeightSegments = obj.coneHeightSegments;
+    if (obj.coneOpenEnded !== undefined)
+      fileObj.coneOpenEnded = obj.coneOpenEnded;
+    if (obj.coneThetaStart !== undefined)
+      fileObj.coneThetaStart = obj.coneThetaStart;
+    if (obj.coneThetaLength !== undefined)
+      fileObj.coneThetaLength = obj.coneThetaLength;
+    // Torus geometry params
+    if (obj.torusRadius !== undefined) fileObj.torusRadius = obj.torusRadius;
+    if (obj.torusTube !== undefined) fileObj.torusTube = obj.torusTube;
+    if (obj.torusRadialSegments !== undefined)
+      fileObj.torusRadialSegments = obj.torusRadialSegments;
+    if (obj.torusTubularSegments !== undefined)
+      fileObj.torusTubularSegments = obj.torusTubularSegments;
+    if (obj.torusArc !== undefined) fileObj.torusArc = obj.torusArc;
+    // Plane geometry params
+    if (obj.planeWidthSegments !== undefined)
+      fileObj.planeWidthSegments = obj.planeWidthSegments;
+    if (obj.planeHeightSegments !== undefined)
+      fileObj.planeHeightSegments = obj.planeHeightSegments;
+    // Capsule geometry params
+    if (obj.capsuleRadius !== undefined)
+      fileObj.capsuleRadius = obj.capsuleRadius;
+    if (obj.capsuleLength !== undefined)
+      fileObj.capsuleLength = obj.capsuleLength;
+    if (obj.capsuleCapSegments !== undefined)
+      fileObj.capsuleCapSegments = obj.capsuleCapSegments;
+    if (obj.capsuleRadialSegments !== undefined)
+      fileObj.capsuleRadialSegments = obj.capsuleRadialSegments;
     // Include complex geometry data if present
     if (obj.points) fileObj.points = obj.points;
     if (obj.shape) fileObj.shape = obj.shape;
     if (obj.extrudeOptions) fileObj.extrudeOptions = obj.extrudeOptions;
     if (obj.path) fileObj.path = obj.path;
     if (obj.tubeRadius !== undefined) fileObj.tubeRadius = obj.tubeRadius;
+    if (obj.tubeTubularSegments !== undefined)
+      fileObj.tubeTubularSegments = obj.tubeTubularSegments;
+    if (obj.tubeRadialSegments !== undefined)
+      fileObj.tubeRadialSegments = obj.tubeRadialSegments;
+    if (obj.tubeClosed !== undefined) fileObj.tubeClosed = obj.tubeClosed;
     if (obj.vertices) fileObj.vertices = obj.vertices;
     if (obj.indices) fileObj.indices = obj.indices;
     return fileObj;
@@ -289,6 +406,77 @@ export const useSceneStore = create<SceneState>()(
             visible: true,
             locked: false,
           };
+          // Box geometry params
+          if (fo.boxWidthSegments !== undefined)
+            sceneObject.boxWidthSegments = fo.boxWidthSegments;
+          if (fo.boxHeightSegments !== undefined)
+            sceneObject.boxHeightSegments = fo.boxHeightSegments;
+          if (fo.boxDepthSegments !== undefined)
+            sceneObject.boxDepthSegments = fo.boxDepthSegments;
+          // Sphere geometry params
+          if (fo.sphereWidthSegments !== undefined)
+            sceneObject.sphereWidthSegments = fo.sphereWidthSegments;
+          if (fo.sphereHeightSegments !== undefined)
+            sceneObject.sphereHeightSegments = fo.sphereHeightSegments;
+          if (fo.spherePhiStart !== undefined)
+            sceneObject.spherePhiStart = fo.spherePhiStart;
+          if (fo.spherePhiLength !== undefined)
+            sceneObject.spherePhiLength = fo.spherePhiLength;
+          if (fo.sphereThetaStart !== undefined)
+            sceneObject.sphereThetaStart = fo.sphereThetaStart;
+          if (fo.sphereThetaLength !== undefined)
+            sceneObject.sphereThetaLength = fo.sphereThetaLength;
+          // Cylinder geometry params
+          if (fo.cylinderRadiusTop !== undefined)
+            sceneObject.cylinderRadiusTop = fo.cylinderRadiusTop;
+          if (fo.cylinderRadiusBottom !== undefined)
+            sceneObject.cylinderRadiusBottom = fo.cylinderRadiusBottom;
+          if (fo.cylinderRadialSegments !== undefined)
+            sceneObject.cylinderRadialSegments = fo.cylinderRadialSegments;
+          if (fo.cylinderHeightSegments !== undefined)
+            sceneObject.cylinderHeightSegments = fo.cylinderHeightSegments;
+          if (fo.cylinderOpenEnded !== undefined)
+            sceneObject.cylinderOpenEnded = fo.cylinderOpenEnded;
+          if (fo.cylinderThetaStart !== undefined)
+            sceneObject.cylinderThetaStart = fo.cylinderThetaStart;
+          if (fo.cylinderThetaLength !== undefined)
+            sceneObject.cylinderThetaLength = fo.cylinderThetaLength;
+          // Cone geometry params
+          if (fo.coneRadius !== undefined)
+            sceneObject.coneRadius = fo.coneRadius;
+          if (fo.coneRadialSegments !== undefined)
+            sceneObject.coneRadialSegments = fo.coneRadialSegments;
+          if (fo.coneHeightSegments !== undefined)
+            sceneObject.coneHeightSegments = fo.coneHeightSegments;
+          if (fo.coneOpenEnded !== undefined)
+            sceneObject.coneOpenEnded = fo.coneOpenEnded;
+          if (fo.coneThetaStart !== undefined)
+            sceneObject.coneThetaStart = fo.coneThetaStart;
+          if (fo.coneThetaLength !== undefined)
+            sceneObject.coneThetaLength = fo.coneThetaLength;
+          // Torus geometry params
+          if (fo.torusRadius !== undefined)
+            sceneObject.torusRadius = fo.torusRadius;
+          if (fo.torusTube !== undefined) sceneObject.torusTube = fo.torusTube;
+          if (fo.torusRadialSegments !== undefined)
+            sceneObject.torusRadialSegments = fo.torusRadialSegments;
+          if (fo.torusTubularSegments !== undefined)
+            sceneObject.torusTubularSegments = fo.torusTubularSegments;
+          if (fo.torusArc !== undefined) sceneObject.torusArc = fo.torusArc;
+          // Plane geometry params
+          if (fo.planeWidthSegments !== undefined)
+            sceneObject.planeWidthSegments = fo.planeWidthSegments;
+          if (fo.planeHeightSegments !== undefined)
+            sceneObject.planeHeightSegments = fo.planeHeightSegments;
+          // Capsule geometry params
+          if (fo.capsuleRadius !== undefined)
+            sceneObject.capsuleRadius = fo.capsuleRadius;
+          if (fo.capsuleLength !== undefined)
+            sceneObject.capsuleLength = fo.capsuleLength;
+          if (fo.capsuleCapSegments !== undefined)
+            sceneObject.capsuleCapSegments = fo.capsuleCapSegments;
+          if (fo.capsuleRadialSegments !== undefined)
+            sceneObject.capsuleRadialSegments = fo.capsuleRadialSegments;
           // Complex geometry data - only assign if defined
           if (fo.points) sceneObject.points = fo.points;
           if (fo.shape) sceneObject.shape = fo.shape as TSPShapePath;
@@ -297,6 +485,12 @@ export const useSceneStore = create<SceneState>()(
           if (fo.path) sceneObject.path = fo.path as TSPCurve3D;
           if (fo.tubeRadius !== undefined)
             sceneObject.tubeRadius = fo.tubeRadius;
+          if (fo.tubeTubularSegments !== undefined)
+            sceneObject.tubeTubularSegments = fo.tubeTubularSegments;
+          if (fo.tubeRadialSegments !== undefined)
+            sceneObject.tubeRadialSegments = fo.tubeRadialSegments;
+          if (fo.tubeClosed !== undefined)
+            sceneObject.tubeClosed = fo.tubeClosed;
           if (fo.vertices) sceneObject.vertices = fo.vertices;
           if (fo.indices) sceneObject.indices = fo.indices;
           newObjects[id] = sceneObject;

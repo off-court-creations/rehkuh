@@ -208,6 +208,69 @@ export function importFromTSP(tspData: TSPFile): TSPImportResult {
           sceneObj.boxHeightSegments = geo.boxHeightSegments;
         if (geo.boxDepthSegments !== undefined)
           sceneObj.boxDepthSegments = geo.boxDepthSegments;
+        // Sphere geometry subdivision
+        if (geo.sphereWidthSegments !== undefined)
+          sceneObj.sphereWidthSegments = geo.sphereWidthSegments;
+        if (geo.sphereHeightSegments !== undefined)
+          sceneObj.sphereHeightSegments = geo.sphereHeightSegments;
+        // Sphere geometry partial sphere params
+        if (geo.spherePhiStart !== undefined)
+          sceneObj.spherePhiStart = geo.spherePhiStart;
+        if (geo.spherePhiLength !== undefined)
+          sceneObj.spherePhiLength = geo.spherePhiLength;
+        if (geo.sphereThetaStart !== undefined)
+          sceneObj.sphereThetaStart = geo.sphereThetaStart;
+        if (geo.sphereThetaLength !== undefined)
+          sceneObj.sphereThetaLength = geo.sphereThetaLength;
+        // Cylinder geometry params
+        if (geo.cylinderRadiusTop !== undefined)
+          sceneObj.cylinderRadiusTop = geo.cylinderRadiusTop;
+        if (geo.cylinderRadiusBottom !== undefined)
+          sceneObj.cylinderRadiusBottom = geo.cylinderRadiusBottom;
+        if (geo.cylinderRadialSegments !== undefined)
+          sceneObj.cylinderRadialSegments = geo.cylinderRadialSegments;
+        if (geo.cylinderHeightSegments !== undefined)
+          sceneObj.cylinderHeightSegments = geo.cylinderHeightSegments;
+        if (geo.cylinderOpenEnded !== undefined)
+          sceneObj.cylinderOpenEnded = geo.cylinderOpenEnded;
+        if (geo.cylinderThetaStart !== undefined)
+          sceneObj.cylinderThetaStart = geo.cylinderThetaStart;
+        if (geo.cylinderThetaLength !== undefined)
+          sceneObj.cylinderThetaLength = geo.cylinderThetaLength;
+        // Cone geometry params
+        if (geo.coneRadius !== undefined) sceneObj.coneRadius = geo.coneRadius;
+        if (geo.coneRadialSegments !== undefined)
+          sceneObj.coneRadialSegments = geo.coneRadialSegments;
+        if (geo.coneHeightSegments !== undefined)
+          sceneObj.coneHeightSegments = geo.coneHeightSegments;
+        if (geo.coneOpenEnded !== undefined)
+          sceneObj.coneOpenEnded = geo.coneOpenEnded;
+        if (geo.coneThetaStart !== undefined)
+          sceneObj.coneThetaStart = geo.coneThetaStart;
+        if (geo.coneThetaLength !== undefined)
+          sceneObj.coneThetaLength = geo.coneThetaLength;
+        // Torus geometry params
+        if (geo.torusRadius !== undefined) sceneObj.torusRadius = geo.torusRadius;
+        if (geo.torusTube !== undefined) sceneObj.torusTube = geo.torusTube;
+        if (geo.torusRadialSegments !== undefined)
+          sceneObj.torusRadialSegments = geo.torusRadialSegments;
+        if (geo.torusTubularSegments !== undefined)
+          sceneObj.torusTubularSegments = geo.torusTubularSegments;
+        if (geo.torusArc !== undefined) sceneObj.torusArc = geo.torusArc;
+        // Plane geometry params
+        if (geo.planeWidthSegments !== undefined)
+          sceneObj.planeWidthSegments = geo.planeWidthSegments;
+        if (geo.planeHeightSegments !== undefined)
+          sceneObj.planeHeightSegments = geo.planeHeightSegments;
+        // Capsule geometry params
+        if (geo.capsuleRadius !== undefined)
+          sceneObj.capsuleRadius = geo.capsuleRadius;
+        if (geo.capsuleLength !== undefined)
+          sceneObj.capsuleLength = geo.capsuleLength;
+        if (geo.capsuleCapSegments !== undefined)
+          sceneObj.capsuleCapSegments = geo.capsuleCapSegments;
+        if (geo.capsuleRadialSegments !== undefined)
+          sceneObj.capsuleRadialSegments = geo.capsuleRadialSegments;
         // Complex geometry data
         if (geo.points) sceneObj.points = geo.points;
         if (geo.shape) sceneObj.shape = geo.shape;

@@ -277,6 +277,188 @@ Boxes support optional subdivision segments for smoother lighting and displaceme
 
 Boxes with custom segments get unique geometry keys (e.g., `box_abc12345`) instead of sharing the default `box` geometry.
 
+#### SphereGeometry Options
+
+Spheres support subdivision segments and partial sphere angles:
+
+```json
+{
+  "type": "sphere",
+  "args": [0.5, 32, 32],
+  "sphereWidthSegments": 16,
+  "sphereHeightSegments": 12,
+  "spherePhiStart": 0,
+  "spherePhiLength": 3.14159,
+  "sphereThetaStart": 0,
+  "sphereThetaLength": 1.5708
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `sphereWidthSegments` | number? | 32 | Horizontal segments (longitude) |
+| `sphereHeightSegments` | number? | 32 | Vertical segments (latitude) |
+| `spherePhiStart` | number? | 0 | Horizontal start angle in radians |
+| `spherePhiLength` | number? | 2π | Horizontal sweep angle in radians |
+| `sphereThetaStart` | number? | 0 | Vertical start angle in radians |
+| `sphereThetaLength` | number? | π | Vertical sweep angle in radians |
+
+**Use cases:**
+- `spherePhiLength < 2π` → Vertical slice (like an orange wedge)
+- `sphereThetaLength < π` → Dome or bowl shape
+- Combine both → Partial dome sections
+
+#### CylinderGeometry Options
+
+Cylinders support variable radii, segments, and partial angles:
+
+```json
+{
+  "type": "cylinder",
+  "args": [0.5, 0.5, 1, 32],
+  "cylinderRadiusTop": 0.3,
+  "cylinderRadiusBottom": 0.5,
+  "cylinderRadialSegments": 6,
+  "cylinderHeightSegments": 4,
+  "cylinderOpenEnded": true,
+  "cylinderThetaStart": 0,
+  "cylinderThetaLength": 3.14159
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `cylinderRadiusTop` | number? | 0.5 | Radius at the top |
+| `cylinderRadiusBottom` | number? | 0.5 | Radius at the bottom |
+| `cylinderRadialSegments` | number? | 32 | Number of faces around circumference |
+| `cylinderHeightSegments` | number? | 1 | Number of rows of faces along height |
+| `cylinderOpenEnded` | boolean? | false | Whether ends are open (no caps) |
+| `cylinderThetaStart` | number? | 0 | Start angle in radians |
+| `cylinderThetaLength` | number? | 2π | Sweep angle in radians |
+
+**Use cases:**
+- `cylinderRadiusTop ≠ cylinderRadiusBottom` → Tapered cylinder / frustum
+- `cylinderRadiusTop = 0` → Cone (use cone type instead)
+- `cylinderOpenEnded = true` → Tube/pipe
+- `cylinderThetaLength < 2π` → Partial cylinder (pac-man shape from above)
+- `cylinderRadialSegments = 6` → Hexagonal prism
+
+#### ConeGeometry Options
+
+Cones support variable radius, segments, and partial angles:
+
+```json
+{
+  "type": "cone",
+  "args": [0.5, 1, 32],
+  "coneRadius": 0.4,
+  "coneRadialSegments": 8,
+  "coneHeightSegments": 4,
+  "coneOpenEnded": true,
+  "coneThetaStart": 0,
+  "coneThetaLength": 4.71239
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `coneRadius` | number? | 0.5 | Base radius |
+| `coneRadialSegments` | number? | 32 | Number of faces around circumference |
+| `coneHeightSegments` | number? | 1 | Number of rows of faces along height |
+| `coneOpenEnded` | boolean? | false | Whether base is open (no cap) |
+| `coneThetaStart` | number? | 0 | Start angle in radians |
+| `coneThetaLength` | number? | 2π | Sweep angle in radians |
+
+**Use cases:**
+- `coneOpenEnded = true` → Hollow cone / funnel
+- `coneThetaLength < 2π` → Partial cone (pie slice shape)
+- `coneRadialSegments = 4` → Pyramid
+
+#### TorusGeometry Options
+
+Toruses support variable radii, segments, and partial arcs:
+
+```json
+{
+  "type": "torus",
+  "args": [0.5, 0.2, 16, 32],
+  "torusRadius": 0.6,
+  "torusTube": 0.15,
+  "torusRadialSegments": 24,
+  "torusTubularSegments": 48,
+  "torusArc": 4.71239
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `torusRadius` | number? | 0.5 | Distance from center to center of tube |
+| `torusTube` | number? | 0.2 | Radius of the tube cross-section |
+| `torusRadialSegments` | number? | 16 | Segments around tube cross-section |
+| `torusTubularSegments` | number? | 32 | Segments around the torus ring |
+| `torusArc` | number? | 2π | Arc angle in radians |
+
+**Use cases:**
+- `torusArc < 2π` → Partial torus (C-shape, horseshoe)
+- `torusTube > torusRadius` → Thick donut / blob shape
+- `torusRadialSegments = 3` → Triangular cross-section
+- `torusRadialSegments = 4` → Square cross-section tube
+
+#### PlaneGeometry Options
+
+Planes support subdivision segments for vertex displacement and smoother shading:
+
+```json
+{
+  "type": "plane",
+  "args": [1, 1],
+  "planeWidthSegments": 10,
+  "planeHeightSegments": 10
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `planeWidthSegments` | number? | 1 | Segments along width (X axis) |
+| `planeHeightSegments` | number? | 1 | Segments along height (Y axis) |
+
+**Use cases:**
+- Higher segments for vertex displacement shaders
+- Smoother shading on large planes with point lights
+- Grid-based terrain or water surfaces
+
+Planes with custom segments get unique geometry keys (e.g., `plane_abc12345`) instead of sharing the default `plane` geometry.
+
+#### CapsuleGeometry Options
+
+Capsules support variable radius, length, and segment counts:
+
+```json
+{
+  "type": "capsule",
+  "args": [0.5, 1, 4, 8],
+  "capsuleRadius": 0.3,
+  "capsuleLength": 2,
+  "capsuleCapSegments": 8,
+  "capsuleRadialSegments": 16
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `capsuleRadius` | number? | 0.5 | Radius of the capsule |
+| `capsuleLength` | number? | 1 | Length of the middle cylindrical section |
+| `capsuleCapSegments` | number? | 4 | Number of curve segments for the caps |
+| `capsuleRadialSegments` | number? | 8 | Number of segments around the circumference |
+
+**Use cases:**
+- `capsuleLength = 0` → Sphere-like shape (just the caps)
+- Higher `capsuleCapSegments` → Smoother cap hemispheres
+- Higher `capsuleRadialSegments` → Smoother cylindrical section
+- `capsuleRadialSegments = 6` → Hexagonal cross-section
+
+Capsules with custom params get unique geometry keys (e.g., `capsule_abc12345`) instead of sharing the default `capsule` geometry.
+
 #### Complex Geometries
 
 These require additional fields and can be hand-authored in TSP files.

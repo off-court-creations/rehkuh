@@ -466,17 +466,58 @@ export function SceneObject({ id }) {
           obj.boxDepthSegments ?? 1,
         );
       case "sphere":
-        return new THREE.SphereGeometry(0.5, 32, 32);
+        return new THREE.SphereGeometry(
+          0.5,
+          obj.sphereWidthSegments ?? 32,
+          obj.sphereHeightSegments ?? 32,
+          obj.spherePhiStart ?? 0,
+          obj.spherePhiLength ?? Math.PI * 2,
+          obj.sphereThetaStart ?? 0,
+          obj.sphereThetaLength ?? Math.PI,
+        );
       case "cylinder":
-        return new THREE.CylinderGeometry(0.5, 0.5, 1, 32);
+        return new THREE.CylinderGeometry(
+          obj.cylinderRadiusTop ?? 0.5,
+          obj.cylinderRadiusBottom ?? 0.5,
+          1,
+          obj.cylinderRadialSegments ?? 32,
+          obj.cylinderHeightSegments ?? 1,
+          obj.cylinderOpenEnded ?? false,
+          obj.cylinderThetaStart ?? 0,
+          obj.cylinderThetaLength ?? Math.PI * 2,
+        );
       case "cone":
-        return new THREE.ConeGeometry(0.5, 1, 32);
+        return new THREE.ConeGeometry(
+          obj.coneRadius ?? 0.5,
+          1,
+          obj.coneRadialSegments ?? 32,
+          obj.coneHeightSegments ?? 1,
+          obj.coneOpenEnded ?? false,
+          obj.coneThetaStart ?? 0,
+          obj.coneThetaLength ?? Math.PI * 2,
+        );
       case "torus":
-        return new THREE.TorusGeometry(0.5, 0.2, 16, 32);
+        return new THREE.TorusGeometry(
+          obj.torusRadius ?? 0.5,
+          obj.torusTube ?? 0.2,
+          obj.torusRadialSegments ?? 16,
+          obj.torusTubularSegments ?? 32,
+          obj.torusArc ?? Math.PI * 2,
+        );
       case "plane":
-        return new THREE.PlaneGeometry(1, 1);
+        return new THREE.PlaneGeometry(
+          1,
+          1,
+          obj.planeWidthSegments ?? 1,
+          obj.planeHeightSegments ?? 1,
+        );
       case "capsule":
-        return new THREE.CapsuleGeometry(0.5, 1, 4, 8);
+        return new THREE.CapsuleGeometry(
+          obj.capsuleRadius ?? 0.5,
+          obj.capsuleLength ?? 1,
+          obj.capsuleCapSegments ?? 4,
+          obj.capsuleRadialSegments ?? 8,
+        );
       case "circle":
         return new THREE.CircleGeometry(0.5, 32);
       case "dodecahedron":
@@ -545,6 +586,36 @@ export function SceneObject({ id }) {
     obj?.boxWidthSegments,
     obj?.boxHeightSegments,
     obj?.boxDepthSegments,
+    obj?.sphereWidthSegments,
+    obj?.sphereHeightSegments,
+    obj?.spherePhiStart,
+    obj?.spherePhiLength,
+    obj?.sphereThetaStart,
+    obj?.sphereThetaLength,
+    obj?.cylinderRadiusTop,
+    obj?.cylinderRadiusBottom,
+    obj?.cylinderRadialSegments,
+    obj?.cylinderHeightSegments,
+    obj?.cylinderOpenEnded,
+    obj?.cylinderThetaStart,
+    obj?.cylinderThetaLength,
+    obj?.coneRadius,
+    obj?.coneRadialSegments,
+    obj?.coneHeightSegments,
+    obj?.coneOpenEnded,
+    obj?.coneThetaStart,
+    obj?.coneThetaLength,
+    obj?.torusRadius,
+    obj?.torusTube,
+    obj?.torusRadialSegments,
+    obj?.torusTubularSegments,
+    obj?.torusArc,
+    obj?.planeWidthSegments,
+    obj?.planeHeightSegments,
+    obj?.capsuleRadius,
+    obj?.capsuleLength,
+    obj?.capsuleCapSegments,
+    obj?.capsuleRadialSegments,
     obj?.points,
     obj?.shape,
     obj?.extrudeOptions,
