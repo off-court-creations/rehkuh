@@ -224,6 +224,18 @@ export interface SceneObject {
   capsuleLength?: number;
   capsuleCapSegments?: number;
   capsuleRadialSegments?: number;
+  // Circle geometry params
+  circleRadius?: number;
+  circleSegments?: number;
+  circleThetaStart?: number;
+  circleThetaLength?: number;
+  // Ring geometry params
+  ringInnerRadius?: number;
+  ringOuterRadius?: number;
+  ringThetaSegments?: number;
+  ringPhiSegments?: number;
+  ringThetaStart?: number;
+  ringThetaLength?: number;
   // Complex geometry data (optional, for lathe/extrude/shape/tube/polyhedron)
   points?: [number, number][];
   shape?: TSPShapePath;
@@ -476,6 +488,18 @@ export interface TSPGeometry {
   capsuleLength?: number;
   capsuleCapSegments?: number;
   capsuleRadialSegments?: number;
+  // CircleGeometry params
+  circleRadius?: number;
+  circleSegments?: number;
+  circleThetaStart?: number;
+  circleThetaLength?: number;
+  // RingGeometry params
+  ringInnerRadius?: number;
+  ringOuterRadius?: number;
+  ringThetaSegments?: number;
+  ringPhiSegments?: number;
+  ringThetaStart?: number;
+  ringThetaLength?: number;
   // LatheGeometry (Vector2 points)
   points?: [number, number][];
   // ExtrudeGeometry, ShapeGeometry (shape path)

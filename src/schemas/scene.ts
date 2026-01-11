@@ -151,6 +151,18 @@ export const SceneFileObjectSchema = z.object({
   capsuleLength: z.number().min(0).optional(),
   capsuleCapSegments: z.number().int().min(1).optional(),
   capsuleRadialSegments: z.number().int().min(3).optional(),
+  // Circle geometry params
+  circleRadius: z.number().min(0).optional(),
+  circleSegments: z.number().int().min(3).optional(),
+  circleThetaStart: z.number().min(0).optional(),
+  circleThetaLength: z.number().min(0).optional(),
+  // Ring geometry params
+  ringInnerRadius: z.number().min(0).optional(),
+  ringOuterRadius: z.number().min(0).optional(),
+  ringThetaSegments: z.number().int().min(3).optional(),
+  ringPhiSegments: z.number().int().min(1).optional(),
+  ringThetaStart: z.number().min(0).optional(),
+  ringThetaLength: z.number().min(0).optional(),
   // Complex geometry data (optional)
   points: z.array(z.tuple([z.number(), z.number()])).optional(),
   shape: TSPShapePathSchema.optional(),

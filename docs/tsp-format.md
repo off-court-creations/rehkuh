@@ -459,6 +459,73 @@ Capsules support variable radius, length, and segment counts:
 
 Capsules with custom params get unique geometry keys (e.g., `capsule_abc12345`) instead of sharing the default `capsule` geometry.
 
+#### CircleGeometry Options
+
+Circles support variable radius, segments, and partial arcs:
+
+```json
+{
+  "type": "circle",
+  "args": [0.5, 32],
+  "circleRadius": 0.8,
+  "circleSegments": 64,
+  "circleThetaStart": 0,
+  "circleThetaLength": 3.14159
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `circleRadius` | number? | 0.5 | Radius of the circle |
+| `circleSegments` | number? | 32 | Number of segments (triangles) |
+| `circleThetaStart` | number? | 0 | Start angle in radians |
+| `circleThetaLength` | number? | 2π | Central angle (arc length) in radians |
+
+**Use cases:**
+- `circleThetaLength < 2π` → Partial circle / pie slice / pac-man
+- `circleSegments = 3` → Triangle
+- `circleSegments = 4` → Diamond/square
+- `circleSegments = 6` → Hexagon
+- Higher `circleSegments` → Smoother circle
+
+Circles with custom params get unique geometry keys (e.g., `circle_abc12345`) instead of sharing the default `circle` geometry.
+
+#### RingGeometry Options
+
+Rings support variable inner/outer radii, segments, and partial arcs:
+
+```json
+{
+  "type": "ring",
+  "args": [0.25, 0.5, 32],
+  "ringInnerRadius": 0.3,
+  "ringOuterRadius": 0.8,
+  "ringThetaSegments": 64,
+  "ringPhiSegments": 4,
+  "ringThetaStart": 0,
+  "ringThetaLength": 4.71239
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `ringInnerRadius` | number? | 0.25 | Inner radius (hole size) |
+| `ringOuterRadius` | number? | 0.5 | Outer radius (ring size) |
+| `ringThetaSegments` | number? | 32 | Number of segments around the ring |
+| `ringPhiSegments` | number? | 1 | Number of segments across the ring thickness |
+| `ringThetaStart` | number? | 0 | Start angle in radians |
+| `ringThetaLength` | number? | 2π | Central angle (arc length) in radians |
+
+**Use cases:**
+- `ringInnerRadius = 0` → Filled disc (like circle but facing camera)
+- `ringThetaLength < 2π` → Partial ring / arc segment / pac-man ring
+- `ringThetaSegments = 3` → Triangular ring
+- `ringThetaSegments = 6` → Hexagonal ring
+- Higher `ringPhiSegments` → Smoother lighting across ring thickness
+- `ringInnerRadius` close to `ringOuterRadius` → Thin ring / halo
+
+Rings with custom params get unique geometry keys (e.g., `ring_abc12345`) instead of sharing the default `ring` geometry.
+
 #### Complex Geometries
 
 These require additional fields and can be hand-authored in TSP files.

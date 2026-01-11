@@ -271,6 +271,28 @@ export function importFromTSP(tspData: TSPFile): TSPImportResult {
           sceneObj.capsuleCapSegments = geo.capsuleCapSegments;
         if (geo.capsuleRadialSegments !== undefined)
           sceneObj.capsuleRadialSegments = geo.capsuleRadialSegments;
+        // Circle geometry params
+        if (geo.circleRadius !== undefined)
+          sceneObj.circleRadius = geo.circleRadius;
+        if (geo.circleSegments !== undefined)
+          sceneObj.circleSegments = geo.circleSegments;
+        if (geo.circleThetaStart !== undefined)
+          sceneObj.circleThetaStart = geo.circleThetaStart;
+        if (geo.circleThetaLength !== undefined)
+          sceneObj.circleThetaLength = geo.circleThetaLength;
+        // Ring geometry params
+        if (geo.ringInnerRadius !== undefined)
+          sceneObj.ringInnerRadius = geo.ringInnerRadius;
+        if (geo.ringOuterRadius !== undefined)
+          sceneObj.ringOuterRadius = geo.ringOuterRadius;
+        if (geo.ringThetaSegments !== undefined)
+          sceneObj.ringThetaSegments = geo.ringThetaSegments;
+        if (geo.ringPhiSegments !== undefined)
+          sceneObj.ringPhiSegments = geo.ringPhiSegments;
+        if (geo.ringThetaStart !== undefined)
+          sceneObj.ringThetaStart = geo.ringThetaStart;
+        if (geo.ringThetaLength !== undefined)
+          sceneObj.ringThetaLength = geo.ringThetaLength;
         // Complex geometry data
         if (geo.points) sceneObj.points = geo.points;
         if (geo.shape) sceneObj.shape = geo.shape;

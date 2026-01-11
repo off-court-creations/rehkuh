@@ -68,6 +68,18 @@ interface SceneFileObject {
   capsuleLength?: number;
   capsuleCapSegments?: number;
   capsuleRadialSegments?: number;
+  // Circle geometry params
+  circleRadius?: number;
+  circleSegments?: number;
+  circleThetaStart?: number;
+  circleThetaLength?: number;
+  // Ring geometry params
+  ringInnerRadius?: number;
+  ringOuterRadius?: number;
+  ringThetaSegments?: number;
+  ringPhiSegments?: number;
+  ringThetaStart?: number;
+  ringThetaLength?: number;
   // Complex geometry data
   points?: [number, number][];
   shape?: TSPShapePath;
@@ -274,6 +286,28 @@ function toSceneFileObjects(
       fileObj.capsuleCapSegments = obj.capsuleCapSegments;
     if (obj.capsuleRadialSegments !== undefined)
       fileObj.capsuleRadialSegments = obj.capsuleRadialSegments;
+    // Circle geometry params
+    if (obj.circleRadius !== undefined)
+      fileObj.circleRadius = obj.circleRadius;
+    if (obj.circleSegments !== undefined)
+      fileObj.circleSegments = obj.circleSegments;
+    if (obj.circleThetaStart !== undefined)
+      fileObj.circleThetaStart = obj.circleThetaStart;
+    if (obj.circleThetaLength !== undefined)
+      fileObj.circleThetaLength = obj.circleThetaLength;
+    // Ring geometry params
+    if (obj.ringInnerRadius !== undefined)
+      fileObj.ringInnerRadius = obj.ringInnerRadius;
+    if (obj.ringOuterRadius !== undefined)
+      fileObj.ringOuterRadius = obj.ringOuterRadius;
+    if (obj.ringThetaSegments !== undefined)
+      fileObj.ringThetaSegments = obj.ringThetaSegments;
+    if (obj.ringPhiSegments !== undefined)
+      fileObj.ringPhiSegments = obj.ringPhiSegments;
+    if (obj.ringThetaStart !== undefined)
+      fileObj.ringThetaStart = obj.ringThetaStart;
+    if (obj.ringThetaLength !== undefined)
+      fileObj.ringThetaLength = obj.ringThetaLength;
     // Include complex geometry data if present
     if (obj.points) fileObj.points = obj.points;
     if (obj.shape) fileObj.shape = obj.shape;
@@ -477,6 +511,28 @@ export const useSceneStore = create<SceneState>()(
             sceneObject.capsuleCapSegments = fo.capsuleCapSegments;
           if (fo.capsuleRadialSegments !== undefined)
             sceneObject.capsuleRadialSegments = fo.capsuleRadialSegments;
+          // Circle geometry params
+          if (fo.circleRadius !== undefined)
+            sceneObject.circleRadius = fo.circleRadius;
+          if (fo.circleSegments !== undefined)
+            sceneObject.circleSegments = fo.circleSegments;
+          if (fo.circleThetaStart !== undefined)
+            sceneObject.circleThetaStart = fo.circleThetaStart;
+          if (fo.circleThetaLength !== undefined)
+            sceneObject.circleThetaLength = fo.circleThetaLength;
+          // Ring geometry params
+          if (fo.ringInnerRadius !== undefined)
+            sceneObject.ringInnerRadius = fo.ringInnerRadius;
+          if (fo.ringOuterRadius !== undefined)
+            sceneObject.ringOuterRadius = fo.ringOuterRadius;
+          if (fo.ringThetaSegments !== undefined)
+            sceneObject.ringThetaSegments = fo.ringThetaSegments;
+          if (fo.ringPhiSegments !== undefined)
+            sceneObject.ringPhiSegments = fo.ringPhiSegments;
+          if (fo.ringThetaStart !== undefined)
+            sceneObject.ringThetaStart = fo.ringThetaStart;
+          if (fo.ringThetaLength !== undefined)
+            sceneObject.ringThetaLength = fo.ringThetaLength;
           // Complex geometry data - only assign if defined
           if (fo.points) sceneObject.points = fo.points;
           if (fo.shape) sceneObject.shape = fo.shape as TSPShapePath;

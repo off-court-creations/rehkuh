@@ -301,6 +301,24 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
         obj.capsuleCapSegments !== undefined ||
         obj.capsuleRadialSegments !== undefined);
 
+    // Check if circle has custom params (requires unique geometry)
+    const hasCustomCircleParams =
+      obj.type === "circle" &&
+      (obj.circleRadius !== undefined ||
+        obj.circleSegments !== undefined ||
+        obj.circleThetaStart !== undefined ||
+        obj.circleThetaLength !== undefined);
+
+    // Check if ring has custom params (requires unique geometry)
+    const hasCustomRingParams =
+      obj.type === "ring" &&
+      (obj.ringInnerRadius !== undefined ||
+        obj.ringOuterRadius !== undefined ||
+        obj.ringThetaSegments !== undefined ||
+        obj.ringPhiSegments !== undefined ||
+        obj.ringThetaStart !== undefined ||
+        obj.ringThetaLength !== undefined);
+
     if (isComplex) {
       // Complex geometry - unique key per object
       const geoKey = `${obj.type}_${obj.id.slice(0, 8)}`;
@@ -437,6 +455,42 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
         geo.capsuleCapSegments = obj.capsuleCapSegments;
       if (obj.capsuleRadialSegments !== undefined)
         geo.capsuleRadialSegments = obj.capsuleRadialSegments;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
+    } else if (hasCustomCircleParams) {
+      // Circle with custom params - unique key per object
+      const geoKey = `circle_${obj.id.slice(0, 8)}`;
+      const geo: TSPGeometry = { type: "circle", args: [0.5, 32] };
+
+      if (obj.circleRadius !== undefined)
+        geo.circleRadius = obj.circleRadius;
+      if (obj.circleSegments !== undefined)
+        geo.circleSegments = obj.circleSegments;
+      if (obj.circleThetaStart !== undefined)
+        geo.circleThetaStart = obj.circleThetaStart;
+      if (obj.circleThetaLength !== undefined)
+        geo.circleThetaLength = obj.circleThetaLength;
+
+      geometries[geoKey] = geo;
+      geometryKeyMap.set(obj.id, geoKey);
+    } else if (hasCustomRingParams) {
+      // Ring with custom params - unique key per object
+      const geoKey = `ring_${obj.id.slice(0, 8)}`;
+      const geo: TSPGeometry = { type: "ring", args: [0.25, 0.5, 32] };
+
+      if (obj.ringInnerRadius !== undefined)
+        geo.ringInnerRadius = obj.ringInnerRadius;
+      if (obj.ringOuterRadius !== undefined)
+        geo.ringOuterRadius = obj.ringOuterRadius;
+      if (obj.ringThetaSegments !== undefined)
+        geo.ringThetaSegments = obj.ringThetaSegments;
+      if (obj.ringPhiSegments !== undefined)
+        geo.ringPhiSegments = obj.ringPhiSegments;
+      if (obj.ringThetaStart !== undefined)
+        geo.ringThetaStart = obj.ringThetaStart;
+      if (obj.ringThetaLength !== undefined)
+        geo.ringThetaLength = obj.ringThetaLength;
 
       geometries[geoKey] = geo;
       geometryKeyMap.set(obj.id, geoKey);

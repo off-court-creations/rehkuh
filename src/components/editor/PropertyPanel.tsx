@@ -1454,6 +1454,362 @@ export function PropertyPanel() {
             </>
           )}
 
+          {/* Circle Geometry Options */}
+          {obj.type === "circle" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Radius
+                </Typography>
+                <input
+                  type="number"
+                  min="0.01"
+                  max="10"
+                  step="0.01"
+                  value={obj.circleRadius ?? 0.5}
+                  onChange={(e) => {
+                    const val = Math.max(
+                      0.01,
+                      parseFloat(e.target.value) || 0.5,
+                    );
+                    updateObject(primaryId, { circleRadius: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="3"
+                  max="128"
+                  step="1"
+                  value={obj.circleSegments ?? 32}
+                  onChange={(e) => {
+                    const val = Math.max(3, parseInt(e.target.value) || 32);
+                    updateObject(primaryId, { circleSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Theta Start (rad)
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="6.28319"
+                  step="0.1"
+                  value={obj.circleThetaStart ?? 0}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0);
+                    updateObject(primaryId, { circleThetaStart: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Theta Length (rad)
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="6.28319"
+                  step="0.1"
+                  value={obj.circleThetaLength ?? 6.28319}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 6.28319);
+                    updateObject(primaryId, { circleThetaLength: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
+          {/* Ring Geometry Options */}
+          {obj.type === "ring" && (
+            <>
+              <Typography
+                variant="body"
+                sx={{
+                  fontSize: "10px",
+                  opacity: 0.5,
+                  padding: "8px 4px 2px 4px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "4px",
+                }}
+              >
+                Geometry
+              </Typography>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Inner Radius
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="10"
+                  step="0.01"
+                  value={obj.ringInnerRadius ?? 0.25}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0.25);
+                    updateObject(primaryId, { ringInnerRadius: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Outer Radius
+                </Typography>
+                <input
+                  type="number"
+                  min="0.01"
+                  max="10"
+                  step="0.01"
+                  value={obj.ringOuterRadius ?? 0.5}
+                  onChange={(e) => {
+                    const val = Math.max(
+                      0.01,
+                      parseFloat(e.target.value) || 0.5,
+                    );
+                    updateObject(primaryId, { ringOuterRadius: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Theta Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="3"
+                  max="128"
+                  step="1"
+                  value={obj.ringThetaSegments ?? 32}
+                  onChange={(e) => {
+                    const val = Math.max(3, parseInt(e.target.value) || 32);
+                    updateObject(primaryId, { ringThetaSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Phi Segments
+                </Typography>
+                <input
+                  type="number"
+                  min="1"
+                  max="32"
+                  step="1"
+                  value={obj.ringPhiSegments ?? 1}
+                  onChange={(e) => {
+                    const val = Math.max(1, parseInt(e.target.value) || 1);
+                    updateObject(primaryId, { ringPhiSegments: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Theta Start (rad)
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="6.28319"
+                  step="0.1"
+                  value={obj.ringThetaStart ?? 0}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 0);
+                    updateObject(primaryId, { ringThetaStart: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0} sx={{ padding: "0 4px 4px 4px" }}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: "11px", lineHeight: 1.2, opacity: 0.7 }}
+                >
+                  Theta Length (rad)
+                </Typography>
+                <input
+                  type="number"
+                  min="0"
+                  max="6.28319"
+                  step="0.1"
+                  value={obj.ringThetaLength ?? 6.28319}
+                  onChange={(e) => {
+                    const val = Math.max(0, parseFloat(e.target.value) || 6.28319);
+                    updateObject(primaryId, { ringThetaLength: val });
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "20px",
+                    fontSize: "11px",
+                    padding: "0 4px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "2px",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    color: "inherit",
+                  }}
+                />
+              </Stack>
+
+              <div
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  marginTop: "8px",
+                }}
+              />
+            </>
+          )}
+
           {/* Tube Geometry Options */}
           {obj.type === "tube" && (
             <>

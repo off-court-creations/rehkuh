@@ -519,7 +519,12 @@ export function SceneObject({ id }) {
           obj.capsuleRadialSegments ?? 8,
         );
       case "circle":
-        return new THREE.CircleGeometry(0.5, 32);
+        return new THREE.CircleGeometry(
+          obj.circleRadius ?? 0.5,
+          obj.circleSegments ?? 32,
+          obj.circleThetaStart ?? 0,
+          obj.circleThetaLength ?? Math.PI * 2,
+        );
       case "dodecahedron":
         return new THREE.DodecahedronGeometry(0.5, 0);
       case "icosahedron":
@@ -527,7 +532,14 @@ export function SceneObject({ id }) {
       case "octahedron":
         return new THREE.OctahedronGeometry(0.5, 0);
       case "ring":
-        return new THREE.RingGeometry(0.25, 0.5, 32);
+        return new THREE.RingGeometry(
+          obj.ringInnerRadius ?? 0.25,
+          obj.ringOuterRadius ?? 0.5,
+          obj.ringThetaSegments ?? 32,
+          obj.ringPhiSegments ?? 1,
+          obj.ringThetaStart ?? 0,
+          obj.ringThetaLength ?? Math.PI * 2,
+        );
       case "tetrahedron":
         return new THREE.TetrahedronGeometry(0.5, 0);
       case "torusKnot":
@@ -616,6 +628,16 @@ export function SceneObject({ id }) {
     obj?.capsuleLength,
     obj?.capsuleCapSegments,
     obj?.capsuleRadialSegments,
+    obj?.circleRadius,
+    obj?.circleSegments,
+    obj?.circleThetaStart,
+    obj?.circleThetaLength,
+    obj?.ringInnerRadius,
+    obj?.ringOuterRadius,
+    obj?.ringThetaSegments,
+    obj?.ringPhiSegments,
+    obj?.ringThetaStart,
+    obj?.ringThetaLength,
     obj?.points,
     obj?.shape,
     obj?.extrudeOptions,
