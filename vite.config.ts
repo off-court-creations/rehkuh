@@ -5,21 +5,14 @@ import fs from 'node:fs';
 import { sceneSyncPlugin } from './vite-plugin-scene-sync';
 
 // Plugin to copy scene and shader files for production build
+// Note: scene.json comes from public/ (Vite copies it automatically)
+// This plugin only handles shaders from the shaders/ directory
 function copySceneFilesPlugin() {
   return {
     name: 'copy-scene-files',
     closeBundle() {
       const distDir = path.resolve(process.cwd(), 'dist');
-      const sceneDir = path.resolve(process.cwd(), 'scene');
       const shadersDir = path.resolve(process.cwd(), 'shaders');
-
-      // Copy scene.json
-      const sceneSrc = path.join(sceneDir, 'scene.json');
-      const sceneDest = path.join(distDir, 'scene.json');
-      if (fs.existsSync(sceneSrc)) {
-        fs.copyFileSync(sceneSrc, sceneDest);
-        console.log('[copy-scene-files] Copied scene.json to dist');
-      }
 
       // Copy shaders directory (excluding staging and templates)
       const shadersDestDir = path.join(distDir, 'shaders');
