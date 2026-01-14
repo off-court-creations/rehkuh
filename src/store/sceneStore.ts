@@ -427,13 +427,22 @@ const saveToFile = (objects: Record<string, SceneObject>) => {
 
   if (saveTimeout) clearTimeout(saveTimeout);
   saveTimeout = setTimeout(async () => {
-    const fileObjects = toSceneFileObjects(objects);
+    const settings = useSettingsStore.getState();
+    const sceneData: {
+      title?: string;
+      description?: string;
+      objects: ReturnType<typeof toSceneFileObjects>;
+    } = {
+      objects: toSceneFileObjects(objects),
+    };
+    if (settings.title) sceneData.title = settings.title;
+    if (settings.description) sceneData.description = settings.description;
 
     try {
       const res = await fetch("/__scene", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(fileObjects, null, 2),
+        body: JSON.stringify(sceneData, null, 2),
       });
 
       if (!res.ok) {
@@ -477,7 +486,20 @@ export const useSceneStore = create<SceneState>()(
           return;
         }
 
-        const fileObjects = validation.data;
+        const sceneData = validation.data;
+        const fileObjects = sceneData.objects;
+
+        // Load title/description into settings if present
+        if (
+          sceneData.title !== undefined ||
+          sceneData.description !== undefined
+        ) {
+          const settingsStore = useSettingsStore.getState();
+          if (sceneData.title !== undefined)
+            settingsStore.setTitle(sceneData.title);
+          if (sceneData.description !== undefined)
+            settingsStore.setDescription(sceneData.description);
+        }
 
         if (fileObjects.length === 0) {
           set({ isLoaded: true });
@@ -732,15 +754,31 @@ export const useSceneStore = create<SceneState>()(
     },
 
     serializeScene: () => {
-      const fileObjects = toSceneFileObjects(get().objects);
-      return JSON.stringify(fileObjects, null, 2);
+      const settings = useSettingsStore.getState();
+      const sceneData: {
+        title?: string;
+        description?: string;
+        objects: ReturnType<typeof toSceneFileObjects>;
+      } = {
+        objects: toSceneFileObjects(get().objects),
+      };
+      if (settings.title) sceneData.title = settings.title;
+      if (settings.description) sceneData.description = settings.description;
+      return JSON.stringify(sceneData, null, 2);
     },
 
     serializeSceneAsTSP: () => {
       const settings = useSettingsStore.getState();
-      const options: { author?: string; copyright?: string } = {};
+      const options: {
+        author?: string;
+        copyright?: string;
+        title?: string;
+        description?: string;
+      } = {};
       if (settings.author) options.author = settings.author;
       if (settings.copyright) options.copyright = settings.copyright;
+      if (settings.title) options.title = settings.title;
+      if (settings.description) options.description = settings.description;
       const tspData = exportToTSP(get().objects, options);
       return serializeTSP(tspData);
     },

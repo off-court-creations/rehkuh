@@ -215,6 +215,8 @@ function convertToTSPMaterial(material: MaterialProps): TSPMaterial {
 export interface ExportOptions {
   author?: string;
   copyright?: string;
+  title?: string;
+  description?: string;
 }
 
 export function exportToTSP(
@@ -638,7 +640,7 @@ export function exportToTSP(
     .map((obj) => obj.id);
 
   const metadata: TSPFile["metadata"] = {
-    version: "0.9.1",
+    version: "0.9.2",
     id: crypto.randomUUID(),
     created: new Date().toISOString(),
     generator: "rehkuh",
@@ -650,6 +652,12 @@ export function exportToTSP(
   }
   if (options.copyright) {
     metadata.copyright = options.copyright;
+  }
+  if (options.title) {
+    metadata.title = options.title;
+  }
+  if (options.description) {
+    metadata.description = options.description;
   }
 
   return {

@@ -344,6 +344,8 @@ export const TSPMetadataSchema = z.object({
   generatorVersion: z.string(),
   author: z.string().optional(),
   copyright: z.string().optional(),
+  title: z.string().optional(),
+  description: z.string().optional(),
 });
 
 export const TSPFileSchema = z.object({

@@ -9,9 +9,13 @@ interface SettingsModalProps {
 export function SettingsModal({ open, onClose }: SettingsModalProps) {
   const author = useSettingsStore((s) => s.author);
   const copyright = useSettingsStore((s) => s.copyright);
+  const title = useSettingsStore((s) => s.title);
+  const description = useSettingsStore((s) => s.description);
   const projectPath = useSettingsStore((s) => s.projectPath);
   const setAuthor = useSettingsStore((s) => s.setAuthor);
   const setCopyright = useSettingsStore((s) => s.setCopyright);
+  const setTitle = useSettingsStore((s) => s.setTitle);
+  const setDescription = useSettingsStore((s) => s.setDescription);
   const setProjectPath = useSettingsStore((s) => s.setProjectPath);
 
   if (!open) return null;
@@ -48,6 +52,59 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
         </Typography>
 
         <Stack gap={2}>
+          <Stack gap={0.5}>
+            <Typography variant="body" sx={{ fontSize: "12px", opacity: 0.7 }}>
+              Scene Title
+            </Typography>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="My Scene"
+              style={{
+                width: "100%",
+                height: "32px",
+                fontSize: "13px",
+                padding: "0 8px",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                borderRadius: "4px",
+                backgroundColor: "rgba(0, 0, 0, 0.3)",
+                color: "inherit",
+                boxSizing: "border-box",
+              }}
+            />
+            <Typography variant="body" sx={{ fontSize: "11px", opacity: 0.5 }}>
+              Included in exported TSP files
+            </Typography>
+          </Stack>
+
+          <Stack gap={0.5}>
+            <Typography variant="body" sx={{ fontSize: "12px", opacity: 0.7 }}>
+              Scene Description
+            </Typography>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="A brief description of this scene"
+              rows={3}
+              style={{
+                width: "100%",
+                fontSize: "13px",
+                padding: "8px",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                borderRadius: "4px",
+                backgroundColor: "rgba(0, 0, 0, 0.3)",
+                color: "inherit",
+                boxSizing: "border-box",
+                resize: "vertical",
+                fontFamily: "inherit",
+              }}
+            />
+            <Typography variant="body" sx={{ fontSize: "11px", opacity: 0.5 }}>
+              Included in exported TSP files
+            </Typography>
+          </Stack>
+
           <Stack gap={0.5}>
             <Typography variant="body" sx={{ fontSize: "12px", opacity: 0.7 }}>
               Author Name
@@ -122,7 +179,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
               }}
             />
             <Typography variant="body" sx={{ fontSize: "11px", opacity: 0.5 }}>
-              Used for "Open in VS Code" (auto-detected in dev)
+              Used for &quot;Open in VS Code&quot; (auto-detected in dev)
             </Typography>
           </Stack>
 

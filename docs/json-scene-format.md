@@ -3,32 +3,43 @@
 The JSON scene format is rehkuh's internal format for the staging workflow. This is the format used by `staging-scene.json` and `scene.json`.
 
 Unlike TSP (the export format), the JSON scene format:
-- Uses a flat array structure (no `materials`, `geometries` sections)
+- Uses a flat `objects` array (no `materials`, `geometries` sections)
 - References parents by **name** instead of UUID
 - Supports inline materials per object
+- Includes optional `title` and `description` metadata
 - Is designed for editing, not export
 
 ## File Structure
 
 ```json
-[
-  {
-    "name": "uniqueName",
-    "type": "box",
-    "parent": "parentName",
-    "position": [0, 1, 0],
-    "rotation": [0, 0, 0],
-    "scale": [1, 1, 1],
-    "material": {
-      "color": "#ff0000",
-      "metalness": 0.5,
-      "roughness": 0.3
+{
+  "title": "My Scene",
+  "description": "A description of this scene",
+  "objects": [
+    {
+      "name": "uniqueName",
+      "type": "box",
+      "parent": "parentName",
+      "position": [0, 1, 0],
+      "rotation": [0, 0, 0],
+      "scale": [1, 1, 1],
+      "material": {
+        "color": "#ff0000",
+        "metalness": 0.5,
+        "roughness": 0.3
+      }
     }
-  }
-]
+  ]
+}
 ```
 
-The file is a JSON array of scene objects.
+### Top-Level Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `objects` | array | Yes | Array of scene objects |
+| `title` | string | No | Human-readable scene title (included in TSP exports) |
+| `description` | string | No | Scene description (included in TSP exports) |
 
 ## Object Schema
 
@@ -359,24 +370,26 @@ On promotion, these are copied to `shaders/` (production).
 Objects reference parents by **name** (not UUID):
 
 ```json
-[
-  {
-    "name": "robot",
-    "type": "group",
-    "position": [0, 0, 0],
-    "rotation": [0, 0, 0],
-    "scale": [1, 1, 1]
-  },
-  {
-    "name": "robot_head",
-    "type": "sphere",
-    "parent": "robot",
-    "position": [0, 2, 0],
-    "rotation": [0, 0, 0],
-    "scale": [0.5, 0.5, 0.5],
-    "material": { "color": "#cccccc", "metalness": 0.8, "roughness": 0.2 }
-  }
-]
+{
+  "objects": [
+    {
+      "name": "robot",
+      "type": "group",
+      "position": [0, 0, 0],
+      "rotation": [0, 0, 0],
+      "scale": [1, 1, 1]
+    },
+    {
+      "name": "robot_head",
+      "type": "sphere",
+      "parent": "robot",
+      "position": [0, 2, 0],
+      "rotation": [0, 0, 0],
+      "scale": [0.5, 0.5, 0.5],
+      "material": { "color": "#cccccc", "metalness": 0.8, "roughness": 0.2 }
+    }
+  ]
+}
 ```
 
 Child positions are relative to parent.
@@ -395,52 +408,57 @@ Child positions are relative to parent.
 ### Simple Object
 
 ```json
-[
-  {
-    "name": "redCube",
-    "type": "box",
-    "position": [0, 0.5, 0],
-    "rotation": [0, 0.785, 0],
-    "scale": [1, 1, 1],
-    "material": {
-      "color": "#ff0000",
-      "metalness": 0.3,
-      "roughness": 0.7
+{
+  "objects": [
+    {
+      "name": "redCube",
+      "type": "box",
+      "position": [0, 0.5, 0],
+      "rotation": [0, 0.785, 0],
+      "scale": [1, 1, 1],
+      "material": {
+        "color": "#ff0000",
+        "metalness": 0.3,
+        "roughness": 0.7
+      }
     }
-  }
-]
+  ]
+}
 ```
 
 ### Hierarchy with Group
 
 ```json
-[
-  {
-    "name": "table",
-    "type": "group",
-    "position": [0, 0, 0],
-    "rotation": [0, 0, 0],
-    "scale": [1, 1, 1]
-  },
-  {
-    "name": "tabletop",
-    "type": "box",
-    "parent": "table",
-    "position": [0, 1, 0],
-    "rotation": [0, 0, 0],
-    "scale": [2, 0.1, 1],
-    "material": { "color": "#8b4513", "metalness": 0, "roughness": 0.9 }
-  },
-  {
-    "name": "leg1",
-    "type": "cylinder",
-    "parent": "table",
-    "position": [-0.9, 0.5, -0.4],
-    "rotation": [0, 0, 0],
-    "scale": [0.1, 1, 0.1],
-    "material": { "color": "#8b4513", "metalness": 0, "roughness": 0.9 }
-  }
-]
+{
+  "title": "Table",
+  "objects": [
+    {
+      "name": "table",
+      "type": "group",
+      "position": [0, 0, 0],
+      "rotation": [0, 0, 0],
+      "scale": [1, 1, 1]
+    },
+    {
+      "name": "tabletop",
+      "type": "box",
+      "parent": "table",
+      "position": [0, 1, 0],
+      "rotation": [0, 0, 0],
+      "scale": [2, 0.1, 1],
+      "material": { "color": "#8b4513", "metalness": 0, "roughness": 0.9 }
+    },
+    {
+      "name": "leg1",
+      "type": "cylinder",
+      "parent": "table",
+      "position": [-0.9, 0.5, -0.4],
+      "rotation": [0, 0, 0],
+      "scale": [0.1, 1, 0.1],
+      "material": { "color": "#8b4513", "metalness": 0, "roughness": 0.9 }
+    }
+  ]
+}
 ```
 
 ### Glass Material

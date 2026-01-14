@@ -254,9 +254,14 @@ const SceneFileObjectSchema = z.object({
   indices: z.array(z.number()).optional(),
 });
 
-const SceneFileSchema = z.array(SceneFileObjectSchema);
+const SceneFileSchema = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  objects: z.array(SceneFileObjectSchema),
+});
 
 type SceneFileZ = z.infer<typeof SceneFileSchema>;
+type SceneFileObjectZ = z.infer<typeof SceneFileObjectSchema>;
 
 function validateSceneFile(
   data: unknown
@@ -274,7 +279,7 @@ function validateSceneFile(
 }
 
 function validateParentReferences(
-  objects: SceneFileZ
+  objects: SceneFileObjectZ[]
 ): { success: true } | { success: false; error: string } {
   const names = new Set(objects.map((o) => o.name));
   const duplicates = objects
@@ -341,7 +346,7 @@ function promoteStaging(): { success: boolean; message: string } {
   }
 
   // Validate parent references
-  const parentValidation = validateParentReferences(validation.data);
+  const parentValidation = validateParentReferences(validation.data.objects);
   if (!parentValidation.success) {
     return {
       success: false,
@@ -351,7 +356,7 @@ function promoteStaging(): { success: boolean; message: string } {
 
   // Validate and collect shader materials that reference external files
   const shaderNames = new Set<string>();
-  for (const obj of validation.data) {
+  for (const obj of validation.data.objects) {
     const mat = obj.material;
     if (mat && mat.type === "shader" && mat.shaderName) {
       shaderNames.add(mat.shaderName);
@@ -420,7 +425,7 @@ function promoteStaging(): { success: boolean; message: string } {
   const shaderMsg = shaderCount > 0 ? ` and ${shaderCount} shader(s)` : "";
   return {
     success: true,
-    message: `Promoted ${validation.data.length} objects${shaderMsg} from staging to scene`,
+    message: `Promoted ${validation.data.objects.length} objects${shaderMsg} from staging to scene`,
   };
 }
 

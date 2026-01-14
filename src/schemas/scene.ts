@@ -192,7 +192,11 @@ export const SceneFileObjectSchema = z.object({
   indices: z.array(z.number()).optional(),
 });
 
-export const SceneFileSchema = z.array(SceneFileObjectSchema);
+export const SceneFileSchema = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  objects: z.array(SceneFileObjectSchema),
+});
 
 export type SceneFileObjectZ = z.infer<typeof SceneFileObjectSchema>;
 export type SceneFileZ = z.infer<typeof SceneFileSchema>;
@@ -213,7 +217,7 @@ export function validateSceneFile(
 }
 
 export function validateParentReferences(
-  objects: SceneFileZ,
+  objects: SceneFileObjectZ[],
 ): { success: true } | { success: false; error: string } {
   const names = new Set(objects.map((o) => o.name));
   const duplicates = objects

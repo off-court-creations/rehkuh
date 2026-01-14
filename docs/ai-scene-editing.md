@@ -92,7 +92,7 @@ Returns the current contents of `staging-scene.json`.
 ```bash
 curl -X POST http://localhost:5173/__staging-scene \
   -H "Content-Type: application/json" \
-  -d '[{"name": "cube", "type": "box", "position": [0,0,0], "rotation": [0,0,0], "scale": [1,1,1], "material": {"color": "#ff0000", "metalness": 0.5, "roughness": 0.5}}]'
+  -d '{"title": "My Scene", "objects": [{"name": "cube", "type": "box", "position": [0,0,0], "rotation": [0,0,0], "scale": [1,1,1], "material": {"color": "#ff0000", "metalness": 0.5, "roughness": 0.5}}]}'
 ```
 
 Writes directly to `staging-scene.json`. No validation - use `/__promote-staging` to validate.
@@ -122,8 +122,8 @@ curl -X POST http://localhost:5173/__promote-staging
 ### Creating a New Scene from Scratch
 
 ```bash
-# 1. Write empty array or new scene to staging
-echo '[]' > scene/staging-scene.json
+# 1. Write new scene to staging (title/description are optional)
+echo '{"title": "My Scene", "description": "A cool scene", "objects": []}' > scene/staging-scene.json
 # or edit staging-scene.json with your objects
 
 # 2. Promote
@@ -140,25 +140,34 @@ curl http://localhost:5173/__scene
 ## Scene Format Quick Reference
 
 ```json
-[
-  {
-    "name": "uniqueName",
-    "type": "box",
-    "position": [0, 0, 0],
-    "rotation": [0, 0, 0],
-    "scale": [1, 1, 1],
-    "material": {
-      "color": "#4bd0d2",
-      "metalness": 0.2,
-      "roughness": 0.4
+{
+  "title": "My Scene",
+  "description": "A description of this scene",
+  "objects": [
+    {
+      "name": "uniqueName",
+      "type": "box",
+      "position": [0, 0, 0],
+      "rotation": [0, 0, 0],
+      "scale": [1, 1, 1],
+      "material": {
+        "color": "#4bd0d2",
+        "metalness": 0.2,
+        "roughness": 0.4
+      }
     }
-  }
-]
+  ]
+}
 ```
 
-**Required fields:** `name`, `type`, `position`, `rotation`, `scale`
+**Top-level fields:**
+- `objects` (required): Array of scene objects
+- `title` (optional): Human-readable scene title
+- `description` (optional): Scene description
 
-**Optional fields:** `parent`, `material` (and complex geometry fields)
+**Object required fields:** `name`, `type`, `position`, `rotation`, `scale`
+
+**Object optional fields:** `parent`, `material` (and complex geometry fields)
 
 **Geometry types:** `box`, `sphere`, `cylinder`, `cone`, `torus`, `plane`, `capsule`, `circle`, `ring`, `dodecahedron`, `icosahedron`, `octahedron`, `tetrahedron`, `torusKnot`, `group`, `lathe`, `extrude`, `shape`, `tube`, `polyhedron`
 
@@ -189,23 +198,26 @@ shaders/                   ← Production shaders (copied on promote)
 1. **Write the staging scene JSON** with a `shaderName` reference (no inline `vertex`/`fragment`):
 
 ```json
-[
-  {
-    "name": "glowingSphere",
-    "type": "sphere",
-    "position": [0, 1, 0],
-    "rotation": [0, 0, 0],
-    "scale": [1, 1, 1],
-    "material": {
-      "type": "shader",
-      "shaderName": "glow",
-      "uniforms": {
-        "baseColor": { "type": "color", "value": "#00ffff" },
-        "time": { "type": "float", "value": 0, "animated": true }
+{
+  "title": "Glow Demo",
+  "objects": [
+    {
+      "name": "glowingSphere",
+      "type": "sphere",
+      "position": [0, 1, 0],
+      "rotation": [0, 0, 0],
+      "scale": [1, 1, 1],
+      "material": {
+        "type": "shader",
+        "shaderName": "glow",
+        "uniforms": {
+          "baseColor": { "type": "color", "value": "#00ffff" },
+          "time": { "type": "float", "value": 0, "animated": true }
+        }
       }
     }
-  }
-]
+  ]
+}
 ```
 
 2. **Write the shader files** in `shaders/staging/`:

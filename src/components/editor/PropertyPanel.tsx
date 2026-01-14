@@ -1,4 +1,5 @@
 import { Stack, Typography, Button, Box } from "@archway/valet";
+import { ConfirmableNumberInput } from "./ConfirmableNumberInput";
 import { useSceneStore } from "@/store/sceneStore";
 import { useSettingsStore } from "@/store/settingsStore";
 import { showError } from "@/store/notificationStore";
@@ -339,26 +340,14 @@ export function PropertyPanel() {
                 >
                   Width Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="1"
-                  max="100"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.boxWidthSegments ?? 1}
-                  onChange={(e) => {
-                    const val = Math.max(1, parseInt(e.target.value) || 1);
-                    updateObject(primaryId, { boxWidthSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { boxWidthSegments: val })
+                  }
+                  min={1}
+                  max={100}
+                  step={1}
                 />
               </Stack>
 
@@ -369,26 +358,14 @@ export function PropertyPanel() {
                 >
                   Height Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="1"
-                  max="100"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.boxHeightSegments ?? 1}
-                  onChange={(e) => {
-                    const val = Math.max(1, parseInt(e.target.value) || 1);
-                    updateObject(primaryId, { boxHeightSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { boxHeightSegments: val })
+                  }
+                  min={1}
+                  max={100}
+                  step={1}
                 />
               </Stack>
 
@@ -399,26 +376,14 @@ export function PropertyPanel() {
                 >
                   Depth Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="1"
-                  max="100"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.boxDepthSegments ?? 1}
-                  onChange={(e) => {
-                    const val = Math.max(1, parseInt(e.target.value) || 1);
-                    updateObject(primaryId, { boxDepthSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { boxDepthSegments: val })
+                  }
+                  min={1}
+                  max={100}
+                  step={1}
                 />
               </Stack>
 
@@ -454,26 +419,14 @@ export function PropertyPanel() {
                 >
                   Width Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="3"
-                  max="128"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.sphereWidthSegments ?? 32}
-                  onChange={(e) => {
-                    const val = Math.max(3, parseInt(e.target.value) || 32);
-                    updateObject(primaryId, { sphereWidthSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { sphereWidthSegments: val })
+                  }
+                  min={3}
+                  max={128}
+                  step={1}
                 />
               </Stack>
 
@@ -484,26 +437,14 @@ export function PropertyPanel() {
                 >
                   Height Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="2"
-                  max="128"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.sphereHeightSegments ?? 32}
-                  onChange={(e) => {
-                    const val = Math.max(2, parseInt(e.target.value) || 32);
-                    updateObject(primaryId, { sphereHeightSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { sphereHeightSegments: val })
+                  }
+                  min={2}
+                  max={128}
+                  step={1}
                 />
               </Stack>
 
@@ -514,26 +455,14 @@ export function PropertyPanel() {
                 >
                   Phi Start
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="6.283"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.spherePhiStart ?? 0}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0);
-                    updateObject(primaryId, { spherePhiStart: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { spherePhiStart: val })
+                  }
+                  min={0}
+                  max={6.283}
+                  step={0.1}
                 />
               </Stack>
 
@@ -544,26 +473,14 @@ export function PropertyPanel() {
                 >
                   Phi Length
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="6.283"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.spherePhiLength ?? Math.PI * 2}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0);
-                    updateObject(primaryId, { spherePhiLength: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { spherePhiLength: val })
+                  }
+                  min={0}
+                  max={6.283}
+                  step={0.1}
                 />
               </Stack>
 
@@ -574,26 +491,14 @@ export function PropertyPanel() {
                 >
                   Theta Start
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="3.142"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.sphereThetaStart ?? 0}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0);
-                    updateObject(primaryId, { sphereThetaStart: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { sphereThetaStart: val })
+                  }
+                  min={0}
+                  max={3.142}
+                  step={0.1}
                 />
               </Stack>
 
@@ -604,26 +509,14 @@ export function PropertyPanel() {
                 >
                   Theta Length
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="3.142"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.sphereThetaLength ?? Math.PI}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0);
-                    updateObject(primaryId, { sphereThetaLength: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { sphereThetaLength: val })
+                  }
+                  min={0}
+                  max={3.142}
+                  step={0.1}
                 />
               </Stack>
 
@@ -659,26 +552,14 @@ export function PropertyPanel() {
                 >
                   Radius Top
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="10"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.cylinderRadiusTop ?? 0.5}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0.5);
-                    updateObject(primaryId, { cylinderRadiusTop: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { cylinderRadiusTop: val })
+                  }
+                  min={0}
+                  max={10}
+                  step={0.1}
                 />
               </Stack>
 
@@ -689,26 +570,14 @@ export function PropertyPanel() {
                 >
                   Radius Bottom
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="10"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.cylinderRadiusBottom ?? 0.5}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0.5);
-                    updateObject(primaryId, { cylinderRadiusBottom: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { cylinderRadiusBottom: val })
+                  }
+                  min={0}
+                  max={10}
+                  step={0.1}
                 />
               </Stack>
 
@@ -719,26 +588,14 @@ export function PropertyPanel() {
                 >
                   Radial Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="3"
-                  max="128"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.cylinderRadialSegments ?? 32}
-                  onChange={(e) => {
-                    const val = Math.max(3, parseInt(e.target.value) || 32);
-                    updateObject(primaryId, { cylinderRadialSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { cylinderRadialSegments: val })
+                  }
+                  min={3}
+                  max={128}
+                  step={1}
                 />
               </Stack>
 
@@ -749,26 +606,14 @@ export function PropertyPanel() {
                 >
                   Height Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="1"
-                  max="128"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.cylinderHeightSegments ?? 1}
-                  onChange={(e) => {
-                    const val = Math.max(1, parseInt(e.target.value) || 1);
-                    updateObject(primaryId, { cylinderHeightSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { cylinderHeightSegments: val })
+                  }
+                  min={1}
+                  max={128}
+                  step={1}
                 />
               </Stack>
 
@@ -801,26 +646,14 @@ export function PropertyPanel() {
                 >
                   Theta Start
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="6.283"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.cylinderThetaStart ?? 0}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0);
-                    updateObject(primaryId, { cylinderThetaStart: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { cylinderThetaStart: val })
+                  }
+                  min={0}
+                  max={6.283}
+                  step={0.1}
                 />
               </Stack>
 
@@ -831,26 +664,14 @@ export function PropertyPanel() {
                 >
                   Theta Length
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="6.283"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.cylinderThetaLength ?? Math.PI * 2}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0);
-                    updateObject(primaryId, { cylinderThetaLength: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { cylinderThetaLength: val })
+                  }
+                  min={0}
+                  max={6.283}
+                  step={0.1}
                 />
               </Stack>
 
@@ -886,26 +707,14 @@ export function PropertyPanel() {
                 >
                   Radius
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="10"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.coneRadius ?? 0.5}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0.5);
-                    updateObject(primaryId, { coneRadius: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { coneRadius: val })
+                  }
+                  min={0}
+                  max={10}
+                  step={0.1}
                 />
               </Stack>
 
@@ -916,26 +725,14 @@ export function PropertyPanel() {
                 >
                   Radial Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="3"
-                  max="128"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.coneRadialSegments ?? 32}
-                  onChange={(e) => {
-                    const val = Math.max(3, parseInt(e.target.value) || 32);
-                    updateObject(primaryId, { coneRadialSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { coneRadialSegments: val })
+                  }
+                  min={3}
+                  max={128}
+                  step={1}
                 />
               </Stack>
 
@@ -946,26 +743,14 @@ export function PropertyPanel() {
                 >
                   Height Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="1"
-                  max="128"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.coneHeightSegments ?? 1}
-                  onChange={(e) => {
-                    const val = Math.max(1, parseInt(e.target.value) || 1);
-                    updateObject(primaryId, { coneHeightSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { coneHeightSegments: val })
+                  }
+                  min={1}
+                  max={128}
+                  step={1}
                 />
               </Stack>
 
@@ -998,26 +783,14 @@ export function PropertyPanel() {
                 >
                   Theta Start
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="6.283"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.coneThetaStart ?? 0}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0);
-                    updateObject(primaryId, { coneThetaStart: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { coneThetaStart: val })
+                  }
+                  min={0}
+                  max={6.283}
+                  step={0.1}
                 />
               </Stack>
 
@@ -1028,26 +801,14 @@ export function PropertyPanel() {
                 >
                   Theta Length
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="6.283"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.coneThetaLength ?? Math.PI * 2}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0);
-                    updateObject(primaryId, { coneThetaLength: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { coneThetaLength: val })
+                  }
+                  min={0}
+                  max={6.283}
+                  step={0.1}
                 />
               </Stack>
 
@@ -1083,26 +844,14 @@ export function PropertyPanel() {
                 >
                   Radius
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="10"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.torusRadius ?? 0.5}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0.5);
-                    updateObject(primaryId, { torusRadius: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { torusRadius: val })
+                  }
+                  min={0}
+                  max={10}
+                  step={0.1}
                 />
               </Stack>
 
@@ -1113,29 +862,14 @@ export function PropertyPanel() {
                 >
                   Tube
                 </Typography>
-                <input
-                  type="number"
-                  min="0.01"
-                  max="5"
-                  step="0.01"
+                <ConfirmableNumberInput
                   value={obj.torusTube ?? 0.2}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      0.01,
-                      parseFloat(e.target.value) || 0.2,
-                    );
-                    updateObject(primaryId, { torusTube: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { torusTube: val })
+                  }
+                  min={0.01}
+                  max={5}
+                  step={0.01}
                 />
               </Stack>
 
@@ -1146,26 +880,14 @@ export function PropertyPanel() {
                 >
                   Radial Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="3"
-                  max="64"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.torusRadialSegments ?? 16}
-                  onChange={(e) => {
-                    const val = Math.max(3, parseInt(e.target.value) || 16);
-                    updateObject(primaryId, { torusRadialSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { torusRadialSegments: val })
+                  }
+                  min={3}
+                  max={64}
+                  step={1}
                 />
               </Stack>
 
@@ -1176,26 +898,14 @@ export function PropertyPanel() {
                 >
                   Tubular Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="3"
-                  max="200"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.torusTubularSegments ?? 32}
-                  onChange={(e) => {
-                    const val = Math.max(3, parseInt(e.target.value) || 32);
-                    updateObject(primaryId, { torusTubularSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { torusTubularSegments: val })
+                  }
+                  min={3}
+                  max={200}
+                  step={1}
                 />
               </Stack>
 
@@ -1206,26 +916,12 @@ export function PropertyPanel() {
                 >
                   Arc
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="6.283"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.torusArc ?? Math.PI * 2}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0);
-                    updateObject(primaryId, { torusArc: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) => updateObject(primaryId, { torusArc: val })}
+                  min={0}
+                  max={6.283}
+                  step={0.1}
                 />
               </Stack>
 
@@ -1261,26 +957,14 @@ export function PropertyPanel() {
                 >
                   Width Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="1"
-                  max="100"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.planeWidthSegments ?? 1}
-                  onChange={(e) => {
-                    const val = Math.max(1, parseInt(e.target.value) || 1);
-                    updateObject(primaryId, { planeWidthSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { planeWidthSegments: val })
+                  }
+                  min={1}
+                  max={100}
+                  step={1}
                 />
               </Stack>
 
@@ -1291,26 +975,14 @@ export function PropertyPanel() {
                 >
                   Height Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="1"
-                  max="100"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.planeHeightSegments ?? 1}
-                  onChange={(e) => {
-                    const val = Math.max(1, parseInt(e.target.value) || 1);
-                    updateObject(primaryId, { planeHeightSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { planeHeightSegments: val })
+                  }
+                  min={1}
+                  max={100}
+                  step={1}
                 />
               </Stack>
 
@@ -1346,29 +1018,14 @@ export function PropertyPanel() {
                 >
                   Radius
                 </Typography>
-                <input
-                  type="number"
-                  min="0.01"
-                  max="10"
-                  step="0.01"
+                <ConfirmableNumberInput
                   value={obj.capsuleRadius ?? 0.5}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      0.01,
-                      parseFloat(e.target.value) || 0.5,
-                    );
-                    updateObject(primaryId, { capsuleRadius: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { capsuleRadius: val })
+                  }
+                  min={0.01}
+                  max={10}
+                  step={0.01}
                 />
               </Stack>
 
@@ -1379,26 +1036,14 @@ export function PropertyPanel() {
                 >
                   Length
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="20"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.capsuleLength ?? 1}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 1);
-                    updateObject(primaryId, { capsuleLength: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { capsuleLength: val })
+                  }
+                  min={0}
+                  max={20}
+                  step={0.1}
                 />
               </Stack>
 
@@ -1409,26 +1054,14 @@ export function PropertyPanel() {
                 >
                   Cap Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="1"
-                  max="32"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.capsuleCapSegments ?? 4}
-                  onChange={(e) => {
-                    const val = Math.max(1, parseInt(e.target.value) || 4);
-                    updateObject(primaryId, { capsuleCapSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { capsuleCapSegments: val })
+                  }
+                  min={1}
+                  max={32}
+                  step={1}
                 />
               </Stack>
 
@@ -1439,26 +1072,14 @@ export function PropertyPanel() {
                 >
                   Radial Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="3"
-                  max="64"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.capsuleRadialSegments ?? 8}
-                  onChange={(e) => {
-                    const val = Math.max(3, parseInt(e.target.value) || 8);
-                    updateObject(primaryId, { capsuleRadialSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { capsuleRadialSegments: val })
+                  }
+                  min={3}
+                  max={64}
+                  step={1}
                 />
               </Stack>
 
@@ -1494,29 +1115,14 @@ export function PropertyPanel() {
                 >
                   Radius
                 </Typography>
-                <input
-                  type="number"
-                  min="0.01"
-                  max="10"
-                  step="0.01"
+                <ConfirmableNumberInput
                   value={obj.circleRadius ?? 0.5}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      0.01,
-                      parseFloat(e.target.value) || 0.5,
-                    );
-                    updateObject(primaryId, { circleRadius: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { circleRadius: val })
+                  }
+                  min={0.01}
+                  max={10}
+                  step={0.01}
                 />
               </Stack>
 
@@ -1527,26 +1133,14 @@ export function PropertyPanel() {
                 >
                   Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="3"
-                  max="128"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.circleSegments ?? 32}
-                  onChange={(e) => {
-                    const val = Math.max(3, parseInt(e.target.value) || 32);
-                    updateObject(primaryId, { circleSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { circleSegments: val })
+                  }
+                  min={3}
+                  max={128}
+                  step={1}
                 />
               </Stack>
 
@@ -1557,26 +1151,14 @@ export function PropertyPanel() {
                 >
                   Theta Start (rad)
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="6.28319"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.circleThetaStart ?? 0}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0);
-                    updateObject(primaryId, { circleThetaStart: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { circleThetaStart: val })
+                  }
+                  min={0}
+                  max={6.28319}
+                  step={0.1}
                 />
               </Stack>
 
@@ -1587,29 +1169,14 @@ export function PropertyPanel() {
                 >
                   Theta Length (rad)
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="6.28319"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.circleThetaLength ?? 6.28319}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      0,
-                      parseFloat(e.target.value) || 6.28319,
-                    );
-                    updateObject(primaryId, { circleThetaLength: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { circleThetaLength: val })
+                  }
+                  min={0}
+                  max={6.28319}
+                  step={0.1}
                 />
               </Stack>
 
@@ -1645,26 +1212,14 @@ export function PropertyPanel() {
                 >
                   Inner Radius
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="10"
-                  step="0.01"
+                <ConfirmableNumberInput
                   value={obj.ringInnerRadius ?? 0.25}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0.25);
-                    updateObject(primaryId, { ringInnerRadius: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { ringInnerRadius: val })
+                  }
+                  min={0}
+                  max={10}
+                  step={0.01}
                 />
               </Stack>
 
@@ -1675,29 +1230,14 @@ export function PropertyPanel() {
                 >
                   Outer Radius
                 </Typography>
-                <input
-                  type="number"
-                  min="0.01"
-                  max="10"
-                  step="0.01"
+                <ConfirmableNumberInput
                   value={obj.ringOuterRadius ?? 0.5}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      0.01,
-                      parseFloat(e.target.value) || 0.5,
-                    );
-                    updateObject(primaryId, { ringOuterRadius: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { ringOuterRadius: val })
+                  }
+                  min={0.01}
+                  max={10}
+                  step={0.01}
                 />
               </Stack>
 
@@ -1708,26 +1248,14 @@ export function PropertyPanel() {
                 >
                   Theta Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="3"
-                  max="128"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.ringThetaSegments ?? 32}
-                  onChange={(e) => {
-                    const val = Math.max(3, parseInt(e.target.value) || 32);
-                    updateObject(primaryId, { ringThetaSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { ringThetaSegments: val })
+                  }
+                  min={3}
+                  max={128}
+                  step={1}
                 />
               </Stack>
 
@@ -1738,26 +1266,14 @@ export function PropertyPanel() {
                 >
                   Phi Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="1"
-                  max="32"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.ringPhiSegments ?? 1}
-                  onChange={(e) => {
-                    const val = Math.max(1, parseInt(e.target.value) || 1);
-                    updateObject(primaryId, { ringPhiSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { ringPhiSegments: val })
+                  }
+                  min={1}
+                  max={32}
+                  step={1}
                 />
               </Stack>
 
@@ -1768,26 +1284,14 @@ export function PropertyPanel() {
                 >
                   Theta Start (rad)
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="6.28319"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.ringThetaStart ?? 0}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseFloat(e.target.value) || 0);
-                    updateObject(primaryId, { ringThetaStart: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { ringThetaStart: val })
+                  }
+                  min={0}
+                  max={6.28319}
+                  step={0.1}
                 />
               </Stack>
 
@@ -1798,29 +1302,14 @@ export function PropertyPanel() {
                 >
                   Theta Length (rad)
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="6.28319"
-                  step="0.1"
+                <ConfirmableNumberInput
                   value={obj.ringThetaLength ?? 6.28319}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      0,
-                      parseFloat(e.target.value) || 6.28319,
-                    );
-                    updateObject(primaryId, { ringThetaLength: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { ringThetaLength: val })
+                  }
+                  min={0}
+                  max={6.28319}
+                  step={0.1}
                 />
               </Stack>
 
@@ -1856,29 +1345,14 @@ export function PropertyPanel() {
                 >
                   Radius
                 </Typography>
-                <input
-                  type="number"
-                  min="0.01"
-                  max="10"
-                  step="0.01"
+                <ConfirmableNumberInput
                   value={obj.torusKnotRadius ?? 0.5}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      0.01,
-                      parseFloat(e.target.value) || 0.5,
-                    );
-                    updateObject(primaryId, { torusKnotRadius: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { torusKnotRadius: val })
+                  }
+                  min={0.01}
+                  max={10}
+                  step={0.01}
                 />
               </Stack>
 
@@ -1889,29 +1363,14 @@ export function PropertyPanel() {
                 >
                   Tube
                 </Typography>
-                <input
-                  type="number"
-                  min="0.01"
-                  max="5"
-                  step="0.01"
+                <ConfirmableNumberInput
                   value={obj.torusKnotTube ?? 0.15}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      0.01,
-                      parseFloat(e.target.value) || 0.15,
-                    );
-                    updateObject(primaryId, { torusKnotTube: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { torusKnotTube: val })
+                  }
+                  min={0.01}
+                  max={5}
+                  step={0.01}
                 />
               </Stack>
 
@@ -1922,26 +1381,14 @@ export function PropertyPanel() {
                 >
                   Tubular Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="3"
-                  max="256"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.torusKnotTubularSegments ?? 64}
-                  onChange={(e) => {
-                    const val = Math.max(3, parseInt(e.target.value) || 64);
-                    updateObject(primaryId, { torusKnotTubularSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { torusKnotTubularSegments: val })
+                  }
+                  min={3}
+                  max={256}
+                  step={1}
                 />
               </Stack>
 
@@ -1952,26 +1399,14 @@ export function PropertyPanel() {
                 >
                   Radial Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="3"
-                  max="64"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.torusKnotRadialSegments ?? 8}
-                  onChange={(e) => {
-                    const val = Math.max(3, parseInt(e.target.value) || 8);
-                    updateObject(primaryId, { torusKnotRadialSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { torusKnotRadialSegments: val })
+                  }
+                  min={3}
+                  max={64}
+                  step={1}
                 />
               </Stack>
 
@@ -1982,26 +1417,14 @@ export function PropertyPanel() {
                 >
                   P (winds around axis)
                 </Typography>
-                <input
-                  type="number"
-                  min="1"
-                  max="20"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.torusKnotP ?? 2}
-                  onChange={(e) => {
-                    const val = Math.max(1, parseInt(e.target.value) || 2);
-                    updateObject(primaryId, { torusKnotP: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { torusKnotP: val })
+                  }
+                  min={1}
+                  max={20}
+                  step={1}
                 />
               </Stack>
 
@@ -2012,26 +1435,14 @@ export function PropertyPanel() {
                 >
                   Q (winds around interior)
                 </Typography>
-                <input
-                  type="number"
-                  min="1"
-                  max="20"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.torusKnotQ ?? 3}
-                  onChange={(e) => {
-                    const val = Math.max(1, parseInt(e.target.value) || 3);
-                    updateObject(primaryId, { torusKnotQ: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { torusKnotQ: val })
+                  }
+                  min={1}
+                  max={20}
+                  step={1}
                 />
               </Stack>
 
@@ -2067,29 +1478,14 @@ export function PropertyPanel() {
                 >
                   Radius
                 </Typography>
-                <input
-                  type="number"
-                  min="0.01"
-                  max="10"
-                  step="0.01"
+                <ConfirmableNumberInput
                   value={obj.octaRadius ?? 0.5}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      0.01,
-                      parseFloat(e.target.value) || 0.5,
-                    );
-                    updateObject(primaryId, { octaRadius: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { octaRadius: val })
+                  }
+                  min={0.01}
+                  max={10}
+                  step={0.01}
                 />
               </Stack>
 
@@ -2100,26 +1496,14 @@ export function PropertyPanel() {
                 >
                   Detail
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="5"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.octaDetail ?? 0}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseInt(e.target.value) || 0);
-                    updateObject(primaryId, { octaDetail: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { octaDetail: val })
+                  }
+                  min={0}
+                  max={5}
+                  step={1}
                 />
               </Stack>
 
@@ -2155,29 +1539,14 @@ export function PropertyPanel() {
                 >
                   Radius
                 </Typography>
-                <input
-                  type="number"
-                  min="0.01"
-                  max="10"
-                  step="0.01"
+                <ConfirmableNumberInput
                   value={obj.dodecaRadius ?? 0.5}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      0.01,
-                      parseFloat(e.target.value) || 0.5,
-                    );
-                    updateObject(primaryId, { dodecaRadius: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { dodecaRadius: val })
+                  }
+                  min={0.01}
+                  max={10}
+                  step={0.01}
                 />
               </Stack>
 
@@ -2188,26 +1557,14 @@ export function PropertyPanel() {
                 >
                   Detail
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="5"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.dodecaDetail ?? 0}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseInt(e.target.value) || 0);
-                    updateObject(primaryId, { dodecaDetail: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { dodecaDetail: val })
+                  }
+                  min={0}
+                  max={5}
+                  step={1}
                 />
               </Stack>
 
@@ -2243,29 +1600,14 @@ export function PropertyPanel() {
                 >
                   Radius
                 </Typography>
-                <input
-                  type="number"
-                  min="0.01"
-                  max="10"
-                  step="0.01"
+                <ConfirmableNumberInput
                   value={obj.icosaRadius ?? 0.5}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      0.01,
-                      parseFloat(e.target.value) || 0.5,
-                    );
-                    updateObject(primaryId, { icosaRadius: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { icosaRadius: val })
+                  }
+                  min={0.01}
+                  max={10}
+                  step={0.01}
                 />
               </Stack>
 
@@ -2276,26 +1618,14 @@ export function PropertyPanel() {
                 >
                   Detail
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="5"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.icosaDetail ?? 0}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseInt(e.target.value) || 0);
-                    updateObject(primaryId, { icosaDetail: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { icosaDetail: val })
+                  }
+                  min={0}
+                  max={5}
+                  step={1}
                 />
               </Stack>
 
@@ -2331,29 +1661,14 @@ export function PropertyPanel() {
                 >
                   Radius
                 </Typography>
-                <input
-                  type="number"
-                  min="0.01"
-                  max="10"
-                  step="0.01"
+                <ConfirmableNumberInput
                   value={obj.tetraRadius ?? 0.5}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      0.01,
-                      parseFloat(e.target.value) || 0.5,
-                    );
-                    updateObject(primaryId, { tetraRadius: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { tetraRadius: val })
+                  }
+                  min={0.01}
+                  max={10}
+                  step={0.01}
                 />
               </Stack>
 
@@ -2364,26 +1679,14 @@ export function PropertyPanel() {
                 >
                   Detail
                 </Typography>
-                <input
-                  type="number"
-                  min="0"
-                  max="5"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.tetraDetail ?? 0}
-                  onChange={(e) => {
-                    const val = Math.max(0, parseInt(e.target.value) || 0);
-                    updateObject(primaryId, { tetraDetail: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { tetraDetail: val })
+                  }
+                  min={0}
+                  max={5}
+                  step={1}
                 />
               </Stack>
 
@@ -2419,29 +1722,14 @@ export function PropertyPanel() {
                 >
                   Radius
                 </Typography>
-                <input
-                  type="number"
-                  min="0.01"
-                  max="10"
-                  step="0.01"
+                <ConfirmableNumberInput
                   value={obj.tubeRadius ?? 0.1}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      0.01,
-                      parseFloat(e.target.value) || 0.1,
-                    );
-                    updateObject(primaryId, { tubeRadius: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { tubeRadius: val })
+                  }
+                  min={0.01}
+                  max={10}
+                  step={0.01}
                 />
               </Stack>
 
@@ -2452,26 +1740,14 @@ export function PropertyPanel() {
                 >
                   Tubular Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="1"
-                  max="200"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.tubeTubularSegments ?? 64}
-                  onChange={(e) => {
-                    const val = Math.max(1, parseInt(e.target.value) || 64);
-                    updateObject(primaryId, { tubeTubularSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { tubeTubularSegments: val })
+                  }
+                  min={1}
+                  max={200}
+                  step={1}
                 />
               </Stack>
 
@@ -2482,26 +1758,14 @@ export function PropertyPanel() {
                 >
                   Radial Segments
                 </Typography>
-                <input
-                  type="number"
-                  min="3"
-                  max="64"
-                  step="1"
+                <ConfirmableNumberInput
                   value={obj.tubeRadialSegments ?? 8}
-                  onChange={(e) => {
-                    const val = Math.max(3, parseInt(e.target.value) || 8);
-                    updateObject(primaryId, { tubeRadialSegments: val });
-                  }}
-                  style={{
-                    width: "60px",
-                    height: "20px",
-                    fontSize: "11px",
-                    padding: "0 4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "2px",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    color: "inherit",
-                  }}
+                  onChange={(val) =>
+                    updateObject(primaryId, { tubeRadialSegments: val })
+                  }
+                  min={3}
+                  max={64}
+                  step={1}
                 />
               </Stack>
 
@@ -3358,27 +2622,13 @@ export function PropertyPanel() {
                             )}
 
                             {uniform.type === "float" && (
-                              <input
-                                type="number"
+                              <ConfirmableNumberInput
                                 value={uniform.value as number}
-                                step={uniform.step ?? 0.1}
-                                onChange={(e) =>
-                                  handleUniformChange(
-                                    name,
-                                    "value",
-                                    parseFloat(e.target.value) || 0,
-                                  )
+                                onChange={(val) =>
+                                  handleUniformChange(name, "value", val)
                                 }
-                                style={{
-                                  width: "50px",
-                                  height: "14px",
-                                  fontSize: "10px",
-                                  padding: "0 2px",
-                                  border: "1px solid rgba(255,255,255,0.2)",
-                                  borderRadius: "2px",
-                                  backgroundColor: "rgba(0,0,0,0.3)",
-                                  color: "inherit",
-                                }}
+                                step={uniform.step ?? 0.1}
+                                width="50px"
                               />
                             )}
 

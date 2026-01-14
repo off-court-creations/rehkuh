@@ -578,6 +578,8 @@ export interface TSPMetadata {
   generatorVersion: string; // semver of the generator (e.g. rehkuh version)
   author?: string;
   copyright?: string;
+  title?: string;
+  description?: string;
 }
 
 export interface TSPFile {

@@ -503,7 +503,7 @@ export function sceneSyncPlugin(): Plugin {
             res.end(data);
           } catch {
             res.writeHead(200, { "Content-Type": "application/json" });
-            res.end("[]");
+            res.end(JSON.stringify({ objects: [] }));
           }
         } else {
           res.writeHead(405);
@@ -521,7 +521,7 @@ export function sceneSyncPlugin(): Plugin {
         }
 
         try {
-          const emptyScene = "[]";
+          const emptyScene = JSON.stringify({ objects: [] }, null, 2);
           const newHash = hashContent(emptyScene);
           lastWrittenHash = newHash;
           ignoreNextChange = true;
@@ -868,7 +868,7 @@ void main() {
           }
 
           // Validate parent references
-          const parentValidation = validateParentReferences(validation.data);
+          const parentValidation = validateParentReferences(validation.data.objects);
           if (!parentValidation.success) {
             res.writeHead(400, { "Content-Type": "application/json" });
             res.end(
@@ -882,7 +882,7 @@ void main() {
 
           // Validate and collect shader materials that reference external files
           const shaderNames = new Set<string>();
-          for (const obj of validation.data) {
+          for (const obj of validation.data.objects) {
             const mat = obj.material;
             if (mat && mat.type === "shader" && mat.shaderName) {
               shaderNames.add(mat.shaderName);
@@ -971,14 +971,14 @@ void main() {
           const shaderCount = shaderNames.size;
           const shaderMsg = shaderCount > 0 ? ` and ${shaderCount} shader(s)` : "";
           console.log(
-            `[scene-sync] Promoted ${validation.data.length} objects${shaderMsg} from staging`
+            `[scene-sync] Promoted ${validation.data.objects.length} objects${shaderMsg} from staging`
           );
 
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
               ok: true,
-              message: `Promoted ${validation.data.length} objects${shaderMsg} from staging to scene`,
+              message: `Promoted ${validation.data.objects.length} objects${shaderMsg} from staging to scene`,
             })
           );
         } catch (err) {
@@ -1015,8 +1015,8 @@ void main() {
           let objectCount = 0;
           try {
             const parsed = JSON.parse(content);
-            if (Array.isArray(parsed)) {
-              objectCount = parsed.length;
+            if (parsed && Array.isArray(parsed.objects)) {
+              objectCount = parsed.objects.length;
             }
           } catch {
             // Non-fatal
@@ -1069,11 +1069,11 @@ void main() {
               res.end(data);
             } else {
               res.writeHead(200, { "Content-Type": "application/json" });
-              res.end("[]");
+              res.end(JSON.stringify({ objects: [] }));
             }
           } catch {
             res.writeHead(200, { "Content-Type": "application/json" });
-            res.end("[]");
+            res.end(JSON.stringify({ objects: [] }));
           }
         } else if (req.method === "POST") {
           // Allow writing to staging scene
