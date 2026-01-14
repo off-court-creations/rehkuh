@@ -207,7 +207,7 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
   return (
     <>
       <color attach="background" args={["#1a1a2e"]} />
-      <fog attach="fog" args={["#1a1a2e", 20, 60]} />
+      {showGrid && <fog attach="fog" args={["#1a1a2e", 20, 60]} />}
 
       <Suspense fallback={null}>
         <Environment preset="apartment" />
@@ -256,14 +256,16 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
         />
       )}
 
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, -0.02, 0]}
-        receiveShadow
-      >
-        <planeGeometry args={[100, 100]} />
-        <meshStandardMaterial color="#1a2a3a" transparent opacity={0.5} />
-      </mesh>
+      {showGrid && (
+        <mesh
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[0, -0.02, 0]}
+          receiveShadow
+        >
+          <planeGeometry args={[100, 100]} />
+          <meshStandardMaterial color="#1a2a3a" transparent opacity={0.5} />
+        </mesh>
+      )}
     </>
   );
 }

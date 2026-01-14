@@ -756,7 +756,7 @@ export function SceneObject({ id }) {
               ref={meshRef}
               onClick={handleClick}
               userData={{ objectId: id }}
-              castShadow={obj.castShadow ?? true}
+              castShadow={obj.castShadow ?? false}
               receiveShadow={obj.receiveShadow ?? true}
               geometry={geometry}
               material={objectMaterial}
