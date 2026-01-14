@@ -422,14 +422,24 @@ const saveToFile = (objects: Record<string, SceneObject>) => {
   if (!import.meta.env.DEV) return;
 
   if (saveTimeout) clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(() => {
+  saveTimeout = setTimeout(async () => {
     const fileObjects = toSceneFileObjects(objects);
 
-    fetch("/__scene", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(fileObjects, null, 2),
-    }).catch(() => {});
+    try {
+      const res = await fetch("/__scene", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fileObjects, null, 2),
+      });
+
+      if (!res.ok) {
+        showError(`Failed to save scene: ${res.status} ${res.statusText}`);
+      }
+    } catch (err) {
+      showError(
+        `Failed to save scene: ${err instanceof Error ? err.message : "Network error"}`,
+      );
+    }
   }, 300);
 };
 

@@ -7,17 +7,6 @@ Last reviewed: 2026-01-13
 
 ## Critical Issues
 
-### 1. ~~Hardcoded Path Fallback~~ (FIXED)
-
-**Status:** Resolved
-
-**Solution:**
-- Added `projectPath` setting to Settings modal (persisted to localStorage)
-- Vite config now auto-injects `VITE_CWD` via `define` option in dev mode
-- PropertyPanel shows error notification if path not configured (only affects prod)
-
----
-
 ### 2. Silent Auto-Save Failures
 
 **File:** `src/store/sceneStore.ts:432`
@@ -112,7 +101,7 @@ window as unknown as { showDirectoryPicker?: ... }
 ## Pre-Deployment Checklist
 
 - [x] Fix hardcoded path in PropertyPanel.tsx
-- [ ] Add error handling to auto-save fetch
+- [x] Add error handling to auto-save fetch
 - [ ] Add `.ok` checks to all fetch calls
 - [ ] Replace `console.warn` with `showError()` in TSP import
 - [ ] Evaluate bundle size optimization strategy
