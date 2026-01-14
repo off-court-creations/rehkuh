@@ -5,6 +5,7 @@ import { Outliner } from "@/components/editor/Outliner";
 import { PropertyPanel } from "@/components/editor/PropertyPanel";
 import { GlobalSnackbar } from "@/components/GlobalSnackbar";
 import { useSceneStore } from "@/store/sceneStore";
+import { useSettingsStore } from "@/store/settingsStore";
 import { useUndoRedoKeyboard } from "@/hooks/useUndoRedoKeyboard";
 import { EditorToolbar } from "@/components/editor/EditorToolbar";
 
@@ -14,6 +15,7 @@ const APPBAR_HEIGHT = 48;
 export default function Editor() {
   const loadScene = useSceneStore((s) => s.loadScene);
   const isLoaded = useSceneStore((s) => s.isLoaded);
+  const previewMode = useSettingsStore((s) => s.previewMode);
 
   useUndoRedoKeyboard();
 
@@ -125,19 +127,21 @@ export default function Editor() {
           }}
         >
           {/* Left sidebar - Outliner */}
-          <div
-            style={{
-              width: SIDEBAR_WIDTH,
-              flexShrink: 0,
-              display: "flex",
-              flexDirection: "column",
-              borderRight: "1px solid rgba(255,255,255,0.1)",
-              backgroundColor: "rgba(26, 26, 46, 0.95)",
-              overflow: "hidden",
-            }}
-          >
-            <Outliner />
-          </div>
+          {!previewMode && (
+            <div
+              style={{
+                width: SIDEBAR_WIDTH,
+                flexShrink: 0,
+                display: "flex",
+                flexDirection: "column",
+                borderRight: "1px solid rgba(255,255,255,0.1)",
+                backgroundColor: "rgba(26, 26, 46, 0.95)",
+                overflow: "hidden",
+              }}
+            >
+              <Outliner />
+            </div>
+          )}
 
           {/* Center - Viewport */}
           <div style={{ flex: 1, position: "relative", minWidth: 0 }}>
@@ -145,19 +149,21 @@ export default function Editor() {
           </div>
 
           {/* Right sidebar - Property Panel */}
-          <div
-            style={{
-              width: SIDEBAR_WIDTH,
-              flexShrink: 0,
-              display: "flex",
-              flexDirection: "column",
-              borderLeft: "1px solid rgba(255,255,255,0.1)",
-              backgroundColor: "rgba(26, 26, 46, 0.95)",
-              overflow: "hidden",
-            }}
-          >
-            <PropertyPanel />
-          </div>
+          {!previewMode && (
+            <div
+              style={{
+                width: SIDEBAR_WIDTH,
+                flexShrink: 0,
+                display: "flex",
+                flexDirection: "column",
+                borderLeft: "1px solid rgba(255,255,255,0.1)",
+                backgroundColor: "rgba(26, 26, 46, 0.95)",
+                overflow: "hidden",
+              }}
+            >
+              <PropertyPanel />
+            </div>
+          )}
         </div>
       </div>
 

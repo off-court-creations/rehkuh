@@ -3,6 +3,7 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Grid, Environment } from "@react-three/drei";
 import * as THREE from "three";
 import { useSceneStore } from "@/store/sceneStore";
+import { useSettingsStore } from "@/store/settingsStore";
 import { SceneObject } from "./SceneObject";
 import { MultiTransformGizmo } from "./MultiTransformGizmo";
 
@@ -182,6 +183,7 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
   const beginTransaction = useSceneStore((state) => state.beginTransaction);
   const commitTransaction = useSceneStore((state) => state.commitTransaction);
   const setIsDragging = useSceneStore((state) => state.setIsDragging);
+  const showGrid = useSettingsStore((state) => state.showGrid);
 
   const rootObjects = objects.filter((o) => o.parentId === null);
 
@@ -238,19 +240,21 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
         />
       )}
 
-      <Grid
-        position={[0, -0.01, 0]}
-        args={[50, 50]}
-        cellSize={1}
-        cellThickness={0.5}
-        cellColor="#444"
-        sectionSize={5}
-        sectionThickness={1}
-        sectionColor="#666"
-        fadeDistance={50}
-        fadeStrength={1}
-        infiniteGrid
-      />
+      {showGrid && (
+        <Grid
+          position={[0, -0.01, 0]}
+          args={[50, 50]}
+          cellSize={1}
+          cellThickness={0.5}
+          cellColor="#444"
+          sectionSize={5}
+          sectionThickness={1}
+          sectionColor="#666"
+          fadeDistance={50}
+          fadeStrength={1}
+          infiniteGrid
+        />
+      )}
 
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}

@@ -10,11 +10,14 @@ Click the **Export** button in the Outliner panel. The file picker will suggest 
 
 ```json
 {
-  "version": "0.9.0",
   "metadata": {
-    "name": "scene_name",
+    "version": "0.9.1",
+    "id": "550e8400-e29b-41d4-a716-446655440000",
     "created": "2026-01-09T12:00:00Z",
-    "generator": "rehkuh"
+    "generator": "rehkuh",
+    "generatorVersion": "0.1.0",
+    "author": "Artist Name",
+    "copyright": "CC BY 4.0"
   },
   "materials": {
     "mat_ff0000_50_30": {
@@ -47,17 +50,17 @@ Click the **Export** button in the Outliner panel. The file picker will suggest 
 
 ## Sections
 
-### `version`
-
-Format version string. Currently `"0.9.0"`.
-
 ### `metadata`
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `name` | string | Scene name (from first root group or "scene") |
-| `created` | string | ISO 8601 timestamp |
-| `generator` | string | Always `"rehkuh"` for rehkuh exports |
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `version` | string | Yes | TSP format version (currently `"0.9.1"`) |
+| `id` | string | Yes | UUID v4 identifier - users can use this how they please or ignore it |
+| `created` | string | Yes | ISO 8601 timestamp |
+| `generator` | string | Yes | Generator name (always `"rehkuh"` for rehkuh exports) |
+| `generatorVersion` | string | Yes | Semver version of the generator (e.g. `"0.1.0"`) |
+| `author` | string | No | Author/creator name (configured in Settings) |
+| `copyright` | string | No | Copyright or license info (configured in Settings) |
 
 ### `materials`
 

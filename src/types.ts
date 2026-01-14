@@ -571,13 +571,16 @@ export interface TSPObject {
 }
 
 export interface TSPMetadata {
-  name: string;
+  version: string; // TSP format version
+  id: string; // UUID v4 - users can use this how they please
   created: string; // ISO 8601 timestamp
   generator: string;
+  generatorVersion: string; // semver of the generator (e.g. rehkuh version)
+  author?: string;
+  copyright?: string;
 }
 
 export interface TSPFile {
-  version: string;
   metadata: TSPMetadata;
   materials: Record<string, TSPMaterial>;
   geometries: Record<string, TSPGeometry>;

@@ -13,6 +13,7 @@ import type {
 } from "@/types";
 import { validateSceneFile, validateParentReferences } from "@/schemas/scene";
 import { showError } from "@/store/notificationStore";
+import { useSettingsStore } from "@/store/settingsStore";
 import { exportToTSP, serializeTSP } from "@/export/tspExporter";
 import { importFromTSP } from "@/export/tspImporter";
 import type { TSPFile } from "@/types";
@@ -698,7 +699,11 @@ export const useSceneStore = create<SceneState>()(
     },
 
     serializeSceneAsTSP: () => {
-      const tspData = exportToTSP(get().objects);
+      const settings = useSettingsStore.getState();
+      const options: { author?: string; copyright?: string } = {};
+      if (settings.author) options.author = settings.author;
+      if (settings.copyright) options.copyright = settings.copyright;
+      const tspData = exportToTSP(get().objects, options);
       return serializeTSP(tspData);
     },
 

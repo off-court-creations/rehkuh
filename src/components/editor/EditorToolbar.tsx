@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { Button, Stack, Tooltip, IconButton, Divider } from "@archway/valet";
 import { useSceneStore } from "@/store/sceneStore";
+import { useSettingsStore } from "@/store/settingsStore";
 import { validateTSPFile } from "@/schemas/tsp";
 import { showError, showSuccess } from "@/store/notificationStore";
+import { SettingsModal } from "./SettingsModal";
 import type { PrimitiveType, TSPFile } from "@/types";
 
 interface EditorToolbarProps {
@@ -9,6 +12,13 @@ interface EditorToolbarProps {
 }
 
 export function EditorToolbar({ section }: EditorToolbarProps) {
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const previewMode = useSettingsStore((state) => state.previewMode);
+  const togglePreviewMode = useSettingsStore(
+    (state) => state.togglePreviewMode,
+  );
+  const showGrid = useSettingsStore((state) => state.showGrid);
+  const toggleShowGrid = useSettingsStore((state) => state.toggleShowGrid);
   const addObject = useSceneStore((state) => state.addObject);
   const clearScene = useSceneStore((state) => state.clearScene);
   const serializeSceneAsTSP = useSceneStore(
@@ -73,8 +83,6 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
       return;
     }
 
-    const sceneName = validation.data.metadata.name || "scene";
-
     try {
       const picker = (
         window as unknown as {
@@ -84,7 +92,7 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
 
       if (typeof picker === "function") {
         const handle = (await picker({
-          suggestedName: `${sceneName}.tsp`,
+          suggestedName: "scene.tsp",
           types: [
             {
               description: "Three Shaded Primitive",
@@ -111,7 +119,7 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${sceneName}.tsp`;
+    link.download = "scene.tsp";
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -228,6 +236,33 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
   if (section === "left") {
     return (
       <Stack direction="row" gap={1}>
+        <Tooltip
+          placement="bottom"
+          title={previewMode ? "Edit Mode" : "Preview Mode"}
+        >
+          <IconButton
+            variant={previewMode ? "filled" : "outlined"}
+            size="sm"
+            icon={previewMode ? "mdi:pencil" : "mdi:eye"}
+            onClick={togglePreviewMode}
+            aria-label={
+              previewMode ? "Switch to Edit Mode" : "Switch to Preview Mode"
+            }
+          />
+        </Tooltip>
+        <Tooltip
+          placement="bottom"
+          title={showGrid ? "Hide Grid" : "Show Grid"}
+        >
+          <IconButton
+            variant={showGrid ? "filled" : "outlined"}
+            size="sm"
+            icon="mdi:grid"
+            onClick={toggleShowGrid}
+            aria-label={showGrid ? "Hide Grid" : "Show Grid"}
+          />
+        </Tooltip>
+        <Divider orientation="vertical" />
         <Button
           size="sm"
           variant="filled"
@@ -273,6 +308,20 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
             Promote
           </Button>
         </Tooltip>
+        <Divider orientation="vertical" />
+        <Tooltip placement="bottom" title="Settings">
+          <IconButton
+            variant="plain"
+            size="sm"
+            icon="mdi:cog"
+            onClick={() => setSettingsOpen(true)}
+            aria-label="Settings"
+          />
+        </Tooltip>
+        <SettingsModal
+          open={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+        />
       </Stack>
     );
   }

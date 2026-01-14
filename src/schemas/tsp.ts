@@ -337,13 +337,16 @@ export const TSPObjectSchema = z.object({
 });
 
 export const TSPMetadataSchema = z.object({
-  name: z.string(),
+  version: z.string(),
+  id: z.string().uuid(),
   created: z.string(),
   generator: z.string(),
+  generatorVersion: z.string(),
+  author: z.string().optional(),
+  copyright: z.string().optional(),
 });
 
 export const TSPFileSchema = z.object({
-  version: z.string(),
   metadata: TSPMetadataSchema,
   materials: z.record(z.string(), TSPMaterialSchema),
   geometries: z.record(z.string(), TSPGeometrySchema),

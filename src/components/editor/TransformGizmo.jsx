@@ -67,7 +67,12 @@ export function TransformGizmo({ objectId, onDragStart, onDragEnd }) {
         scale={obj.scale}
       />
       {target && (
-        <TransformControls ref={transformRef} object={target} mode={mode} space="local" />
+        <TransformControls
+          ref={transformRef}
+          object={target}
+          mode={mode}
+          space="local"
+        />
       )}
     </>
   );

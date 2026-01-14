@@ -212,7 +212,15 @@ function convertToTSPMaterial(material: MaterialProps): TSPMaterial {
   return tspMat;
 }
 
-export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
+export interface ExportOptions {
+  author?: string;
+  copyright?: string;
+}
+
+export function exportToTSP(
+  objects: Record<string, SceneObject>,
+  options: ExportOptions = {},
+): TSPFile {
   const objectList = Object.values(objects);
 
   // Build deduplicated materials dictionary
@@ -629,19 +637,23 @@ export function exportToTSP(objects: Record<string, SceneObject>): TSPFile {
     .filter((obj) => obj.parentId === null)
     .map((obj) => obj.id);
 
-  // Derive scene name from first root group or "scene"
-  const firstRoot = objectList.find(
-    (obj) => obj.parentId === null && obj.type === "group",
-  );
-  const sceneName = firstRoot?.name || "scene";
+  const metadata: TSPFile["metadata"] = {
+    version: "0.9.1",
+    id: crypto.randomUUID(),
+    created: new Date().toISOString(),
+    generator: "rehkuh",
+    generatorVersion: "0.1.0",
+  };
+
+  if (options.author) {
+    metadata.author = options.author;
+  }
+  if (options.copyright) {
+    metadata.copyright = options.copyright;
+  }
 
   return {
-    version: "0.9.0",
-    metadata: {
-      name: sceneName,
-      created: new Date().toISOString(),
-      generator: "rehkuh",
-    },
+    metadata,
     materials,
     geometries,
     objects: tspObjects,
