@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import { useThree } from "@react-three/fiber";
 import { TransformControls } from "@react-three/drei";
-import { Vector3, Euler, Quaternion, Box3 } from "three";
+import { Vector3, Euler, Quaternion, Box3, Matrix4 } from "three";
 import { useSceneStore } from "@/store/sceneStore";
 
 export function MultiTransformGizmo({ selectedIds, onDragStart, onDragEnd }) {
@@ -115,28 +115,47 @@ export function MultiTransformGizmo({ selectedIds, onDragStart, onDragEnd }) {
 
     const handleDraggingChanged = (event) => {
       if (event.value) {
-        // Store initial state of all selected objects
-        // Use transform center (position average) for rotation/scale offset calculations
-        const transformCenter = getTransformCenter();
-        initialStateRef.current = {
-          // Store pivot's actual starting position for translation delta
-          pivotStartPosition: pivot.position.clone(),
-          // Transform center for rotation/scale calculations
-          center: new Vector3(...transformCenter),
-          pivotRotation: new Euler(0, 0, 0),
-          pivotScale: new Vector3(1, 1, 1),
-          objects: selectedObjects.map((obj) => ({
+        // Store initial state - use pivot position (visual center) as transform center
+        const pivotPos = pivot.position.clone();
+
+        // Build object data with world positions for correct pivot-relative transforms
+        const objectsData = selectedObjects.map((obj) => {
+          // Find the Three.js object to get world position and parent transform
+          let worldPosition = new Vector3(...obj.position);
+          let parentWorldMatrixInverse = new Matrix4(); // identity
+
+          // Find the GROUP wrapper (not the mesh) - SceneObject wraps all objects
+          // in a <group> that holds position/rotation/scale
+          scene.traverse((threeObj) => {
+            if (
+              threeObj?.userData?.objectId === obj.id &&
+              threeObj.isGroup
+            ) {
+              threeObj.updateWorldMatrix(true, false);
+              threeObj.getWorldPosition(worldPosition);
+              if (threeObj.parent) {
+                parentWorldMatrixInverse
+                  .copy(threeObj.parent.matrixWorld)
+                  .invert();
+              }
+            }
+          });
+
+          return {
             id: obj.id,
-            position: new Vector3(...obj.position),
+            localPosition: new Vector3(...obj.position),
+            worldPosition: worldPosition.clone(),
             rotation: new Euler(...obj.rotation),
             scale: new Vector3(...obj.scale),
-            // Offset from transform center (in local space)
-            offset: new Vector3(
-              obj.position[0] - transformCenter[0],
-              obj.position[1] - transformCenter[1],
-              obj.position[2] - transformCenter[2],
-            ),
-          })),
+            // Offset from pivot in world space
+            worldOffset: new Vector3().subVectors(worldPosition, pivotPos),
+            parentWorldMatrixInverse: parentWorldMatrixInverse.clone(),
+          };
+        });
+
+        initialStateRef.current = {
+          pivotStartPosition: pivotPos,
+          objects: objectsData,
         };
         onDragStart?.();
       } else {
@@ -151,28 +170,43 @@ export function MultiTransformGizmo({ selectedIds, onDragStart, onDragEnd }) {
       const initial = initialStateRef.current;
 
       if (mode === "translate") {
-        // For translation, compute delta from pivot's starting position
-        // This ensures delta starts at zero and grows as user drags
+        // Translation: compute world delta and apply
         const delta = new Vector3().subVectors(
           pivot.position,
           initial.pivotStartPosition,
         );
 
         initial.objects.forEach((initObj) => {
-          const newPos = new Vector3().addVectors(initObj.position, delta);
+          // Compute new world position
+          const newWorldPos = new Vector3().addVectors(
+            initObj.worldPosition,
+            delta,
+          );
+          // Convert to local space
+          const newLocalPos = newWorldPos
+            .clone()
+            .applyMatrix4(initObj.parentWorldMatrixInverse);
           updateObject(initObj.id, {
-            position: newPos.toArray(),
+            position: newLocalPos.toArray(),
           });
         });
       } else if (mode === "rotate") {
-        // For rotation, rotate each object's position around the pivot
-        // and also rotate its own rotation
+        // Rotation: rotate world offset around pivot, convert back to local
         const pivotQuat = new Quaternion().setFromEuler(pivot.rotation);
 
         initial.objects.forEach((initObj) => {
-          // Rotate offset around pivot
-          const newOffset = initObj.offset.clone().applyQuaternion(pivotQuat);
-          const newPos = new Vector3().addVectors(initial.center, newOffset);
+          // Rotate world offset around pivot
+          const newWorldOffset = initObj.worldOffset
+            .clone()
+            .applyQuaternion(pivotQuat);
+          const newWorldPos = new Vector3().addVectors(
+            initial.pivotStartPosition,
+            newWorldOffset,
+          );
+          // Convert to local space
+          const newLocalPos = newWorldPos
+            .clone()
+            .applyMatrix4(initObj.parentWorldMatrixInverse);
 
           // Combine rotations
           const objQuat = new Quaternion().setFromEuler(initObj.rotation);
@@ -183,24 +217,32 @@ export function MultiTransformGizmo({ selectedIds, onDragStart, onDragEnd }) {
           const newRot = new Euler().setFromQuaternion(newQuat);
 
           updateObject(initObj.id, {
-            position: newPos.toArray(),
+            position: newLocalPos.toArray(),
             rotation: [newRot.x, newRot.y, newRot.z],
           });
         });
       } else if (mode === "scale") {
-        // For scale, scale each object's offset from center and its own scale
+        // Scale: scale world offset from pivot, convert back to local
+        // Scale is applied in local axes (object's own scale property)
         const scaleVec = pivot.scale;
 
         initial.objects.forEach((initObj) => {
-          // Scale offset from center
-          const newOffset = new Vector3(
-            initObj.offset.x * scaleVec.x,
-            initObj.offset.y * scaleVec.y,
-            initObj.offset.z * scaleVec.z,
+          // Scale world offset from pivot center
+          const newWorldOffset = new Vector3(
+            initObj.worldOffset.x * scaleVec.x,
+            initObj.worldOffset.y * scaleVec.y,
+            initObj.worldOffset.z * scaleVec.z,
           );
-          const newPos = new Vector3().addVectors(initial.center, newOffset);
+          const newWorldPos = new Vector3().addVectors(
+            initial.pivotStartPosition,
+            newWorldOffset,
+          );
+          // Convert to local space
+          const newLocalPos = newWorldPos
+            .clone()
+            .applyMatrix4(initObj.parentWorldMatrixInverse);
 
-          // Scale the object's own scale
+          // Scale the object's own scale (local axes)
           const newScale = new Vector3(
             initObj.scale.x * scaleVec.x,
             initObj.scale.y * scaleVec.y,
@@ -208,7 +250,7 @@ export function MultiTransformGizmo({ selectedIds, onDragStart, onDragEnd }) {
           );
 
           updateObject(initObj.id, {
-            position: newPos.toArray(),
+            position: newLocalPos.toArray(),
             scale: newScale.toArray(),
           });
         });
@@ -229,8 +271,8 @@ export function MultiTransformGizmo({ selectedIds, onDragStart, onDragEnd }) {
     onDragStart,
     onDragEnd,
     updateObject,
-    getTransformCenter,
     selectedObjects,
+    scene,
   ]);
 
   if (selectedObjects.length === 0) return null;

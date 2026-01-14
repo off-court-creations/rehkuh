@@ -777,9 +777,9 @@ export function SceneObject({ id }) {
           <SceneObject key={child.id} id={child.id} />
         ))}
       </group>
-
-      {/* Bounding box for selected groups - rendered outside group transform */}
-      {isSelected && obj.type === "group" && <GroupBoundingBox id={id} />}
     </>
   );
 }
+
+// Export for use in Viewport (rendered at scene root to avoid parent transform issues)
+export { GroupBoundingBox };

@@ -4,7 +4,7 @@ import { OrbitControls, Grid, Environment } from "@react-three/drei";
 import * as THREE from "three";
 import { useSceneStore } from "@/store/sceneStore";
 import { useSettingsStore } from "@/store/settingsStore";
-import { SceneObject } from "./SceneObject";
+import { SceneObject, GroupBoundingBox } from "./SceneObject";
 import { MultiTransformGizmo } from "./MultiTransformGizmo";
 
 function FocusOnF({ isDraggingRef }) {
@@ -177,7 +177,8 @@ function DeselectOnEmptyDoubleClick({ isDraggingRef }) {
 }
 
 function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
-  const objects = useSceneStore((state) => Object.values(state.objects));
+  const objects = useSceneStore((state) => state.objects);
+  const objectList = Object.values(objects);
   const selectedIds = useSceneStore((state) => state.selection.selectedIds);
   const transformMode = useSceneStore((state) => state.transformMode);
   const beginTransaction = useSceneStore((state) => state.beginTransaction);
@@ -185,7 +186,12 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
   const setIsDragging = useSceneStore((state) => state.setIsDragging);
   const showGrid = useSettingsStore((state) => state.showGrid);
 
-  const rootObjects = objects.filter((o) => o.parentId === null);
+  const rootObjects = objectList.filter((o) => o.parentId === null);
+
+  // Get selected group IDs for rendering bounding boxes at scene root
+  const selectedGroupIds = selectedIds.filter(
+    (id) => objects[id]?.type === "group",
+  );
 
   const handleDragStart = () => {
     isDraggingRef.current = true;
@@ -230,6 +236,11 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
 
       {rootObjects.map((obj) => (
         <SceneObject key={obj.id} id={obj.id} />
+      ))}
+
+      {/* Render group bounding boxes at scene root to avoid parent transform issues */}
+      {selectedGroupIds.map((id) => (
+        <GroupBoundingBox key={`bbox-${id}`} id={id} />
       ))}
 
       {selectedIds.length > 0 && transformMode && (
