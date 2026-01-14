@@ -160,14 +160,8 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
     }
 
     try {
-      const picker = (
-        window as unknown as {
-          showSaveFilePicker?: (options?: unknown) => Promise<unknown>;
-        }
-      ).showSaveFilePicker;
-
-      if (typeof picker === "function") {
-        const handle = (await picker({
+      if (typeof window.showSaveFilePicker === "function") {
+        const handle = await window.showSaveFilePicker({
           suggestedName: "scene.tsp",
           types: [
             {
@@ -175,12 +169,7 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
               accept: { "application/json": [".tsp"] },
             },
           ],
-        })) as {
-          createWritable: () => Promise<{
-            write: (data: string) => Promise<void>;
-            close: () => Promise<void>;
-          }>;
-        };
+        });
 
         const writable = await handle.createWritable();
         await writable.write(tsp);
@@ -250,16 +239,10 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
 
   const handleImportTSP = async () => {
     try {
-      const picker = (
-        window as unknown as {
-          showOpenFilePicker?: (options?: unknown) => Promise<unknown[]>;
-        }
-      ).showOpenFilePicker;
-
       let fileContent: string;
 
-      if (typeof picker === "function") {
-        const handles = (await picker({
+      if (typeof window.showOpenFilePicker === "function") {
+        const handles = await window.showOpenFilePicker({
           types: [
             {
               description: "Three Shaded Primitive",
@@ -267,7 +250,7 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
             },
           ],
           multiple: false,
-        })) as Array<{ getFile: () => Promise<File> }>;
+        });
 
         const handle = handles[0];
         if (!handle) {

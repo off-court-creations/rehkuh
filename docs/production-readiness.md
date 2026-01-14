@@ -4,22 +4,6 @@ Status: **In Progress**
 
 ## Medium Priority Issues
 
-### 5. Console Warnings Instead of User Notifications
-
-**File:** `src/store/sceneStore.ts:694-696`
-
-```typescript
-} catch (err) {
-  console.warn(`Failed to write shader ${shader.name}:`, err);
-}
-```
-
-**Problem:** TSP shader import failures only log to console. Production users won't see these warnings.
-
-**Fix:** Replace `console.warn` with `showError()` for user-facing error notification.
-
----
-
 ### 6. Window Type Assertions
 
 **File:** `src/components/editor/EditorToolbar.tsx:164,248`
