@@ -18,3 +18,16 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
+customHeaders:
+  - pattern: "*.json"
+    headers:
+      - key: Content-Type
+        value: application/json
+  - pattern: "*.vert"
+    headers:
+      - key: Content-Type
+        value: text/plain
+  - pattern: "*.frag"
+    headers:
+      - key: Content-Type
+        value: text/plain
