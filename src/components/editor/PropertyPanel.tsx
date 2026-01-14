@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@archway/valet";
+import { Stack, Typography, Panel, Box } from "@archway/valet";
 import { useSceneStore } from "@/store/sceneStore";
 import type {
   StandardMaterialProps,
@@ -95,34 +95,16 @@ export function PropertyPanel() {
 
   if (!obj || !primaryId) {
     return (
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          minHeight: 0,
-        }}
-      >
-        <div style={panelHeaderStyle}>
-          <Typography
-            variant="body"
-            sx={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.06em" }}
-          >
-            Properties
-          </Typography>
-        </div>
-        <div
-          style={{
-            opacity: 0.65,
-            fontStyle: "italic",
-            fontSize: "11px",
-            padding: "6px 10px",
-          }}
-        >
-          No object selected
-        </div>
-      </div>
+      <Box compact>
+        <Stack gap={0} sx={{ padding: 0 }}>
+          <Panel sx={panelHeaderStyle}>
+            <Typography variant="body">Properties</Typography>
+          </Panel>
+          <Panel>
+            No object selected
+          </Panel>
+        </Stack>
+      </Box>
     );
   }
 
@@ -134,73 +116,62 @@ export function PropertyPanel() {
       : "standard";
 
   return (
-    <div
-      style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        minHeight: 0,
-      }}
-    >
-      <div style={panelHeaderStyle}>
-        <Typography
-          variant="body"
-          sx={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.06em" }}
-        >
-          Properties
-        </Typography>
-      </div>
-      <div style={panelScrollStyle}>
-        <Stack gap={0} sx={{ padding: 0 }}>
-          <TransformSection
-            obj={obj}
-            primaryId={primaryId}
-            transformMode={transformMode}
-            setTransformMode={setTransformMode}
-            updateObject={updateObject}
-          />
-          <GeometrySection
-            obj={obj}
-            primaryId={primaryId}
-            updateObject={updateObject}
-          />
+    <Box compact>
+      <Stack gap={0} sx={{ padding: 0 }}>
+        <Panel sx={panelHeaderStyle}>
+          <Typography variant="body">Properties</Typography>
+        </Panel>
+        <Panel sx={{ padding: 0 }}>
+          <Stack gap={0} sx={{ padding: 0 }}>
+            <TransformSection
+              obj={obj}
+              primaryId={primaryId}
+              transformMode={transformMode}
+              setTransformMode={setTransformMode}
+              updateObject={updateObject}
+            />
+            <GeometrySection
+              obj={obj}
+              primaryId={primaryId}
+              updateObject={updateObject}
+            />
 
-          {!isGroup && (
-            <>
-              <MaterialTypeToggle
-                materialType={materialType}
-                onChange={handleMaterialTypeChange}
-              />
-              {isStandardMaterial(obj.material) && (
-                <StandardMaterialSection
-                  material={obj.material}
-                  primaryId={primaryId}
-                  updateObject={updateObject}
-                  beginTransaction={beginTransaction}
-                  commitTransaction={commitTransaction}
+            {!isGroup && (
+              <>
+                <MaterialTypeToggle
+                  materialType={materialType}
+                  onChange={handleMaterialTypeChange}
                 />
-              )}
-              {isPhysicalMaterial(obj.material) && (
-                <PhysicalMaterialSection
-                  material={obj.material}
-                  primaryId={primaryId}
-                  updateObject={updateObject}
-                  beginTransaction={beginTransaction}
-                  commitTransaction={commitTransaction}
-                />
-              )}
-              {isShaderMaterial(obj.material) && (
-                <ShaderMaterialSection
-                  obj={obj}
-                  primaryId={primaryId}
-                  updateObject={updateObject}
-                />
-              )}
-            </>
-          )}
-        </Stack>
-      </div>
-    </div>
+                {isStandardMaterial(obj.material) && (
+                  <StandardMaterialSection
+                    material={obj.material}
+                    primaryId={primaryId}
+                    updateObject={updateObject}
+                    beginTransaction={beginTransaction}
+                    commitTransaction={commitTransaction}
+                  />
+                )}
+                {isPhysicalMaterial(obj.material) && (
+                  <PhysicalMaterialSection
+                    material={obj.material}
+                    primaryId={primaryId}
+                    updateObject={updateObject}
+                    beginTransaction={beginTransaction}
+                    commitTransaction={commitTransaction}
+                  />
+                )}
+                {isShaderMaterial(obj.material) && (
+                  <ShaderMaterialSection
+                    obj={obj}
+                    primaryId={primaryId}
+                    updateObject={updateObject}
+                  />
+                )}
+              </>
+            )}
+          </Stack>
+        </Panel>
+      </Stack>
+    </Box>
   );
 }

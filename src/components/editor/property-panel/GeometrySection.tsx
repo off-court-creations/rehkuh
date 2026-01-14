@@ -31,6 +31,12 @@ function NumberField({
   max,
   step,
 }: NumberFieldProps) {
+  const maybeBoundsProps = {
+    ...(min !== undefined ? { min } : {}),
+    ...(max !== undefined ? { max } : {}),
+    ...(step !== undefined ? { step } : {}),
+  };
+
   return (
     <Stack gap={0} sx={{ padding: "0 4px 2px 4px" }}>
       <Typography variant="body" sx={fieldLabelSx}>
@@ -39,9 +45,7 @@ function NumberField({
       <ConfirmableNumberInput
         value={value}
         onChange={onChange}
-        min={min}
-        max={max}
-        step={step}
+        {...maybeBoundsProps}
       />
     </Stack>
   );

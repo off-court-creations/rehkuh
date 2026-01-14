@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, type KeyboardEvent } from "react";
-import { Box, Icon } from "@archway/valet";
+import { useState, useRef, useEffect, useId, type KeyboardEvent } from "react";
+import { Box, Icon, TextField } from "@archway/valet";
 
 interface ConfirmableNumberInputProps {
   value: number;
@@ -8,6 +8,7 @@ interface ConfirmableNumberInputProps {
   max?: number;
   step?: number;
   width?: string;
+  name?: string;
 }
 
 export function ConfirmableNumberInput({
@@ -17,12 +18,14 @@ export function ConfirmableNumberInput({
   max,
   step = 1,
   width = "60px",
+  name,
 }: ConfirmableNumberInputProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [pendingValue, setPendingValue] = useState("");
   const [originalValue, setOriginalValue] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
   const ignoreBlurRef = useRef(false);
+  const autoId = useId();
+  const fieldName = name ?? `confirmable-number-${autoId}`;
 
   // Sync pendingValue when external value changes while not editing
   useEffect(() => {
@@ -73,11 +76,11 @@ export function ConfirmableNumberInput({
     if (e.key === "Enter") {
       e.preventDefault();
       handleConfirm();
-      inputRef.current?.blur();
+      e.currentTarget.blur();
     } else if (e.key === "Escape") {
       e.preventDefault();
       handleCancel();
-      inputRef.current?.blur();
+      e.currentTarget.blur();
     }
   };
 
@@ -87,29 +90,14 @@ export function ConfirmableNumberInput({
     ignoreBlurRef.current = true;
   };
 
-  const baseInputStyle: React.CSSProperties = {
-    width,
-    height: "18px",
-    fontSize: "10px",
-    padding: "0 3px",
-    border: hasChanges
-      ? "1px solid rgba(75, 208, 210, 0.6)"
-      : "1px solid rgba(255,255,255,0.2)",
-    borderRadius: "2px",
-    backgroundColor: hasChanges
-      ? "rgba(75, 208, 210, 0.15)"
-      : "rgba(0,0,0,0.3)",
-    color: "inherit",
-    outline: "none",
-    fontVariantNumeric: "tabular-nums",
-  };
+  const fieldWidth = width ?? "60px";
 
   const iconButtonStyle: React.CSSProperties = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "16px",
-    height: "16px",
+    width: "18px",
+    height: "18px",
     cursor: "pointer",
     borderRadius: "2px",
     transition: "background-color 0.1s",
@@ -120,11 +108,11 @@ export function ConfirmableNumberInput({
       sx={{
         display: "flex",
         alignItems: "center",
-        gap: "2px",
+        gap: "24px",
       }}
     >
-      <input
-        ref={inputRef}
+      <TextField
+        name={fieldName}
         type="number"
         min={min}
         max={max}
@@ -134,10 +122,20 @@ export function ConfirmableNumberInput({
         onFocus={handleFocus}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
-        style={baseInputStyle}
+        fullWidth={fieldWidth === "100%"}
+        sx={{
+          width: fieldWidth === "100%" ? "100%" : fieldWidth,
+          boxShadow: hasChanges
+            ? "0 0 0 1px rgba(75, 208, 210, 0.6)"
+            : "0 0 0 1px rgba(255,255,255,0.2)",
+          borderRadius: "2px",
+          backgroundColor: hasChanges
+            ? "rgba(75, 208, 210, 0.1)"
+            : "transparent",
+        }}
       />
       {hasChanges && (
-        <>
+        <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
           <div
             onMouseDown={handleButtonMouseDown}
             onClick={handleConfirm}
@@ -160,7 +158,7 @@ export function ConfirmableNumberInput({
           >
             <Icon icon="mdi:close" size="xs" />
           </div>
-        </>
+        </Box>
       )}
     </Box>
   );

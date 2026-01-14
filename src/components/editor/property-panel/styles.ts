@@ -8,13 +8,13 @@ export const panelHeaderStyle = {
   padding: "6px 10px",
   borderBottom: "1px solid rgba(255,255,255,0.08)",
   opacity: 0.95,
-  userSelect: "none",
+  userSelect: "none" as const,
 };
 
 export const panelScrollStyle = {
   flex: 1,
-  overflowY: "auto",
-  overflowX: "hidden",
+  overflowY: "auto" as const,
+  overflowX: "hidden" as const,
   minHeight: 0,
 };
 
@@ -37,7 +37,7 @@ export const sectionHeaderSx = {
   lineHeight: 1.2,
   opacity: 0.65,
   letterSpacing: "0.08em",
-  textTransform: "uppercase",
+  textTransform: "uppercase" as const,
   padding: "6px 4px 1px 4px",
   borderTop: "1px solid rgba(255,255,255,0.1)",
   marginTop: "2px",
@@ -46,7 +46,7 @@ export const sectionHeaderSx = {
 export const axisLabelSx = {
   fontSize: "10px",
   opacity: 0.65,
-  textAlign: "center",
+  textAlign: "center" as const,
   fontWeight: 600,
 };
 
@@ -58,10 +58,10 @@ export const tinyLabelSx = {
 };
 
 export const toggleButtonSx = {
-  padding: "0 6px",
-  minHeight: "18px",
+  padding: "2px 8px",
+  minHeight: "24px",
   fontSize: "10px",
-  lineHeight: "18px",
+  lineHeight: "20px",
   fontWeight: 600,
 };
 
@@ -75,9 +75,9 @@ export const quickButtonSx = {
 };
 
 export const wrapRowSx = {
-  flexWrap: "wrap",
-  columnGap: "4px",
-  rowGap: "4px",
+  flexWrap: "wrap" as const,
+  columnGap: "6px",
+  rowGap: "8px",
 };
 
 export const sliderPrecisionFromStep = (step?: number) => {

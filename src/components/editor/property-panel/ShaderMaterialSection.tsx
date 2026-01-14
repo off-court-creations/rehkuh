@@ -136,21 +136,12 @@ export function ShaderMaterialSection({
 
   return (
     <>
-      <Stack gap={0} sx={{ padding: "0 4px 2px 4px" }}>
-        <Typography variant="body" sx={fieldLabelSx}>
+      <Stack>
+        <Typography variant="body">
           Shader: {mat.shaderName}
         </Typography>
         <Button
           size="sm"
-          sx={{
-            padding: "1px 6px",
-            minHeight: "18px",
-            fontSize: "10px",
-            lineHeight: "16px",
-            fontWeight: 600,
-            backgroundColor: "rgba(100, 150, 255, 0.3)",
-            marginTop: "2px",
-          }}
           onClick={async () => {
             if (!mat.shaderName) return;
             await createShaderFilesAndLoad(mat.shaderName);
@@ -161,25 +152,13 @@ export function ShaderMaterialSection({
         </Button>
       </Stack>
 
-      <Stack gap={0} sx={{ padding: "0 4px 2px 4px" }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Typography variant="body" sx={fieldLabelSx}>
+      <Stack>
+        <Box>
+          <Typography variant="body">
             Uniforms
           </Typography>
           <Button
             size="sm"
-            sx={{
-              padding: "0 4px",
-              minHeight: "14px",
-              fontSize: "10px",
-              lineHeight: "14px",
-            }}
             onClick={handleAddUniform}
           >
             + Add
@@ -189,24 +168,9 @@ export function ShaderMaterialSection({
         {Object.entries(mat.uniforms).map(([name, uniform]) => (
           <Box
             key={name}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: "4px",
-              marginTop: "2px",
-              padding: "2px",
-              backgroundColor: "rgba(255,255,255,0.05)",
-              borderRadius: "2px",
-            }}
           >
             <Typography
               variant="body"
-              sx={{
-                fontSize: "10px",
-                minWidth: "50px",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
             >
               {name}
             </Typography>
@@ -218,15 +182,6 @@ export function ShaderMaterialSection({
                 onChange={(e) =>
                   handleUniformChange(name, "value", e.target.value)
                 }
-                style={{
-                  width: "14px",
-                  height: "14px",
-                  padding: 0,
-                  margin: 0,
-                  border: "none",
-                  borderRadius: "2px",
-                  cursor: "pointer",
-                }}
               />
             )}
 
@@ -242,7 +197,6 @@ export function ShaderMaterialSection({
             {uniform.animated && (
               <Typography
                 variant="body"
-                sx={{ fontSize: "10px", opacity: 0.65 }}
                 title="Animated"
               >
                 ⚡
@@ -251,14 +205,6 @@ export function ShaderMaterialSection({
 
             <Button
               size="sm"
-              sx={{
-                padding: "0 2px",
-                minHeight: "14px",
-                fontSize: "10px",
-                lineHeight: "14px",
-                marginLeft: "auto",
-                opacity: 0.65,
-              }}
               onClick={() => handleRemoveUniform(name)}
             >
               ×
@@ -268,8 +214,8 @@ export function ShaderMaterialSection({
       </Stack>
 
       {/* Shader Options */}
-      <Stack gap={0} sx={{ padding: "0 4px 2px 4px" }}>
-        <Typography variant="body" sx={fieldLabelSx}>
+      <Stack>
+        <Typography variant="body">
           Options
         </Typography>
         <Checkbox
@@ -296,14 +242,8 @@ export function ShaderMaterialSection({
           }
         />
         <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
-            marginTop: "2px",
-          }}
         >
-          <Typography variant="body" sx={{ ...compactLabelSx, minWidth: "30px" }}>
+          <Typography variant="body">
             Side:
           </Typography>
           <Select

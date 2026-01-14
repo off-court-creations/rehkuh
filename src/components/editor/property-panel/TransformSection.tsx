@@ -33,7 +33,7 @@ export function TransformSection({
 
   return (
     <>
-      <Stack gap={0} sx={{ padding: "0 4px 2px 4px" }}>
+      <Stack gap={0} sx={{ padding: "2px 4px 6px 4px" }}>
         <Typography variant="body" sx={fieldLabelSx}>
           Transform Mode
         </Typography>
