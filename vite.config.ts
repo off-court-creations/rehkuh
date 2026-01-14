@@ -69,6 +69,10 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(process.cwd(), 'src'),
       },
     },
+    define: {
+      // Auto-detect project path in dev mode for VS Code integration
+      'import.meta.env.VITE_CWD': JSON.stringify(process.cwd()),
+    },
     server: {
       host: true,
       port: env.VITE_PORT ? Number(env.VITE_PORT) : undefined,

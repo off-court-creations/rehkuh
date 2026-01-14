@@ -1,5 +1,7 @@
 import { Stack, Typography, Button, Box } from "@archway/valet";
 import { useSceneStore } from "@/store/sceneStore";
+import { useSettingsStore } from "@/store/settingsStore";
+import { showError } from "@/store/notificationStore";
 import type {
   TransformMode,
   StandardMaterialProps,
@@ -103,7 +105,13 @@ export function PropertyPanel() {
 
   const openInVSCode = (shaderName: string) => {
     // Open VS Code with the staging shader files (not live)
-    const cwd = import.meta.env["VITE_CWD"] || "/home/xbenc/occ/pngwin/rehkuh";
+    const projectPath = useSettingsStore.getState().projectPath;
+    const cwd = projectPath || import.meta.env["VITE_CWD"];
+
+    if (!cwd) {
+      showError("Set Project Path in Settings to use VS Code integration");
+      return;
+    }
 
     const openUrl = (url: string) => {
       const a = document.createElement("a");

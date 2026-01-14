@@ -9,8 +9,10 @@ interface SettingsModalProps {
 export function SettingsModal({ open, onClose }: SettingsModalProps) {
   const author = useSettingsStore((s) => s.author);
   const copyright = useSettingsStore((s) => s.copyright);
+  const projectPath = useSettingsStore((s) => s.projectPath);
   const setAuthor = useSettingsStore((s) => s.setAuthor);
   const setCopyright = useSettingsStore((s) => s.setCopyright);
+  const setProjectPath = useSettingsStore((s) => s.setProjectPath);
 
   if (!open) return null;
 
@@ -95,6 +97,32 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
             />
             <Typography variant="body" sx={{ fontSize: "11px", opacity: 0.5 }}>
               Included in exported TSP files
+            </Typography>
+          </Stack>
+
+          <Stack gap={0.5}>
+            <Typography variant="body" sx={{ fontSize: "12px", opacity: 0.7 }}>
+              Project Path
+            </Typography>
+            <input
+              type="text"
+              value={projectPath}
+              onChange={(e) => setProjectPath(e.target.value)}
+              placeholder="/path/to/rehkuh"
+              style={{
+                width: "100%",
+                height: "32px",
+                fontSize: "13px",
+                padding: "0 8px",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                borderRadius: "4px",
+                backgroundColor: "rgba(0, 0, 0, 0.3)",
+                color: "inherit",
+                boxSizing: "border-box",
+              }}
+            />
+            <Typography variant="body" sx={{ fontSize: "11px", opacity: 0.5 }}>
+              Used for "Open in VS Code" (auto-detected in dev)
             </Typography>
           </Stack>
 
