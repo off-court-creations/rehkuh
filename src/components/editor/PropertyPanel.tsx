@@ -131,14 +131,20 @@ export function PropertyPanel() {
   const createShaderFilesAndLoad = async (shaderName: string) => {
     // Create shader files in staging by POSTing to a Vite dev endpoint
     try {
-      await fetch("/__create-shader", {
+      const createRes = await fetch("/__create-shader", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: shaderName }),
       });
+      if (!createRes.ok) {
+        throw new Error(`Failed to create shader: ${createRes.status}`);
+      }
 
       // Load the shader content from staging and update the object
       const res = await fetch(`/__staging-shader/${shaderName}`);
+      if (!res.ok) {
+        throw new Error(`Failed to load shader: ${res.status}`);
+      }
       const { vert, frag } = await res.json();
 
       if (obj && primaryId && isShaderMaterial(obj.material)) {

@@ -205,6 +205,9 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
   const handleCopyToStaging = async () => {
     try {
       const res = await fetch("/__copy-to-staging", { method: "POST" });
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.status}`);
+      }
       const data = (await res.json()) as {
         ok?: boolean;
         message?: string;
@@ -225,6 +228,9 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
   const handlePromoteStaging = async () => {
     try {
       const res = await fetch("/__promote-staging", { method: "POST" });
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.status}`);
+      }
       const data = (await res.json()) as {
         ok?: boolean;
         message?: string;

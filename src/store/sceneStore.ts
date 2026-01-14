@@ -203,6 +203,10 @@ async function loadShaderFiles(
     if (import.meta.env.DEV) {
       // In dev, use the Vite plugin endpoint
       const res = await fetch(`/__shader/${shaderName}`);
+      if (!res.ok) {
+        console.warn(`Shader ${shaderName} not found (${res.status})`);
+        return { vert: "", frag: "" };
+      }
       return await res.json();
     } else {
       // In production, load shader files directly
@@ -458,6 +462,11 @@ export const useSceneStore = create<SceneState>()(
         // In dev mode, use the Vite plugin endpoint; in production, use static file
         const sceneUrl = import.meta.env.DEV ? "/__scene" : "/scene.json";
         const res = await fetch(sceneUrl);
+        if (!res.ok) {
+          showError(`Failed to load scene: ${res.status} ${res.statusText}`);
+          set({ isLoaded: true });
+          return;
+        }
         const rawData = await res.json();
 
         // Validate JSON structure
