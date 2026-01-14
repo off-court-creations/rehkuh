@@ -711,7 +711,9 @@ export const useSceneStore = create<SceneState>()(
             }),
           });
         } catch (err) {
-          console.warn(`Failed to write shader ${shader.name}:`, err);
+          showError(
+            `Failed to write shader ${shader.name}: ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
       }
 
