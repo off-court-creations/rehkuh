@@ -89,9 +89,9 @@ export function ConfirmableNumberInput({
 
   const baseInputStyle: React.CSSProperties = {
     width,
-    height: "20px",
-    fontSize: "11px",
-    padding: "0 4px",
+    height: "18px",
+    fontSize: "10px",
+    padding: "0 3px",
     border: hasChanges
       ? "1px solid rgba(75, 208, 210, 0.6)"
       : "1px solid rgba(255,255,255,0.2)",
@@ -101,14 +101,15 @@ export function ConfirmableNumberInput({
       : "rgba(0,0,0,0.3)",
     color: "inherit",
     outline: "none",
+    fontVariantNumeric: "tabular-nums",
   };
 
   const iconButtonStyle: React.CSSProperties = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "18px",
-    height: "18px",
+    width: "16px",
+    height: "16px",
     cursor: "pointer",
     borderRadius: "2px",
     transition: "background-color 0.1s",
@@ -119,7 +120,7 @@ export function ConfirmableNumberInput({
       sx={{
         display: "flex",
         alignItems: "center",
-        gap: "4px",
+        gap: "2px",
       }}
     >
       <input
