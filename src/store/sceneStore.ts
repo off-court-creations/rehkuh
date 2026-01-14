@@ -200,8 +200,20 @@ async function loadShaderFiles(
   shaderName: string,
 ): Promise<{ vert: string; frag: string }> {
   try {
-    const res = await fetch(`/__shader/${shaderName}`);
-    return await res.json();
+    if (import.meta.env.DEV) {
+      // In dev, use the Vite plugin endpoint
+      const res = await fetch(`/__shader/${shaderName}`);
+      return await res.json();
+    } else {
+      // In production, load shader files directly
+      const [vertRes, fragRes] = await Promise.all([
+        fetch(`/shaders/${shaderName}.vert`),
+        fetch(`/shaders/${shaderName}.frag`),
+      ]);
+      const vert = vertRes.ok ? await vertRes.text() : "";
+      const frag = fragRes.ok ? await fragRes.text() : "";
+      return { vert, frag };
+    }
   } catch {
     return { vert: "", frag: "" };
   }
@@ -406,6 +418,9 @@ function decomposeMatrix(matrix: Matrix4): {
 // Debounced save to file
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 const saveToFile = (objects: Record<string, SceneObject>) => {
+  // Save is only available in dev mode (requires Vite plugin backend)
+  if (!import.meta.env.DEV) return;
+
   if (saveTimeout) clearTimeout(saveTimeout);
   saveTimeout = setTimeout(() => {
     const fileObjects = toSceneFileObjects(objects);
@@ -430,7 +445,9 @@ export const useSceneStore = create<SceneState>()(
 
     loadScene: async () => {
       try {
-        const res = await fetch("/__scene");
+        // In dev mode, use the Vite plugin endpoint; in production, use static file
+        const sceneUrl = import.meta.env.DEV ? "/__scene" : "/scene.json";
+        const res = await fetch(sceneUrl);
         const rawData = await res.json();
 
         // Validate JSON structure
