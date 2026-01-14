@@ -1,6 +1,10 @@
 import type { TransformMode } from "@/types";
 
-export const TRANSFORM_MODES: TransformMode[] = ["translate", "rotate", "scale"];
+export const TRANSFORM_MODES: TransformMode[] = [
+  "translate",
+  "rotate",
+  "scale",
+];
 export const AXES = ["X", "Y", "Z"] as const;
 
 export const panelHeaderStyle = {

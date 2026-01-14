@@ -163,9 +163,7 @@ export function GeometrySection({
         <NumberField
           label="Theta Start"
           value={obj.sphereThetaStart ?? 0}
-          onChange={(val) =>
-            updateObject(primaryId, { sphereThetaStart: val })
-          }
+          onChange={(val) => updateObject(primaryId, { sphereThetaStart: val })}
           min={0}
           max={3.142}
           step={0.1}
@@ -303,9 +301,7 @@ export function GeometrySection({
         <NumberField
           label="Theta Start"
           value={obj.coneThetaStart ?? 0}
-          onChange={(val) =>
-            updateObject(primaryId, { coneThetaStart: val })
-          }
+          onChange={(val) => updateObject(primaryId, { coneThetaStart: val })}
           min={0}
           max={6.283}
           step={0.1}
@@ -313,9 +309,7 @@ export function GeometrySection({
         <NumberField
           label="Theta Length"
           value={obj.coneThetaLength ?? Math.PI * 2}
-          onChange={(val) =>
-            updateObject(primaryId, { coneThetaLength: val })
-          }
+          onChange={(val) => updateObject(primaryId, { coneThetaLength: val })}
           min={0}
           max={6.283}
           step={0.1}
@@ -475,9 +469,7 @@ export function GeometrySection({
         <NumberField
           label="Theta Start (rad)"
           value={obj.circleThetaStart ?? 0}
-          onChange={(val) =>
-            updateObject(primaryId, { circleThetaStart: val })
-          }
+          onChange={(val) => updateObject(primaryId, { circleThetaStart: val })}
           min={0}
           max={6.28319}
           step={0.1}
@@ -504,9 +496,7 @@ export function GeometrySection({
         <NumberField
           label="Inner Radius"
           value={obj.ringInnerRadius ?? 0.25}
-          onChange={(val) =>
-            updateObject(primaryId, { ringInnerRadius: val })
-          }
+          onChange={(val) => updateObject(primaryId, { ringInnerRadius: val })}
           min={0}
           max={10}
           step={0.01}
@@ -514,9 +504,7 @@ export function GeometrySection({
         <NumberField
           label="Outer Radius"
           value={obj.ringOuterRadius ?? 0.5}
-          onChange={(val) =>
-            updateObject(primaryId, { ringOuterRadius: val })
-          }
+          onChange={(val) => updateObject(primaryId, { ringOuterRadius: val })}
           min={0.01}
           max={10}
           step={0.01}
@@ -542,9 +530,7 @@ export function GeometrySection({
         <NumberField
           label="Theta Start (rad)"
           value={obj.ringThetaStart ?? 0}
-          onChange={(val) =>
-            updateObject(primaryId, { ringThetaStart: val })
-          }
+          onChange={(val) => updateObject(primaryId, { ringThetaStart: val })}
           min={0}
           max={6.28319}
           step={0.1}
@@ -552,9 +538,7 @@ export function GeometrySection({
         <NumberField
           label="Theta Length (rad)"
           value={obj.ringThetaLength ?? 6.28319}
-          onChange={(val) =>
-            updateObject(primaryId, { ringThetaLength: val })
-          }
+          onChange={(val) => updateObject(primaryId, { ringThetaLength: val })}
           min={0}
           max={6.28319}
           step={0.1}
@@ -571,9 +555,7 @@ export function GeometrySection({
         <NumberField
           label="Radius"
           value={obj.torusKnotRadius ?? 0.5}
-          onChange={(val) =>
-            updateObject(primaryId, { torusKnotRadius: val })
-          }
+          onChange={(val) => updateObject(primaryId, { torusKnotRadius: val })}
           min={0.01}
           max={10}
           step={0.01}
@@ -581,9 +563,7 @@ export function GeometrySection({
         <NumberField
           label="Tube"
           value={obj.torusKnotTube ?? 0.15}
-          onChange={(val) =>
-            updateObject(primaryId, { torusKnotTube: val })
-          }
+          onChange={(val) => updateObject(primaryId, { torusKnotTube: val })}
           min={0.01}
           max={5}
           step={0.01}

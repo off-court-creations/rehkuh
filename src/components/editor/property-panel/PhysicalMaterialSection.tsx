@@ -169,7 +169,13 @@ export function PhysicalMaterialSection({
         Transmission
       </Typography>
       <MaterialSlider label="Transmission" prop="transmission" />
-      <MaterialSlider label="Thickness" prop="thickness" min={0} max={10} step={0.1} />
+      <MaterialSlider
+        label="Thickness"
+        prop="thickness"
+        min={0}
+        max={10}
+        step={0.1}
+      />
       <ColorPicker label="Attenuation Color" prop="attenuationColor" />
       <MaterialSlider
         label="Attenuation Dist"
@@ -218,12 +224,24 @@ export function PhysicalMaterialSection({
       <Typography variant="body" sx={sectionHeaderSx}>
         Dispersion
       </Typography>
-      <MaterialSlider label="Dispersion" prop="dispersion" min={0} max={1} step={0.01} />
+      <MaterialSlider
+        label="Dispersion"
+        prop="dispersion"
+        min={0}
+        max={1}
+        step={0.01}
+      />
 
       <Typography variant="body" sx={sectionHeaderSx}>
         Other
       </Typography>
-      <MaterialSlider label="Env Map Intensity" prop="envMapIntensity" min={0} max={5} step={0.1} />
+      <MaterialSlider
+        label="Env Map Intensity"
+        prop="envMapIntensity"
+        min={0}
+        max={5}
+        step={0.1}
+      />
       <Stack gap={0} sx={{ padding: "0 4px 2px 4px" }}>
         <Checkbox
           size="xs"

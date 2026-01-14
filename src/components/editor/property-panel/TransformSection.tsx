@@ -73,7 +73,8 @@ export function TransformSection({
             {AXES.map((axis, index) => {
               const values =
                 transformMode === "translate" ? obj.position : obj.scale;
-              const propKey = transformMode === "translate" ? "position" : "scale";
+              const propKey =
+                transformMode === "translate" ? "position" : "scale";
 
               return (
                 <Stack key={axis} gap={0} sx={{ flex: 1, minWidth: 0 }}>

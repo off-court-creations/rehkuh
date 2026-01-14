@@ -127,10 +127,7 @@ export function MultiTransformGizmo({ selectedIds, onDragStart, onDragEnd }) {
           // Find the GROUP wrapper (not the mesh) - SceneObject wraps all objects
           // in a <group> that holds position/rotation/scale
           scene.traverse((threeObj) => {
-            if (
-              threeObj?.userData?.objectId === obj.id &&
-              threeObj.isGroup
-            ) {
+            if (threeObj?.userData?.objectId === obj.id && threeObj.isGroup) {
               threeObj.updateWorldMatrix(true, false);
               threeObj.getWorldPosition(worldPosition);
               if (threeObj.parent) {

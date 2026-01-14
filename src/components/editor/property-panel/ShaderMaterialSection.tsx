@@ -1,9 +1,16 @@
-import { Stack, Typography, Button, Box, Checkbox, Select } from "@archway/valet";
+import {
+  Stack,
+  Typography,
+  Button,
+  Box,
+  Checkbox,
+  Select,
+} from "@archway/valet";
 import type { SceneObject, ShaderMaterialProps, ShaderUniform } from "@/types";
 import { useSettingsStore } from "@/store/settingsStore";
 import { showError } from "@/store/notificationStore";
 import { ConfirmableNumberInput } from "../ConfirmableNumberInput";
-import { compactLabelSx, fieldLabelSx } from "./styles";
+import { compactLabelSx } from "./styles";
 
 interface ShaderMaterialSectionProps {
   obj: SceneObject;
@@ -124,7 +131,8 @@ export function ShaderMaterialSection({
     if (mat.shaderName) newMaterial.shaderName = mat.shaderName;
     if (mat.vertex) newMaterial.vertex = mat.vertex;
     if (mat.fragment) newMaterial.fragment = mat.fragment;
-    if (mat.transparent !== undefined) newMaterial.transparent = mat.transparent;
+    if (mat.transparent !== undefined)
+      newMaterial.transparent = mat.transparent;
     if (mat.side) newMaterial.side = mat.side;
     if (mat.depthWrite !== undefined) newMaterial.depthWrite = mat.depthWrite;
     if (mat.depthTest !== undefined) newMaterial.depthTest = mat.depthTest;
@@ -137,9 +145,7 @@ export function ShaderMaterialSection({
   return (
     <>
       <Stack>
-        <Typography variant="body">
-          Shader: {mat.shaderName}
-        </Typography>
+        <Typography variant="body">Shader: {mat.shaderName}</Typography>
         <Button
           size="sm"
           onClick={async () => {
@@ -154,26 +160,15 @@ export function ShaderMaterialSection({
 
       <Stack>
         <Box>
-          <Typography variant="body">
-            Uniforms
-          </Typography>
-          <Button
-            size="sm"
-            onClick={handleAddUniform}
-          >
+          <Typography variant="body">Uniforms</Typography>
+          <Button size="sm" onClick={handleAddUniform}>
             + Add
           </Button>
         </Box>
 
         {Object.entries(mat.uniforms).map(([name, uniform]) => (
-          <Box
-            key={name}
-          >
-            <Typography
-              variant="body"
-            >
-              {name}
-            </Typography>
+          <Box key={name}>
+            <Typography variant="body">{name}</Typography>
 
             {uniform.type === "color" && (
               <input
@@ -195,18 +190,12 @@ export function ShaderMaterialSection({
             )}
 
             {uniform.animated && (
-              <Typography
-                variant="body"
-                title="Animated"
-              >
+              <Typography variant="body" title="Animated">
                 ⚡
               </Typography>
             )}
 
-            <Button
-              size="sm"
-              onClick={() => handleRemoveUniform(name)}
-            >
+            <Button size="sm" onClick={() => handleRemoveUniform(name)}>
               ×
             </Button>
           </Box>
@@ -215,9 +204,7 @@ export function ShaderMaterialSection({
 
       {/* Shader Options */}
       <Stack>
-        <Typography variant="body">
-          Options
-        </Typography>
+        <Typography variant="body">Options</Typography>
         <Checkbox
           size="xs"
           checked={mat.transparent ?? false}
@@ -231,7 +218,8 @@ export function ShaderMaterialSection({
             if (mat.vertex) newMat.vertex = mat.vertex;
             if (mat.fragment) newMat.fragment = mat.fragment;
             if (mat.side) newMat.side = mat.side;
-            if (mat.depthWrite !== undefined) newMat.depthWrite = mat.depthWrite;
+            if (mat.depthWrite !== undefined)
+              newMat.depthWrite = mat.depthWrite;
             if (mat.depthTest !== undefined) newMat.depthTest = mat.depthTest;
             updateObject(primaryId, { material: newMat });
           }}
@@ -241,11 +229,8 @@ export function ShaderMaterialSection({
             </Typography>
           }
         />
-        <Box
-        >
-          <Typography variant="body">
-            Side:
-          </Typography>
+        <Box>
+          <Typography variant="body">Side:</Typography>
           <Select
             size="xs"
             value={mat.side ?? "front"}
@@ -260,7 +245,8 @@ export function ShaderMaterialSection({
               if (mat.fragment) newMat.fragment = mat.fragment;
               if (mat.transparent !== undefined)
                 newMat.transparent = mat.transparent;
-              if (mat.depthWrite !== undefined) newMat.depthWrite = mat.depthWrite;
+              if (mat.depthWrite !== undefined)
+                newMat.depthWrite = mat.depthWrite;
               if (mat.depthTest !== undefined) newMat.depthTest = mat.depthTest;
               updateObject(primaryId, { material: newMat });
             }}

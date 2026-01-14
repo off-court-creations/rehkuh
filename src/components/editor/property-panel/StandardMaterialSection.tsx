@@ -1,4 +1,11 @@
-import { Stack, Typography, Box, Slider, Checkbox, Select } from "@archway/valet";
+import {
+  Stack,
+  Typography,
+  Box,
+  Slider,
+  Checkbox,
+  Select,
+} from "@archway/valet";
 import type { SceneObject, StandardMaterialProps } from "@/types";
 import { HexColorSchema } from "@/schemas/scene";
 import {

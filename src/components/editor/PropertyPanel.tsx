@@ -5,8 +5,12 @@ import type {
   PhysicalMaterialProps,
   ShaderMaterialProps,
 } from "@/types";
-import { isShaderMaterial, isStandardMaterial, isPhysicalMaterial } from "@/types";
-import { panelHeaderStyle, panelScrollStyle } from "./property-panel/styles";
+import {
+  isShaderMaterial,
+  isStandardMaterial,
+  isPhysicalMaterial,
+} from "@/types";
+import { panelHeaderStyle } from "./property-panel/styles";
 import { TransformSection } from "./property-panel/TransformSection";
 import { GeometrySection } from "./property-panel/GeometrySection";
 import { MaterialTypeToggle } from "./property-panel/MaterialTypeToggle";
@@ -100,9 +104,7 @@ export function PropertyPanel() {
           <Panel sx={panelHeaderStyle}>
             <Typography variant="body">Properties</Typography>
           </Panel>
-          <Panel>
-            No object selected
-          </Panel>
+          <Panel>No object selected</Panel>
         </Stack>
       </Box>
     );
