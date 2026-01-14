@@ -1,5 +1,14 @@
-import { useState } from "react";
-import { Button, Stack, Tooltip, IconButton, Divider } from "@archway/valet";
+import { useState, useRef, useEffect } from "react";
+import {
+  Button,
+  Stack,
+  Tooltip,
+  IconButton,
+  Divider,
+  Box,
+  Icon,
+  Typography,
+} from "@archway/valet";
 import { useSceneStore } from "@/store/sceneStore";
 import { useSettingsStore } from "@/store/settingsStore";
 import { validateTSPFile } from "@/schemas/tsp";
@@ -7,12 +16,78 @@ import { showError, showSuccess } from "@/store/notificationStore";
 import { SettingsModal } from "./SettingsModal";
 import type { PrimitiveType, TSPFile } from "@/types";
 
+interface PrimitiveOption {
+  label: string;
+  type: PrimitiveType | "group";
+  icon: string;
+}
+
+function CreateMenuItem({
+  option,
+  onClick,
+}: {
+  option: PrimitiveOption;
+  onClick: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <Box
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        padding: "8px 12px",
+        cursor: "pointer",
+        borderRadius: "4px",
+        transition: "background-color 0.15s",
+        backgroundColor: hovered ? "rgba(255,255,255,0.08)" : "transparent",
+        width: "100%",
+        boxSizing: "border-box",
+      }}
+    >
+      <Icon icon={option.icon} size="sm" />
+      <Typography variant="body" sx={{ fontSize: "13px" }}>
+        {option.label}
+      </Typography>
+    </Box>
+  );
+}
+
+const PRIMITIVE_OPTIONS: PrimitiveOption[] = [
+  { label: "Group", type: "group", icon: "mdi:folder-outline" },
+  { label: "Box", type: "box", icon: "mdi:cube-outline" },
+  { label: "Sphere", type: "sphere", icon: "mdi:sphere" },
+  { label: "Cylinder", type: "cylinder", icon: "mdi:cylinder" },
+  { label: "Cone", type: "cone", icon: "mdi:cone" },
+  { label: "Torus", type: "torus", icon: "mdi:circle-double" },
+  { label: "Plane", type: "plane", icon: "mdi:square-outline" },
+  { label: "Capsule", type: "capsule", icon: "mdi:pill" },
+  { label: "Circle", type: "circle", icon: "mdi:circle-outline" },
+  { label: "Ring", type: "ring", icon: "mdi:ring" },
+  { label: "Tetrahedron", type: "tetrahedron", icon: "mdi:triangle-outline" },
+  { label: "Octahedron", type: "octahedron", icon: "mdi:octagram-outline" },
+  {
+    label: "Icosahedron",
+    type: "icosahedron",
+    icon: "mdi:hexagon-multiple-outline",
+  },
+  { label: "Dodecahedron", type: "dodecahedron", icon: "mdi:pentagon-outline" },
+  { label: "Torus Knot", type: "torusKnot", icon: "mdi:infinity" },
+];
+
 interface EditorToolbarProps {
   section: "left" | "right";
 }
 
 export function EditorToolbar({ section }: EditorToolbarProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [createMenuOpen, setCreateMenuOpen] = useState(false);
+  const createMenuRef = useRef<HTMLDivElement>(null);
+
   const previewMode = useSettingsStore((state) => state.previewMode);
   const togglePreviewMode = useSettingsStore(
     (state) => state.togglePreviewMode,
@@ -30,26 +105,27 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
   const canUndo = useSceneStore((state) => state.history.past.length > 0);
   const canRedo = useSceneStore((state) => state.history.future.length > 0);
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    if (!createMenuOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        createMenuRef.current &&
+        !createMenuRef.current.contains(e.target as Node)
+      ) {
+        setCreateMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [createMenuOpen]);
+
   const handleAddPrimitive = (type: PrimitiveType | "group") => {
     addObject({ type });
+    setCreateMenuOpen(false);
   };
-
-  const renderPrimitiveButton = (
-    label: string,
-    type: PrimitiveType | "group",
-    icon: string,
-    variant: "filled" | "outlined" | "plain" = "filled",
-  ) => (
-    <Tooltip placement="bottom" title={label}>
-      <IconButton
-        variant={variant}
-        size="sm"
-        icon={icon}
-        onClick={() => handleAddPrimitive(type)}
-        aria-label={label}
-      />
-    </Tooltip>
-  );
 
   const handleClearScene = async () => {
     const shouldClear = window.confirm(
@@ -262,6 +338,19 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
             aria-label={showGrid ? "Hide Grid" : "Show Grid"}
           />
         </Tooltip>
+        <Tooltip placement="bottom" title="Settings">
+          <IconButton
+            variant="outlined"
+            size="sm"
+            icon="mdi:cog"
+            onClick={() => setSettingsOpen(true)}
+            aria-label="Settings"
+          />
+        </Tooltip>
+        <SettingsModal
+          open={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+        />
         <Divider orientation="vertical" />
         <Button
           size="sm"
@@ -308,50 +397,52 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
             Promote
           </Button>
         </Tooltip>
-        <Divider orientation="vertical" />
-        <Tooltip placement="bottom" title="Settings">
-          <IconButton
-            variant="plain"
-            size="sm"
-            icon="mdi:cog"
-            onClick={() => setSettingsOpen(true)}
-            aria-label="Settings"
-          />
-        </Tooltip>
-        <SettingsModal
-          open={settingsOpen}
-          onClose={() => setSettingsOpen(false)}
-        />
       </Stack>
     );
   }
 
   return (
-    <Stack direction="row" gap={0.5}>
-      {renderPrimitiveButton(
-        "Group",
-        "group",
-        "mdi:folder-outline",
-        "outlined",
+    <div ref={createMenuRef} style={{ position: "relative" }}>
+      <Tooltip placement="bottom" title="Create Object">
+        <IconButton
+          variant="filled"
+          size="sm"
+          icon="mdi:plus"
+          onClick={() => setCreateMenuOpen((prev) => !prev)}
+          aria-label="Create Object"
+          aria-expanded={createMenuOpen}
+        />
+      </Tooltip>
+
+      {createMenuOpen && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: "100%",
+            right: 0,
+            marginTop: "4px",
+            backgroundColor: "var(--surface-1)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: "8px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+            zIndex: 1000,
+            minWidth: "160px",
+            maxHeight: "400px",
+            overflowY: "auto",
+            padding: "4px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {PRIMITIVE_OPTIONS.map((option) => (
+            <CreateMenuItem
+              key={option.type}
+              option={option}
+              onClick={() => handleAddPrimitive(option.type)}
+            />
+          ))}
+        </Box>
       )}
-      {renderPrimitiveButton("Box", "box", "mdi:cube-outline")}
-      {renderPrimitiveButton("Sphere", "sphere", "mdi:sphere")}
-      {renderPrimitiveButton("Cylinder", "cylinder", "mdi:cylinder")}
-      {renderPrimitiveButton("Cone", "cone", "mdi:cone")}
-      {renderPrimitiveButton("Torus", "torus", "mdi:circle-double")}
-      {renderPrimitiveButton("Plane", "plane", "mdi:square-outline")}
-      {renderPrimitiveButton("Capsule", "capsule", "mdi:pill")}
-      {renderPrimitiveButton("Circle", "circle", "mdi:circle-outline")}
-      {renderPrimitiveButton("Ring", "ring", "mdi:ring")}
-      {renderPrimitiveButton("Tetra", "tetrahedron", "mdi:triangle-outline")}
-      {renderPrimitiveButton("Octa", "octahedron", "mdi:octagram-outline")}
-      {renderPrimitiveButton(
-        "Icosa",
-        "icosahedron",
-        "mdi:hexagon-multiple-outline",
-      )}
-      {renderPrimitiveButton("Dodeca", "dodecahedron", "mdi:pentagon-outline")}
-      {renderPrimitiveButton("Knot", "torusKnot", "mdi:infinity")}
-    </Stack>
+    </div>
   );
 }
