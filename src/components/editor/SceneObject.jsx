@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { useSceneStore } from "@/store/sceneStore";
@@ -7,16 +7,31 @@ import { useSceneStore } from "@/store/sceneStore";
 function GroupBoundingBox({ id }) {
   const { scene } = useThree();
   const getDescendants = useSceneStore((state) => state.getDescendants);
+  const isDragging = useSceneStore((state) => state.isDragging);
 
-  // Calculate bounding box and edges from all descendant meshes
-  const { edgesGeometry, boundsMin, boundsMax } = useMemo(() => {
+  // Use refs for geometry to update in real-time during transforms
+  const lineRef = useRef();
+  const boundsRef = useRef({
+    min: new THREE.Vector3(-1, -1, -1),
+    max: new THREE.Vector3(1, 1, 1),
+  });
+
+  // Reusable objects to avoid allocations in useFrame
+  const tmpBox = useMemo(() => new THREE.Box3(), []);
+  const tmpSize = useMemo(() => new THREE.Vector3(), []);
+  const tmpCenter = useMemo(() => new THREE.Vector3(), []);
+
+  // Get descendant IDs once (these don't change during transform)
+  const descendantIds = useMemo(() => {
     const descendants = getDescendants(id);
-    if (descendants.length === 0)
-      return { edgesGeometry: null, boundsMin: null, boundsMax: null };
+    return new Set(descendants.map((d) => d.id));
+  }, [id, getDescendants]);
 
-    const descendantIds = new Set(descendants.map((d) => d.id));
+  // Calculate bounding box - called on mount and during useFrame when dragging
+  const calculateBounds = () => {
+    if (descendantIds.size === 0) return false;
+
     const bounds = new THREE.Box3();
-    const tmp = new THREE.Box3();
     let hasAny = false;
 
     scene.traverse((obj) => {
@@ -24,35 +39,69 @@ function GroupBoundingBox({ id }) {
       if (!objectId || !descendantIds.has(objectId)) return;
       if (!obj.isMesh) return;
 
-      tmp.setFromObject(obj);
-      if (tmp.isEmpty()) return;
+      // Update world matrix to get current transform
+      obj.updateWorldMatrix(true, false);
+      tmpBox.setFromObject(obj);
+      if (tmpBox.isEmpty()) return;
 
       if (!hasAny) {
-        bounds.copy(tmp);
+        bounds.copy(tmpBox);
         hasAny = true;
       } else {
-        bounds.union(tmp);
+        bounds.union(tmpBox);
       }
     });
 
-    if (!hasAny || bounds.isEmpty())
-      return { edgesGeometry: null, boundsMin: null, boundsMax: null };
+    if (!hasAny || bounds.isEmpty()) return false;
 
-    // Create box geometry from bounds
-    const size = new THREE.Vector3();
-    const center = new THREE.Vector3();
-    bounds.getSize(size);
-    bounds.getCenter(center);
+    boundsRef.current.min.copy(bounds.min);
+    boundsRef.current.max.copy(bounds.max);
 
-    const geo = new THREE.BoxGeometry(size.x, size.y, size.z);
-    geo.translate(center.x, center.y, center.z);
+    // Update geometry
+    if (lineRef.current) {
+      bounds.getSize(tmpSize);
+      bounds.getCenter(tmpCenter);
 
-    return {
-      edgesGeometry: new THREE.EdgesGeometry(geo),
-      boundsMin: bounds.min.clone(),
-      boundsMax: bounds.max.clone(),
-    };
-  }, [id, getDescendants, scene]);
+      // Dispose old geometry and create new one
+      if (lineRef.current.geometry) {
+        lineRef.current.geometry.dispose();
+      }
+      const boxGeo = new THREE.BoxGeometry(tmpSize.x, tmpSize.y, tmpSize.z);
+      boxGeo.translate(tmpCenter.x, tmpCenter.y, tmpCenter.z);
+      lineRef.current.geometry = new THREE.EdgesGeometry(boxGeo);
+      boxGeo.dispose();
+
+      // Update material uniforms
+      if (lineRef.current.material?.uniforms) {
+        lineRef.current.material.uniforms.boundsMin.value.copy(bounds.min);
+        lineRef.current.material.uniforms.boundsMax.value.copy(bounds.max);
+      }
+    }
+
+    return true;
+  };
+
+  // Track if we have any valid descendants to show
+  const hasDescendants = descendantIds.size > 0;
+
+  // Initial calculation after mount and recalculate when descendant IDs change
+  const [needsInitialCalc, setNeedsInitialCalc] = useState(true);
+  useEffect(() => {
+    // Reset flag when descendants change so we recalculate
+    setNeedsInitialCalc(true);
+  }, [descendantIds]);
+
+  // Update bounds every frame while dragging, or once after mount
+  useFrame(() => {
+    if (!lineRef.current) return;
+
+    if (needsInitialCalc) {
+      calculateBounds();
+      setNeedsInitialCalc(false);
+    } else if (isDragging) {
+      calculateBounds();
+    }
+  });
 
   const edgesMaterial = useMemo(
     () =>
@@ -91,17 +140,19 @@ function GroupBoundingBox({ id }) {
     [],
   );
 
-  // Update uniforms when bounds change
-  if (boundsMin && boundsMax) {
-    edgesMaterial.uniforms.boundsMin.value.copy(boundsMin);
-    edgesMaterial.uniforms.boundsMax.value.copy(boundsMax);
-  }
+  // Create initial geometry placeholder
+  const initialGeometry = useMemo(() => {
+    // Create a tiny placeholder geometry - will be replaced by calculateBounds
+    const geo = new THREE.BoxGeometry(0.001, 0.001, 0.001);
+    return new THREE.EdgesGeometry(geo);
+  }, []);
 
-  if (!edgesGeometry) return null;
+  if (!hasDescendants) return null;
 
   return (
     <lineSegments
-      geometry={edgesGeometry}
+      ref={lineRef}
+      geometry={initialGeometry}
       material={edgesMaterial}
       raycast={() => null}
       renderOrder={1000}
