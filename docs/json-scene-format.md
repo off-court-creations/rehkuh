@@ -529,6 +529,8 @@ Requires `shaders/staging/glow.vert` and `shaders/staging/glow.frag` to exist.
 
 Animation clips define keyframe animations for scene objects. Animations target objects by **name** (not UUID), consistent with parent references in the JSON scene format.
 
+**Important:** The viewport plays **one animation clip at a time**. To animate multiple objects simultaneously, use multiple tracks within a single clip rather than creating separate clips. Only create separate clips when they should be played independently (e.g., user-selectable animations).
+
 ### Animation Clip Schema
 
 ```json

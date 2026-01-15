@@ -304,6 +304,64 @@ Common validation errors and fixes:
 | `metalness: Number must be <= 1` | Keep metalness/roughness in 0-1 range |
 | `Missing staging shader files: foo.vert` | Create `shaders/staging/foo.vert` and `foo.frag` |
 
+## Animation Best Practices
+
+### Prefer Multiple Tracks in One Clip
+
+The viewport plays **one animation clip at a time**. If you need multiple objects to animate simultaneously (e.g., a solar system with orbiting planets), put all tracks in a single clip rather than creating separate clips.
+
+**Do this:**
+```json
+{
+  "animations": [
+    {
+      "name": "solar-system",
+      "duration": 20,
+      "tracks": [
+        { "target": "earth-orbit", "path": "quaternion", ... },
+        { "target": "earth", "path": "quaternion", ... },
+        { "target": "moon-orbit", "path": "quaternion", ... }
+      ]
+    }
+  ]
+}
+```
+
+**Not this** (only one will play at a time):
+```json
+{
+  "animations": [
+    { "name": "earth-orbit", "tracks": [...] },
+    { "name": "earth-spin", "tracks": [...] },
+    { "name": "moon-orbit", "tracks": [...] }
+  ]
+}
+```
+
+Only create separate clips when the user explicitly asks for separate animations that can be played independently.
+
+### Handling Different Animation Speeds
+
+When tracks have different speeds (e.g., earth spins faster than it orbits), expand keyframes to cover the full clip duration:
+
+- Earth orbit: 1 rotation in 20s → 5 keyframes
+- Earth spin: 10 rotations in 20s → 41 keyframes (every 0.5s)
+- Moon orbit: 4 rotations in 20s → 17 keyframes (every 1.25s)
+
+### Orbital Animation Pattern
+
+For orbital animations (moons around planets, planets around stars), use a pivot hierarchy to decouple orbits from spins:
+
+```
+earth-orbit (group, rotates for orbit)
+└── earth-pivot (group at orbital distance, no animation)
+    ├── earth (sphere, spins independently)
+    └── moon-orbit (group, rotates for moon's orbit - sibling, not child of earth)
+        └── moon (sphere, spins)
+```
+
+This prevents the moon's orbit from inheriting the earth's spin rotation.
+
 ## Why This Workflow?
 
 1. **Validation** - Staging is validated before going live, preventing broken scenes
