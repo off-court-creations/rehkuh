@@ -1,5 +1,5 @@
 import { Stack, Typography, Panel, Box } from "@archway/valet";
-import { useSceneStore } from "@/store/sceneStore";
+import { useSceneStore, useIsAnimationLocked } from "@/store/sceneStore";
 import type {
   StandardMaterialProps,
   PhysicalMaterialProps,
@@ -57,6 +57,7 @@ export function PropertyPanel() {
   const setTransformMode = useSceneStore((state) => state.setTransformMode);
   const beginTransaction = useSceneStore((state) => state.beginTransaction);
   const commitTransaction = useSceneStore((state) => state.commitTransaction);
+  const isAnimationLocked = useIsAnimationLocked(primaryId ?? "");
 
   const handleMaterialTypeChange = (newType: MaterialType) => {
     if (!obj || !primaryId) return;
@@ -131,6 +132,7 @@ export function PropertyPanel() {
               transformMode={transformMode}
               setTransformMode={setTransformMode}
               updateObject={updateObject}
+              isAnimationLocked={isAnimationLocked}
             />
             <GeometrySection
               obj={obj}

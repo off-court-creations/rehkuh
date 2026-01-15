@@ -18,6 +18,7 @@ interface TransformSectionProps {
   transformMode: TransformMode | null;
   setTransformMode: (mode: TransformMode | null) => void;
   updateObject: (id: string, update: Partial<SceneObject>) => void;
+  isAnimationLocked?: boolean;
 }
 
 export function TransformSection({
@@ -26,10 +27,37 @@ export function TransformSection({
   transformMode,
   setTransformMode,
   updateObject,
+  isAnimationLocked = false,
 }: TransformSectionProps) {
   const handleModeClick = (mode: TransformMode) => {
+    if (isAnimationLocked) return;
     setTransformMode(transformMode === mode ? null : mode);
   };
+
+  // When animation locked, show message and disable all transform controls
+  if (isAnimationLocked) {
+    return (
+      <Stack gap={0} sx={{ padding: "2px 4px 6px 4px" }}>
+        <Typography variant="body" sx={fieldLabelSx}>
+          Transform Mode
+        </Typography>
+        <Typography
+          variant="body"
+          sx={{
+            fontSize: "11px",
+            color: "rgba(255, 180, 100, 0.9)",
+            padding: "6px 4px",
+            backgroundColor: "rgba(255, 150, 50, 0.1)",
+            borderRadius: "4px",
+            lineHeight: 1.3,
+          }}
+        >
+          Transforms locked: This object is part of an animation hierarchy.
+          Remove animations to enable transforms.
+        </Typography>
+      </Stack>
+    );
+  }
 
   return (
     <>

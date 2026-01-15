@@ -1165,3 +1165,200 @@ useSceneStore.subscribe(
     }
   },
 );
+
+/**
+ * Get all object names that are directly targeted by animations.
+ * Returns a Set of object names.
+ */
+export function getAnimatedObjectNames(): Set<string> {
+  const clips = useAnimationStore.getState().clips;
+  const names = new Set<string>();
+  for (const clip of clips) {
+    for (const track of clip.tracks) {
+      names.add(track.target);
+    }
+  }
+  return names;
+}
+
+/**
+ * Get all ancestors (parent chain) of an object.
+ * Returns array of object IDs from immediate parent to root.
+ */
+function getAncestorIds(
+  objectId: string,
+  objects: Record<string, SceneObject>,
+): string[] {
+  const ancestors: string[] = [];
+  let current = objects[objectId];
+  while (current?.parentId) {
+    ancestors.push(current.parentId);
+    current = objects[current.parentId];
+  }
+  return ancestors;
+}
+
+/**
+ * Get all descendant IDs of an object (children, grandchildren, etc.)
+ */
+function getDescendantIds(
+  objectId: string,
+  objects: Record<string, SceneObject>,
+): string[] {
+  const descendants: string[] = [];
+  const children = Object.values(objects).filter(
+    (o) => o.parentId === objectId,
+  );
+  for (const child of children) {
+    descendants.push(child.id);
+    descendants.push(...getDescendantIds(child.id, objects));
+  }
+  return descendants;
+}
+
+/**
+ * Check if an object is "animation locked" - meaning it cannot be transformed
+ * because doing so would break animations.
+ *
+ * An object is animation locked if:
+ * 1. It is directly targeted by an animation track
+ * 2. It is an ancestor (parent, grandparent, etc.) of an animated object
+ * 3. It is a descendant (child, grandchild, etc.) of an animated object
+ *
+ * @param objectId The object ID to check
+ * @returns true if the object is animation locked
+ */
+export function isObjectAnimationLocked(objectId: string): boolean {
+  const objects = useSceneStore.getState().objects;
+  const obj = objects[objectId];
+  if (!obj) return false;
+
+  const animatedNames = getAnimatedObjectNames();
+  if (animatedNames.size === 0) return false;
+
+  // Build a map of name -> id for lookups
+  const nameToId: Record<string, string> = {};
+  for (const o of Object.values(objects)) {
+    nameToId[o.name] = o.id;
+  }
+
+  // Get IDs of all animated objects
+  const animatedIds = new Set<string>();
+  for (const name of animatedNames) {
+    const id = nameToId[name];
+    if (id) animatedIds.add(id);
+  }
+
+  // Check 1: Is this object directly animated?
+  if (animatedIds.has(objectId)) return true;
+
+  // Check 2: Is this object an ancestor of any animated object?
+  for (const animId of animatedIds) {
+    const ancestors = getAncestorIds(animId, objects);
+    if (ancestors.includes(objectId)) return true;
+  }
+
+  // Check 3: Is this object a descendant of any animated object?
+  for (const animId of animatedIds) {
+    const descendants = getDescendantIds(animId, objects);
+    if (descendants.includes(objectId)) return true;
+  }
+
+  return false;
+}
+
+/**
+ * Hook to check if an object is animation locked.
+ * Re-renders when animations or objects change.
+ */
+export function useIsAnimationLocked(objectId: string): boolean {
+  const objects = useSceneStore((state) => state.objects);
+  const clips = useAnimationStore((state) => state.clips);
+
+  // Recompute when objects or clips change
+  if (!objects[objectId]) return false;
+  if (clips.length === 0) return false;
+
+  const animatedNames = new Set<string>();
+  for (const clip of clips) {
+    for (const track of clip.tracks) {
+      animatedNames.add(track.target);
+    }
+  }
+
+  // Build a map of name -> id for lookups
+  const nameToId: Record<string, string> = {};
+  for (const o of Object.values(objects)) {
+    nameToId[o.name] = o.id;
+  }
+
+  // Get IDs of all animated objects
+  const animatedIds = new Set<string>();
+  for (const name of animatedNames) {
+    const id = nameToId[name];
+    if (id) animatedIds.add(id);
+  }
+
+  // Check 1: Is this object directly animated?
+  if (animatedIds.has(objectId)) return true;
+
+  // Check 2: Is this object an ancestor of any animated object?
+  for (const animId of animatedIds) {
+    const ancestors = getAncestorIds(animId, objects);
+    if (ancestors.includes(objectId)) return true;
+  }
+
+  // Check 3: Is this object a descendant of any animated object?
+  for (const animId of animatedIds) {
+    const descendants = getDescendantIds(animId, objects);
+    if (descendants.includes(objectId)) return true;
+  }
+
+  return false;
+}
+
+/**
+ * Hook to get all animation-locked object IDs from a list of IDs.
+ * Returns the subset of IDs that are NOT animation locked (can be transformed).
+ */
+export function useTransformableIds(ids: string[]): string[] {
+  const objects = useSceneStore((state) => state.objects);
+  const clips = useAnimationStore((state) => state.clips);
+
+  if (clips.length === 0) return ids;
+
+  const animatedNames = new Set<string>();
+  for (const clip of clips) {
+    for (const track of clip.tracks) {
+      animatedNames.add(track.target);
+    }
+  }
+
+  // Build a map of name -> id for lookups
+  const nameToId: Record<string, string> = {};
+  for (const o of Object.values(objects)) {
+    nameToId[o.name] = o.id;
+  }
+
+  // Get IDs of all animated objects
+  const animatedIds = new Set<string>();
+  for (const name of animatedNames) {
+    const id = nameToId[name];
+    if (id) animatedIds.add(id);
+  }
+
+  // Pre-compute all locked IDs (animated + ancestors + descendants)
+  const lockedIds = new Set<string>();
+
+  for (const animId of animatedIds) {
+    lockedIds.add(animId);
+    // Add all ancestors
+    const ancestors = getAncestorIds(animId, objects);
+    for (const aid of ancestors) lockedIds.add(aid);
+    // Add all descendants
+    const descendants = getDescendantIds(animId, objects);
+    for (const did of descendants) lockedIds.add(did);
+  }
+
+  return ids.filter((id) => !lockedIds.has(id));
+}

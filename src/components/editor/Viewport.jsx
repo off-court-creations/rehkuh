@@ -2,7 +2,7 @@ import { useState, useRef, Suspense, useEffect, useCallback } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls, Grid, Environment } from "@react-three/drei";
 import * as THREE from "three";
-import { useSceneStore } from "@/store/sceneStore";
+import { useSceneStore, useTransformableIds } from "@/store/sceneStore";
 import { useSettingsStore } from "@/store/settingsStore";
 import { useAnimationStore } from "@/store/animationStore";
 import { compileAnimations } from "@/animation/animationCompiler";
@@ -304,6 +304,10 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
 
   const rootObjects = objectList.filter((o) => o.parentId === null);
 
+  // Filter out animation-locked objects from gizmo control
+  // These objects cannot be transformed because it would break animations
+  const transformableIds = useTransformableIds(selectedIds);
+
   // Get selected group IDs for rendering bounding boxes at scene root
   const selectedGroupIds = selectedIds.filter(
     (id) => objects[id]?.type === "group",
@@ -360,9 +364,9 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
         <GroupBoundingBox key={`bbox-${id}`} id={id} />
       ))}
 
-      {selectedIds.length > 0 && transformMode && (
+      {transformableIds.length > 0 && transformMode && (
         <MultiTransformGizmo
-          selectedIds={selectedIds}
+          selectedIds={transformableIds}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         />
