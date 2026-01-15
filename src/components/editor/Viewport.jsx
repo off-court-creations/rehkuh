@@ -1,11 +1,127 @@
 import { useState, useRef, Suspense, useEffect, useCallback } from "react";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls, Grid, Environment } from "@react-three/drei";
 import * as THREE from "three";
 import { useSceneStore } from "@/store/sceneStore";
 import { useSettingsStore } from "@/store/settingsStore";
+import { useAnimationStore } from "@/store/animationStore";
+import { compileAnimations } from "@/animation/animationCompiler";
 import { SceneObject, GroupBoundingBox } from "./SceneObject";
 import { MultiTransformGizmo } from "./MultiTransformGizmo";
+
+/**
+ * AnimationController manages the Three.js AnimationMixer.
+ * It creates the mixer when animation clips are loaded,
+ * compiles them, and ticks the mixer every frame.
+ */
+function AnimationController() {
+  const { scene } = useThree();
+  const clips = useAnimationStore((state) => state.clips);
+  const setMixer = useAnimationStore((state) => state.setMixer);
+  const clearMixer = useAnimationStore((state) => state.clearMixer);
+  const tick = useAnimationStore((state) => state.tick);
+  const mixerRef = useRef(null);
+  const objects = useSceneStore((state) => state.objects);
+
+  // Create/update mixer when clips or objects change
+  // We need to wait for objects to be in the scene before creating the mixer
+  useEffect(() => {
+    // If no clips, clear the mixer
+    if (!clips || clips.length === 0) {
+      if (mixerRef.current) {
+        mixerRef.current.stopAllAction();
+        mixerRef.current = null;
+        clearMixer();
+      }
+      return;
+    }
+
+    // If no objects, wait for them
+    if (Object.keys(objects).length === 0) {
+      return;
+    }
+
+    // Defer mixer creation to next frame to ensure R3F has committed
+    // the Three.js objects to the scene
+    let cancelled = false;
+    const frameId = requestAnimationFrame(() => {
+      if (cancelled) return;
+
+      // Debug: log all named objects in scene
+      console.log("[AnimationController] Objects in scene:");
+      scene.traverse((obj) => {
+        if (obj.name) {
+          console.log(`  - "${obj.name}" (${obj.type})`);
+        }
+      });
+
+      // Verify target objects exist in scene
+      const targetNames = new Set(
+        clips.flatMap((c) => c.tracks.map((t) => "tsp_" + t.target)),
+      );
+      console.log("[AnimationController] Looking for targets:", [
+        ...targetNames,
+      ]);
+      let allFound = true;
+      for (const name of targetNames) {
+        const obj = scene.getObjectByName(name);
+        if (!obj) {
+          console.warn(
+            `[AnimationController] Object "${name}" not found in scene`,
+          );
+          allFound = false;
+        } else {
+          console.log(
+            `[AnimationController] Found "${name}" -> ${obj.type} (uuid: ${obj.uuid.slice(0, 8)})`,
+          );
+        }
+      }
+
+      if (!allFound) {
+        console.warn(
+          "[AnimationController] Some animation targets not found, retrying...",
+        );
+        return;
+      }
+
+      // Create new mixer with scene as root
+      const mixer = new THREE.AnimationMixer(scene);
+      mixerRef.current = mixer;
+
+      // Compile animation clips
+      const compiledClips = compileAnimations(clips);
+
+      // Debug: log compiled tracks
+      console.log("[AnimationController] Compiled clips:", compiledClips);
+      for (const clip of compiledClips) {
+        console.log(`[AnimationController] Clip "${clip.name}" tracks:`);
+        for (const track of clip.tracks) {
+          console.log(`  - ${track.name} (${track.constructor.name})`);
+        }
+      }
+
+      // Register mixer and clips with store
+      setMixer(mixer, compiledClips);
+    });
+
+    // Cleanup on unmount or when deps change
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frameId);
+      if (mixerRef.current) {
+        mixerRef.current.stopAllAction();
+        mixerRef.current = null;
+      }
+    };
+  }, [clips, objects, scene, setMixer, clearMixer]);
+
+  // Tick the animation system every frame
+  useFrame((_, delta) => {
+    tick(delta);
+  });
+
+  return null;
+}
 
 function FocusOnF({ isDraggingRef }) {
   const selectedId = useSceneStore((state) =>
@@ -233,6 +349,7 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
 
       <DeselectOnEmptyDoubleClick isDraggingRef={isDraggingRef} />
       <FocusOnF isDraggingRef={isDraggingRef} />
+      <AnimationController />
 
       {rootObjects.map((obj) => (
         <SceneObject key={obj.id} id={obj.id} />

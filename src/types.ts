@@ -582,10 +582,46 @@ export interface TSPMetadata {
   description?: string;
 }
 
+// Animation Types (shared between Scene and TSP formats)
+
+export type AnimationPath = "position" | "scale" | "quaternion" | "visible";
+export type AnimationInterpolation = "linear" | "smooth" | "discrete";
+
+// Base track interface (shared shape, target type varies by format)
+export interface AnimationTrackBase {
+  path: AnimationPath;
+  interpolation: AnimationInterpolation;
+  times: number[];
+  values: number[] | boolean[];
+}
+
+// JSON Scene Format: target by object NAME
+export interface SceneAnimationTrack extends AnimationTrackBase {
+  target: string; // Object name (matches objects[].name)
+}
+
+export interface SceneAnimationClip {
+  name: string;
+  duration?: number;
+  tracks: SceneAnimationTrack[];
+}
+
+// TSP Format: target by object UUID
+export interface TSPAnimationTrack extends AnimationTrackBase {
+  target: string; // Object UUID (matches objects[].id)
+}
+
+export interface TSPAnimationClip {
+  name: string;
+  duration?: number;
+  tracks: TSPAnimationTrack[];
+}
+
 export interface TSPFile {
   metadata: TSPMetadata;
   materials: Record<string, TSPMaterial>;
   geometries: Record<string, TSPGeometry>;
   objects: TSPObject[];
   roots: string[]; // ids of root objects
+  animations?: Record<string, TSPAnimationClip>; // Animation clips by key
 }

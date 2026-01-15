@@ -7,6 +7,8 @@ import type {
   PhysicalMaterialProps,
   TSPMaterial,
   TSPPhysicalMaterial,
+  SceneAnimationClip,
+  TSPAnimationClip,
 } from "../types";
 
 const defaultMaterial: StandardMaterialProps = {
@@ -164,11 +166,60 @@ function convertTSPMaterial(
 export interface TSPImportResult {
   objects: Record<string, SceneObject>;
   extractedShaders: ExtractedShader[];
+  animations: SceneAnimationClip[];
+}
+
+/**
+ * Converts TSP animation clips (UUID targets) to scene animation clips (name targets).
+ */
+function convertTSPAnimations(
+  tspAnimations: Record<string, TSPAnimationClip> | undefined,
+  idToNameMap: Map<string, string>,
+): SceneAnimationClip[] {
+  if (!tspAnimations) return [];
+
+  const clips: SceneAnimationClip[] = [];
+
+  for (const tspClip of Object.values(tspAnimations)) {
+    const tracks = tspClip.tracks.map((track) => {
+      // Convert UUID target to object name
+      const targetName = idToNameMap.get(track.target);
+      if (!targetName) {
+        console.warn(
+          `Animation track references unknown object ID: ${track.target}`,
+        );
+      }
+      return {
+        target: targetName ?? track.target, // Fallback to ID if name not found
+        path: track.path,
+        interpolation: track.interpolation,
+        times: track.times,
+        values: track.values,
+      };
+    });
+
+    const sceneClip: SceneAnimationClip = {
+      name: tspClip.name,
+      tracks,
+    };
+    if (tspClip.duration !== undefined) {
+      sceneClip.duration = tspClip.duration;
+    }
+    clips.push(sceneClip);
+  }
+
+  return clips;
 }
 
 export function importFromTSP(tspData: TSPFile): TSPImportResult {
   const objects: Record<string, SceneObject> = {};
   const extractedShaders = new Map<string, ExtractedShader>();
+
+  // Build ID -> name map for animation target conversion
+  const idToNameMap = new Map<string, string>();
+  for (const tspObj of tspData.objects) {
+    idToNameMap.set(tspObj.id, tspObj.name);
+  }
 
   for (const tspObj of tspData.objects) {
     // Get material from materials dictionary
@@ -346,8 +397,12 @@ export function importFromTSP(tspData: TSPFile): TSPImportResult {
     objects[tspObj.id] = sceneObj;
   }
 
+  // Convert animations (UUID targets -> name targets)
+  const animations = convertTSPAnimations(tspData.animations, idToNameMap);
+
   return {
     objects,
     extractedShaders: Array.from(extractedShaders.values()),
+    animations,
   };
 }

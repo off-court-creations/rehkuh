@@ -3,6 +3,7 @@ import { Surface } from "@archway/valet";
 import { Viewport } from "@/components/editor/Viewport";
 import { Outliner } from "@/components/editor/Outliner";
 import { PropertyPanel } from "@/components/editor/PropertyPanel";
+import { AnimationControls } from "@/components/editor/AnimationControls";
 import { GlobalSnackbar } from "@/components/GlobalSnackbar";
 import { useSceneStore } from "@/store/sceneStore";
 import { useSettingsStore } from "@/store/settingsStore";
@@ -146,6 +147,7 @@ export default function Editor() {
           {/* Center - Viewport */}
           <div style={{ flex: 1, position: "relative", minWidth: 0 }}>
             <Viewport />
+            <AnimationControls />
           </div>
 
           {/* Right sidebar - Property Panel */}

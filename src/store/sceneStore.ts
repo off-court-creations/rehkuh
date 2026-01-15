@@ -11,7 +11,13 @@ import type {
   TSPCurve3D,
   TSPExtrudeOptions,
 } from "@/types";
-import { validateSceneFile, validateParentReferences } from "@/schemas/scene";
+import {
+  validateSceneFile,
+  validateParentReferences,
+  validateAnimationTargets,
+} from "@/schemas/scene";
+import { useAnimationStore } from "@/store/animationStore";
+import type { SceneAnimationClip } from "@/types";
 import { showError } from "@/store/notificationStore";
 import { useSettingsStore } from "@/store/settingsStore";
 import { exportToTSP, serializeTSP } from "@/export/tspExporter";
@@ -428,15 +434,18 @@ const saveToFile = (objects: Record<string, SceneObject>) => {
   if (saveTimeout) clearTimeout(saveTimeout);
   saveTimeout = setTimeout(async () => {
     const settings = useSettingsStore.getState();
+    const animationClips = useAnimationStore.getState().clips;
     const sceneData: {
       title?: string;
       description?: string;
       objects: ReturnType<typeof toSceneFileObjects>;
+      animations?: SceneAnimationClip[];
     } = {
       objects: toSceneFileObjects(objects),
     };
     if (settings.title) sceneData.title = settings.title;
     if (settings.description) sceneData.description = settings.description;
+    if (animationClips.length > 0) sceneData.animations = animationClips;
 
     try {
       const res = await fetch("/__scene", {
@@ -703,6 +712,29 @@ export const useSceneStore = create<SceneState>()(
         }
         await Promise.all(shaderLoadPromises);
 
+        // Load animations if present
+        const animations = sceneData.animations as
+          | SceneAnimationClip[]
+          | undefined;
+        if (animations && animations.length > 0) {
+          // Validate animation targets
+          const animationValidation = validateAnimationTargets(
+            fileObjects,
+            animations,
+          );
+          if (!animationValidation.success) {
+            showError(
+              `Animation validation failed: ${animationValidation.error}`,
+            );
+          } else {
+            // Pass animations to animation store
+            useAnimationStore.getState().setClips(animations);
+          }
+        } else {
+          // Clear any existing animations
+          useAnimationStore.getState().clearClips();
+        }
+
         set({
           objects: newObjects,
           isLoaded: true,
@@ -719,7 +751,11 @@ export const useSceneStore = create<SceneState>()(
 
     loadFromTSP: async (tspData: TSPFile) => {
       const state = get();
-      const { objects: newObjects, extractedShaders } = importFromTSP(tspData);
+      const {
+        objects: newObjects,
+        extractedShaders,
+        animations,
+      } = importFromTSP(tspData);
 
       // Write extracted shaders to files so they can be edited
       for (const shader of extractedShaders) {
@@ -739,6 +775,13 @@ export const useSceneStore = create<SceneState>()(
         }
       }
 
+      // Load animations if present
+      if (animations.length > 0) {
+        useAnimationStore.getState().setClips(animations);
+      } else {
+        useAnimationStore.getState().clearClips();
+      }
+
       // Push current state to history
       const newPast = [...state.history.past, state.objects].slice(
         -HISTORY_LIMIT,
@@ -755,36 +798,45 @@ export const useSceneStore = create<SceneState>()(
 
     serializeScene: () => {
       const settings = useSettingsStore.getState();
+      const animationClips = useAnimationStore.getState().clips;
       const sceneData: {
         title?: string;
         description?: string;
         objects: ReturnType<typeof toSceneFileObjects>;
+        animations?: SceneAnimationClip[];
       } = {
         objects: toSceneFileObjects(get().objects),
       };
       if (settings.title) sceneData.title = settings.title;
       if (settings.description) sceneData.description = settings.description;
+      if (animationClips.length > 0) sceneData.animations = animationClips;
       return JSON.stringify(sceneData, null, 2);
     },
 
     serializeSceneAsTSP: () => {
       const settings = useSettingsStore.getState();
+      const animationClips = useAnimationStore.getState().clips;
       const options: {
         author?: string;
         copyright?: string;
         title?: string;
         description?: string;
+        animations?: SceneAnimationClip[];
       } = {};
       if (settings.author) options.author = settings.author;
       if (settings.copyright) options.copyright = settings.copyright;
       if (settings.title) options.title = settings.title;
       if (settings.description) options.description = settings.description;
+      if (animationClips.length > 0) options.animations = animationClips;
       const tspData = exportToTSP(get().objects, options);
       return serializeTSP(tspData);
     },
 
     clearScene: () => {
       const state = get();
+      // Clear animations
+      useAnimationStore.getState().clearClips();
+
       // Push to history if not in a transaction
       if (!state.transactionSnapshot) {
         const newPast = [...state.history.past, state.objects].slice(

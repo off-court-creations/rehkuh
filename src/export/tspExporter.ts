@@ -8,6 +8,8 @@ import type {
   TSPPhysicalMaterial,
   TSPGeometry,
   TSPObject,
+  SceneAnimationClip,
+  TSPAnimationClip,
 } from "../types";
 import { isShaderMaterial, isPhysicalMaterial } from "../types";
 
@@ -217,6 +219,52 @@ export interface ExportOptions {
   copyright?: string;
   title?: string;
   description?: string;
+  animations?: SceneAnimationClip[];
+}
+
+/**
+ * Converts scene animation clips (name targets) to TSP animation clips (UUID targets).
+ */
+function convertSceneAnimationsToTSP(
+  animations: SceneAnimationClip[] | undefined,
+  nameToIdMap: Map<string, string>,
+): Record<string, TSPAnimationClip> | undefined {
+  if (!animations || animations.length === 0) return undefined;
+
+  const result: Record<string, TSPAnimationClip> = {};
+
+  for (const clip of animations) {
+    // Generate a clip ID based on name
+    const clipId = `clip_${clip.name.replace(/[^a-zA-Z0-9_]/g, "_")}`;
+
+    const tracks = clip.tracks.map((track) => {
+      // Convert object name target to UUID
+      const targetId = nameToIdMap.get(track.target);
+      if (!targetId) {
+        console.warn(
+          `Animation track references unknown object name: ${track.target}`,
+        );
+      }
+      return {
+        target: targetId ?? track.target, // Fallback to name if ID not found
+        path: track.path,
+        interpolation: track.interpolation,
+        times: track.times,
+        values: track.values,
+      };
+    });
+
+    const tspClip: TSPAnimationClip = {
+      name: clip.name,
+      tracks,
+    };
+    if (clip.duration !== undefined) {
+      tspClip.duration = clip.duration;
+    }
+    result[clipId] = tspClip;
+  }
+
+  return result;
 }
 
 export function exportToTSP(
@@ -224,6 +272,12 @@ export function exportToTSP(
   options: ExportOptions = {},
 ): TSPFile {
   const objectList = Object.values(objects);
+
+  // Build name -> ID map for animation target conversion
+  const nameToIdMap = new Map<string, string>();
+  for (const obj of objectList) {
+    nameToIdMap.set(obj.name, obj.id);
+  }
 
   // Build deduplicated materials dictionary
   const materials: Record<string, TSPMaterial> = {};
@@ -640,7 +694,7 @@ export function exportToTSP(
     .map((obj) => obj.id);
 
   const metadata: TSPFile["metadata"] = {
-    version: "0.9.2",
+    version: "0.10.0",
     id: crypto.randomUUID(),
     created: new Date().toISOString(),
     generator: "rehkuh",
@@ -660,13 +714,25 @@ export function exportToTSP(
     metadata.description = options.description;
   }
 
-  return {
+  // Convert animations (name targets -> UUID targets)
+  const animations = convertSceneAnimationsToTSP(
+    options.animations,
+    nameToIdMap,
+  );
+
+  const result: TSPFile = {
     metadata,
     materials,
     geometries,
     objects: tspObjects,
     roots,
   };
+
+  if (animations) {
+    result.animations = animations;
+  }
+
+  return result;
 }
 
 export function serializeTSP(tspData: TSPFile): string {

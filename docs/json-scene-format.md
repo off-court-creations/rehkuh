@@ -40,6 +40,7 @@ Unlike TSP (the export format), the JSON scene format:
 | `objects` | array | Yes | Array of scene objects |
 | `title` | string | No | Human-readable scene title (included in TSP exports) |
 | `description` | string | No | Scene description (included in TSP exports) |
+| `animations` | array | No | Array of animation clips (see Animations section) |
 
 ## Object Schema
 
@@ -524,6 +525,129 @@ Requires `shaders/staging/glow.vert` and `shaders/staging/glow.frag` to exist.
 }
 ```
 
+## Animations
+
+Animation clips define keyframe animations for scene objects. Animations target objects by **name** (not UUID), consistent with parent references in the JSON scene format.
+
+### Animation Clip Schema
+
+```json
+{
+  "animations": [
+    {
+      "name": "bounce",
+      "duration": 2.0,
+      "tracks": [...]
+    }
+  ]
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | Yes | Unique name for this animation clip |
+| `duration` | number | No | Clip duration in seconds (defaults to max track time) |
+| `tracks` | array | Yes | Array of animation tracks |
+
+### Animation Track Schema
+
+```json
+{
+  "target": "myCube",
+  "path": "position",
+  "interpolation": "smooth",
+  "times": [0, 0.5, 1.0],
+  "values": [0, 0, 0, 0, 1, 0, 0, 0, 0]
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `target` | string | Yes | Object name to animate (must exist in objects array) |
+| `path` | string | Yes | Property to animate: `"position"`, `"scale"`, `"quaternion"`, `"visible"` |
+| `interpolation` | string | Yes | Interpolation mode: `"linear"`, `"smooth"`, `"discrete"` |
+| `times` | number[] | Yes | Keyframe times in seconds (must be strictly increasing) |
+| `values` | array | Yes | Keyframe values (flat array, see below) |
+
+### Path Types and Value Formats
+
+| Path | Components | Value Format | Example |
+|------|------------|--------------|---------|
+| `position` | 3 (vec3) | `[x, y, z, x, y, z, ...]` | `[0, 0, 0, 0, 1, 0]` for 2 keyframes |
+| `scale` | 3 (vec3) | `[x, y, z, x, y, z, ...]` | `[1, 1, 1, 2, 2, 2]` for 2 keyframes |
+| `quaternion` | 4 (quat) | `[x, y, z, w, x, y, z, w, ...]` | `[0, 0, 0, 1, 0, 0.707, 0, 0.707]` |
+| `visible` | 1 (bool) | `[true, false, ...]` | `[true, false, true]` for 3 keyframes |
+
+**Note:** `values.length` must equal `times.length * components`.
+
+### Interpolation Modes
+
+| Mode | Three.js Equivalent | Description |
+|------|---------------------|-------------|
+| `linear` | `InterpolateLinear` | Linear interpolation between keyframes |
+| `smooth` | `InterpolateSmooth` | Smooth/spline interpolation |
+| `discrete` | `InterpolateDiscrete` | Step/hold (instant jumps) |
+
+### Example: Bouncing Cube
+
+```json
+{
+  "title": "Bouncing Cube",
+  "objects": [
+    {
+      "name": "cube",
+      "type": "box",
+      "position": [0, 0.5, 0],
+      "rotation": [0, 0, 0],
+      "scale": [1, 1, 1],
+      "material": { "color": "#ff0000", "metalness": 0.5, "roughness": 0.5 }
+    }
+  ],
+  "animations": [
+    {
+      "name": "bounce",
+      "tracks": [
+        {
+          "target": "cube",
+          "path": "position",
+          "interpolation": "smooth",
+          "times": [0, 0.5, 1.0],
+          "values": [0, 0.5, 0, 0, 2, 0, 0, 0.5, 0]
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Example: Rotating with Quaternion
+
+```json
+{
+  "name": "spin",
+  "tracks": [
+    {
+      "target": "cube",
+      "path": "quaternion",
+      "interpolation": "linear",
+      "times": [0, 1, 2],
+      "values": [
+        0, 0, 0, 1,
+        0, 0.707, 0, 0.707,
+        0, 1, 0, 0
+      ]
+    }
+  ]
+}
+```
+
+### Validation Rules
+
+1. All `target` values must reference existing object names
+2. `times` must be strictly increasing
+3. `values.length` must equal `times.length * components`
+4. Quaternion values SHOULD be normalized (the loader will normalize them)
+
 ## Differences from TSP Format
 
 | Aspect | JSON Scene | TSP |
@@ -535,5 +659,6 @@ Requires `shaders/staging/glow.vert` and `shaders/staging/glow.frag` to exist.
 | Geometries | Implicit | Deduplicated dictionary |
 | Shaders | External or inline | Always inline |
 | Metadata | None | version, created, generator |
+| Animations | Target by name | Target by UUID |
 
 The JSON scene format is simpler for editing. TSP is more portable for sharing/loading.

@@ -1,6 +1,6 @@
 # TSP File Format Specification
 
-**Version:** 0.9.2
+**Version:** 0.10.0
 **Status:** Draft
 **Last Updated:** 2026-01-14
 **Maintainer:** 0xbenc
@@ -26,14 +26,16 @@ This document defines the structure, semantics, and validation requirements for 
 7. [Geometries Object](#7-geometries-object)
 8. [Objects Array](#8-objects-array)
 9. [Roots Array](#9-roots-array)
-10. [Validation and Error Handling](#10-validation-and-error-handling)
-11. [Security Considerations](#11-security-considerations)
-12. [Versioning Policy](#12-versioning-policy)
-13. [References](#13-references)
-14. [Appendix A: Complete Example](#appendix-a-complete-example)
-15. [Appendix B: Geometry Use Cases](#appendix-b-geometry-use-cases)
-16. [Appendix C: Material Recipes](#appendix-c-material-recipes)
-17. [Revision History](#revision-history)
+10. [Animations Object](#10-animations-object)
+11. [Validation and Error Handling](#11-validation-and-error-handling)
+12. [Security Considerations](#12-security-considerations)
+13. [Versioning Policy](#13-versioning-policy)
+14. [References](#14-references)
+15. [Appendix A: Complete Example](#appendix-a-complete-example)
+16. [Appendix B: Geometry Use Cases](#appendix-b-geometry-use-cases)
+17. [Appendix C: Material Recipes](#appendix-c-material-recipes)
+18. [Appendix D: Animation Examples](#appendix-d-animation-examples)
+19. [Revision History](#revision-history)
 
 ---
 
@@ -101,6 +103,7 @@ A TSP file MUST be a JSON object containing the following top-level members:
 | `geometries` | object | REQUIRED | Geometry definitions dictionary |
 | `objects` | array | REQUIRED | Scene object instances |
 | `roots` | array | REQUIRED | IDs of root-level objects |
+| `animations` | object | OPTIONAL | Animation clip definitions dictionary |
 
 Consumers MUST ignore unrecognized top-level members. Producers MUST NOT emit unrecognized top-level members.
 
@@ -112,7 +115,8 @@ TSPFile
 ├── materials: { [key: string]: Material }
 ├── geometries: { [key: string]: Geometry }
 ├── objects: Object[]
-└── roots: string[]
+├── roots: string[]
+└── animations?: { [key: string]: AnimationClip }
 ```
 
 ---
@@ -1104,9 +1108,128 @@ The `roots` array lists the IDs of all root-level objects (objects with `parent:
 
 ---
 
-## 10. Validation and Error Handling
+## 10. Animations Object
 
-### 10.1 Validation Requirements
+The `animations` object is an OPTIONAL dictionary mapping animation keys to animation clip definitions. Animation clips define keyframe-based animations that can be played back using Three.js's `AnimationMixer` system.
+
+### 10.1 Animation Key Conventions
+
+Producers SHOULD use descriptive key names for animation clips:
+
+| Pattern | Example |
+|---------|---------|
+| `clip_{name}` | `clip_idle`, `clip_walk`, `clip_bounce` |
+| `{name}` | `idle`, `walk`, `bounce` |
+
+Consumers MUST treat animation keys as opaque identifiers.
+
+### 10.2 Animation Clip Schema
+
+| Member | Type | Required | Description |
+|--------|------|----------|-------------|
+| `name` | string | REQUIRED | Human-readable clip name |
+| `duration` | number | OPTIONAL | Clip duration in seconds. Defaults to max track time |
+| `tracks` | array | REQUIRED | Array of animation tracks |
+
+### 10.3 Animation Track Schema
+
+| Member | Type | Required | Description |
+|--------|------|----------|-------------|
+| `target` | string | REQUIRED | Object UUID to animate. MUST reference an existing object `id` |
+| `path` | string | REQUIRED | Property path to animate (see below) |
+| `interpolation` | string | REQUIRED | Interpolation mode (see below) |
+| `times` | array | REQUIRED | Keyframe times in seconds |
+| `values` | array | REQUIRED | Keyframe values (flat array) |
+
+### 10.4 Property Paths
+
+| Path | Components | Value Format | Three.js Track Type |
+|------|------------|--------------|---------------------|
+| `"position"` | 3 (vec3) | `[x, y, z, ...]` | `VectorKeyframeTrack` |
+| `"scale"` | 3 (vec3) | `[x, y, z, ...]` | `VectorKeyframeTrack` |
+| `"quaternion"` | 4 (quat) | `[x, y, z, w, ...]` | `QuaternionKeyframeTrack` |
+| `"visible"` | 1 (bool) | `[true/false, ...]` | `BooleanKeyframeTrack` |
+
+### 10.5 Interpolation Modes
+
+| Value | Three.js Constant | Description |
+|-------|-------------------|-------------|
+| `"linear"` | `InterpolateLinear` | Linear interpolation between keyframes |
+| `"smooth"` | `InterpolateSmooth` | Smooth/spline interpolation (cubic) |
+| `"discrete"` | `InterpolateDiscrete` | Step interpolation (instant transitions) |
+
+### 10.6 Track Validation Rules
+
+1. `times` array MUST contain at least one element.
+2. `times` values MUST be strictly increasing.
+3. `values.length` MUST equal `times.length * components` (3 for vec3, 4 for quat, 1 for bool).
+4. `target` MUST reference an existing object `id` in the `objects` array.
+5. Quaternion values SHOULD be normalized. Consumers MAY normalize on load.
+
+### 10.7 Object Naming for Track Binding
+
+To enable Three.js's `PropertyBinding` system to target objects, consumers SHOULD assign deterministic names derived from TSP object IDs:
+
+```javascript
+// Recommended naming pattern
+object.name = "tsp:" + tspObject.id;
+
+// Track name pattern for PropertyBinding
+trackName = object.name + "." + path;
+// e.g., "tsp:550e8400-e29b-41d4-a716-446655440001.position"
+```
+
+### 10.8 Example
+
+```json
+{
+  "animations": {
+    "clip_bounce": {
+      "name": "bounce",
+      "duration": 2.0,
+      "tracks": [
+        {
+          "target": "550e8400-e29b-41d4-a716-446655440001",
+          "path": "position",
+          "interpolation": "smooth",
+          "times": [0, 0.5, 1.0, 1.5, 2.0],
+          "values": [
+            0, 0.5, 0,
+            0, 2.0, 0,
+            0, 0.5, 0,
+            0, 2.0, 0,
+            0, 0.5, 0
+          ]
+        },
+        {
+          "target": "550e8400-e29b-41d4-a716-446655440001",
+          "path": "quaternion",
+          "interpolation": "linear",
+          "times": [0, 2.0],
+          "values": [0, 0, 0, 1, 0, 0.707, 0, 0.707]
+        }
+      ]
+    }
+  }
+}
+```
+
+### 10.9 Resource Limits
+
+To prevent resource exhaustion, consumers SHOULD enforce the following limits:
+
+| Parameter | Recommended Maximum |
+|-----------|---------------------|
+| Keyframes per track | 10,000 |
+| Tracks per clip | 1,000 |
+| Clips per scene | 100 |
+| Total animation duration | 3,600 seconds (1 hour) |
+
+---
+
+## 11. Validation and Error Handling
+
+### 11.1 Validation Requirements
 
 Consumers MUST validate the following before processing a TSP file:
 
@@ -1116,7 +1239,7 @@ Consumers MUST validate the following before processing a TSP file:
 4. **Reference integrity**: All material, geometry, and parent references MUST resolve.
 5. **Constraint satisfaction**: All numeric constraints MUST be satisfied.
 
-### 10.2 Error Handling
+### 11.2 Error Handling
 
 When validation fails, consumers SHOULD:
 
@@ -1125,7 +1248,7 @@ When validation fails, consumers SHOULD:
 3. Include the expected constraint and actual value.
 4. Reject the entire file rather than attempting partial loading.
 
-### 10.3 Unknown Members
+### 11.3 Unknown Members
 
 | Context | Behavior |
 |---------|----------|
@@ -1137,15 +1260,15 @@ When validation fails, consumers SHOULD:
 
 This policy enables forward compatibility with future specification versions.
 
-### 10.4 Default Values
+### 11.4 Default Values
 
 When optional members are absent, consumers MUST use the default values specified in this document.
 
 ---
 
-## 11. Security Considerations
+## 12. Security Considerations
 
-### 11.1 Shader Code Execution
+### 12.1 Shader Code Execution
 
 TSP files containing Shader Materials include executable GLSL code. Consumers MUST:
 
@@ -1159,7 +1282,7 @@ Consumers MAY implement:
 2. Timeouts for shader compilation.
 3. Resource limits for shader execution.
 
-### 11.2 Resource Exhaustion
+### 12.2 Resource Exhaustion
 
 TSP files may specify geometries with arbitrarily high segment counts. Consumers SHOULD:
 
@@ -1176,19 +1299,19 @@ Recommended limits:
 | Total materials per scene | 10,000 |
 | Shader source length | 100,000 characters |
 
-### 11.3 Path Traversal
+### 12.3 Path Traversal
 
 TSP files do not include file system paths. Consumers MUST NOT interpret any string values as file paths without explicit user action.
 
-### 11.4 UUID Predictability
+### 12.4 UUID Predictability
 
 The `id` fields use UUID v4, which should be generated using cryptographically secure random number generators. Producers MUST NOT use predictable or sequential UUIDs.
 
 ---
 
-## 12. Versioning Policy
+## 13. Versioning Policy
 
-### 12.1 Version Number Format
+### 13.1 Version Number Format
 
 The `metadata.version` field uses Semantic Versioning 2.0.0 ([semver.org][semver]):
 
@@ -1196,7 +1319,7 @@ The `metadata.version` field uses Semantic Versioning 2.0.0 ([semver.org][semver
 MAJOR.MINOR.PATCH
 ```
 
-### 12.2 Compatibility Guarantees
+### 13.2 Compatibility Guarantees
 
 | Version Change | Compatibility |
 |----------------|---------------|
@@ -1204,7 +1327,7 @@ MAJOR.MINOR.PATCH
 | MINOR (0.9.x → 0.10.0) | Backward compatible; new optional features |
 | MAJOR (0.x.x → 1.0.0) | Breaking changes possible |
 
-### 12.3 Consumer Version Handling
+### 13.3 Consumer Version Handling
 
 Consumers SHOULD:
 
@@ -1213,7 +1336,7 @@ Consumers SHOULD:
 3. Accept files with greater MINOR version, ignoring unknown features.
 4. Reject files with different MAJOR version, or warn the user.
 
-### 12.4 Producer Version Handling
+### 13.4 Producer Version Handling
 
 Producers MUST:
 
@@ -1222,9 +1345,9 @@ Producers MUST:
 
 ---
 
-## 13. References
+## 14. References
 
-### 13.1 Normative References
+### 14.1 Normative References
 
 - **[RFC 2119]** Bradner, S., "Key words for use in RFCs to Indicate Requirement Levels", BCP 14, RFC 2119, March 1997. https://www.rfc-editor.org/rfc/rfc2119
 
@@ -1236,7 +1359,7 @@ Producers MUST:
 
 - **[Semantic Versioning]** Preston-Werner, T., "Semantic Versioning 2.0.0". https://semver.org/
 
-### 13.2 Informative References
+### 14.2 Informative References
 
 - **[Three.js Documentation]** Three.js Geometry Classes. https://threejs.org/docs/#api/en/geometries/BoxGeometry
 
@@ -1457,10 +1580,119 @@ The following is a complete, valid TSP file demonstrating multiple features:
 
 ---
 
+## Appendix D: Animation Examples
+
+*This appendix is informative.*
+
+### D.1 Position Bounce
+
+```json
+{
+  "animations": {
+    "clip_bounce": {
+      "name": "bounce",
+      "tracks": [
+        {
+          "target": "00000000-0000-0000-0000-000000000001",
+          "path": "position",
+          "interpolation": "smooth",
+          "times": [0, 0.5, 1.0],
+          "values": [0, 0.5, 0, 0, 2.0, 0, 0, 0.5, 0]
+        }
+      ]
+    }
+  }
+}
+```
+
+### D.2 Rotation with Quaternion
+
+Rotate 90 degrees around Y axis over 1 second:
+
+```json
+{
+  "animations": {
+    "clip_rotate": {
+      "name": "rotate90",
+      "tracks": [
+        {
+          "target": "00000000-0000-0000-0000-000000000001",
+          "path": "quaternion",
+          "interpolation": "linear",
+          "times": [0, 1.0],
+          "values": [0, 0, 0, 1, 0, 0.7071, 0, 0.7071]
+        }
+      ]
+    }
+  }
+}
+```
+
+### D.3 Visibility Toggle (Blink)
+
+```json
+{
+  "animations": {
+    "clip_blink": {
+      "name": "blink",
+      "tracks": [
+        {
+          "target": "00000000-0000-0000-0000-000000000001",
+          "path": "visible",
+          "interpolation": "discrete",
+          "times": [0, 0.5, 1.0, 1.5, 2.0],
+          "values": [true, false, true, false, true]
+        }
+      ]
+    }
+  }
+}
+```
+
+### D.4 Combined Animation
+
+Multiple properties animated together:
+
+```json
+{
+  "animations": {
+    "clip_combined": {
+      "name": "jump_and_spin",
+      "duration": 2.0,
+      "tracks": [
+        {
+          "target": "00000000-0000-0000-0000-000000000001",
+          "path": "position",
+          "interpolation": "smooth",
+          "times": [0, 0.5, 1.0, 1.5, 2.0],
+          "values": [
+            0, 0, 0,
+            0, 2, 0,
+            0, 0, 0,
+            0, 2, 0,
+            0, 0, 0
+          ]
+        },
+        {
+          "target": "00000000-0000-0000-0000-000000000001",
+          "path": "quaternion",
+          "interpolation": "linear",
+          "times": [0, 2.0],
+          "values": [0, 0, 0, 1, 0, 1, 0, 0]
+        }
+      ]
+    }
+  }
+}
+```
+
+---
+
 ## Revision History
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 0.10.0 | 2026-01-14 | Added optional `animations` object for keyframe-based animations (Section 10). |
 | 0.9.2 | 2026-01-14 | Added optional `title` and `description` metadata fields. |
 | 0.9.1 | 2026-01-14 | Document reformatted as formal specification. Added security considerations, versioning policy, validation requirements, and appendices. No format changes. |
 | 0.9.0 | 2026-01-09 | Initial public draft. Core format with standard, physical, and shader materials. Simple and complex geometry support. |

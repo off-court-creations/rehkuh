@@ -11,7 +11,7 @@ import {
 import { join, dirname, basename, extname } from "path";
 import chokidar from "chokidar";
 import { createHash } from "crypto";
-import { validateSceneFile, validateParentReferences } from "./src/schemas/scene";
+import { validateSceneFile, validateParentReferences, validateAnimationTargets } from "./src/schemas/scene";
 
 const SCENE_DIR = join(process.cwd(), "scene");
 const SCENE_PATH = join(SCENE_DIR, "scene.json");
@@ -880,6 +880,22 @@ void main() {
             return;
           }
 
+          // Validate animation targets
+          const animationValidation = validateAnimationTargets(
+            validation.data.objects,
+            validation.data.animations
+          );
+          if (!animationValidation.success) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                ok: false,
+                error: `Animation validation failed: ${animationValidation.error}`,
+              })
+            );
+            return;
+          }
+
           // Validate and collect shader materials that reference external files
           const shaderNames = new Set<string>();
           for (const obj of validation.data.objects) {
@@ -969,16 +985,18 @@ void main() {
           }
 
           const shaderCount = shaderNames.size;
-          const shaderMsg = shaderCount > 0 ? ` and ${shaderCount} shader(s)` : "";
+          const animCount = validation.data.animations?.length ?? 0;
+          const shaderMsg = shaderCount > 0 ? `, ${shaderCount} shader(s)` : "";
+          const animMsg = animCount > 0 ? `, ${animCount} animation clip(s)` : "";
           console.log(
-            `[scene-sync] Promoted ${validation.data.objects.length} objects${shaderMsg} from staging`
+            `[scene-sync] Promoted ${validation.data.objects.length} objects${shaderMsg}${animMsg} from staging`
           );
 
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
               ok: true,
-              message: `Promoted ${validation.data.objects.length} objects${shaderMsg} from staging to scene`,
+              message: `Promoted ${validation.data.objects.length} objects${shaderMsg}${animMsg} from staging to scene`,
             })
           );
         } catch (err) {

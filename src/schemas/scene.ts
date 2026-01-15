@@ -192,12 +192,86 @@ export const SceneFileObjectSchema = z.object({
   indices: z.array(z.number()).optional(),
 });
 
+// Animation schemas
+
+export const AnimationPathSchema = z.enum([
+  "position",
+  "scale",
+  "quaternion",
+  "visible",
+]);
+
+export const AnimationInterpolationSchema = z.enum([
+  "linear",
+  "smooth",
+  "discrete",
+]);
+
+// Helper to get component count for each path
+function getPathComponents(path: string): number {
+  switch (path) {
+    case "position":
+    case "scale":
+      return 3; // vec3
+    case "quaternion":
+      return 4; // quat
+    case "visible":
+      return 1; // bool
+    default:
+      return 0;
+  }
+}
+
+// Helper to check if times are strictly increasing
+function isStrictlyIncreasing(arr: number[]): boolean {
+  for (let i = 1; i < arr.length; i++) {
+    const current = arr[i];
+    const previous = arr[i - 1];
+    if (current === undefined || previous === undefined) return false;
+    if (current <= previous) return false;
+  }
+  return true;
+}
+
+export const SceneAnimationTrackSchema = z
+  .object({
+    target: z.string().min(1, "Track target cannot be empty"), // Object NAME
+    path: AnimationPathSchema,
+    interpolation: AnimationInterpolationSchema,
+    times: z.array(z.number()).min(1, "Track must have at least one keyframe"),
+    values: z.union([z.array(z.number()), z.array(z.boolean())]),
+  })
+  .refine((track) => isStrictlyIncreasing(track.times), {
+    message: "Track times must be strictly increasing",
+  })
+  .refine(
+    (track) => {
+      const components = getPathComponents(track.path);
+      return track.values.length === track.times.length * components;
+    },
+    {
+      message:
+        "Track values length must equal times.length * components (3 for position/scale, 4 for quaternion, 1 for visible)",
+    },
+  );
+
+export const SceneAnimationClipSchema = z.object({
+  name: z.string().min(1, "Animation clip name cannot be empty"),
+  duration: z.number().positive().optional(),
+  tracks: z
+    .array(SceneAnimationTrackSchema)
+    .min(1, "Clip must have at least one track"),
+});
+
 export const SceneFileSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
   objects: z.array(SceneFileObjectSchema),
+  animations: z.array(SceneAnimationClipSchema).optional(),
 });
 
+export type SceneAnimationTrackZ = z.infer<typeof SceneAnimationTrackSchema>;
+export type SceneAnimationClipZ = z.infer<typeof SceneAnimationClipSchema>;
 export type SceneFileObjectZ = z.infer<typeof SceneFileObjectSchema>;
 export type SceneFileZ = z.infer<typeof SceneFileSchema>;
 
@@ -238,6 +312,33 @@ export function validateParentReferences(
         error: `Object "${obj.name}" references non-existent parent "${obj.parent}"`,
       };
     }
+  }
+  return { success: true };
+}
+
+export function validateAnimationTargets(
+  objects: SceneFileObjectZ[],
+  animations: SceneAnimationClipZ[] | undefined,
+): { success: true } | { success: false; error: string } {
+  if (!animations || animations.length === 0) {
+    return { success: true };
+  }
+
+  const names = new Set(objects.map((o) => o.name));
+  const errors: string[] = [];
+
+  for (const clip of animations) {
+    for (const track of clip.tracks) {
+      if (!names.has(track.target)) {
+        errors.push(
+          `Animation "${clip.name}" track targets non-existent object "${track.target}"`,
+        );
+      }
+    }
+  }
+
+  if (errors.length > 0) {
+    return { success: false, error: errors.join("; ") };
   }
   return { success: true };
 }

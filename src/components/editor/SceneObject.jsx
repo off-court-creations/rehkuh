@@ -745,6 +745,7 @@ export function SceneObject({ id }) {
   return (
     <>
       <group
+        name={"tsp_" + obj.name}
         position={obj.position}
         rotation={obj.rotation}
         scale={obj.scale}
