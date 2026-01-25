@@ -295,7 +295,7 @@ Simulates light passing through the material (glass, water, gems).
 | `transmission` | number | `0` | 0.0 to 1.0 | Light transmission amount |
 | `thickness` | number | `0` | >= 0 | Volume thickness for attenuation |
 | `attenuationColor` | string | `"#ffffff"` | Valid hex color | Absorption tint |
-| `attenuationDistance` | number | `Infinity` | > 0 | Distance for full attenuation |
+| `attenuationDistance` | number | `Infinity` | >= 0 | Distance for full attenuation |
 
 #### 6.4.6 Index of Refraction
 
