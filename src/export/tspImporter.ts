@@ -89,6 +89,15 @@ function convertTSPMaterial(
       roughness: tspMat.roughness,
     };
 
+    // Base properties (shared with standard material)
+    if (tspMat.emissive !== undefined) physMat.emissive = tspMat.emissive;
+    if (tspMat.emissiveIntensity !== undefined)
+      physMat.emissiveIntensity = tspMat.emissiveIntensity;
+    if (tspMat.opacity !== undefined) physMat.opacity = tspMat.opacity;
+    if (tspMat.transparent !== undefined)
+      physMat.transparent = tspMat.transparent;
+    if (tspMat.side !== undefined) physMat.side = tspMat.side;
+
     // Clearcoat channel
     if (tspMat.clearcoat !== undefined) physMat.clearcoat = tspMat.clearcoat;
     if (tspMat.clearcoatRoughness !== undefined)

@@ -390,6 +390,10 @@ Optional uniform members:
 | Member | Type | Default | Description |
 |--------|------|---------|-------------|
 | `animated` | boolean | `false` | Hint that this uniform changes per frame |
+| `min` | number | - | UI hint: minimum value for numeric uniforms (`float`, `int`) |
+| `max` | number | - | UI hint: maximum value for numeric uniforms (`float`, `int`) |
+
+> **Note:** `min` and `max` are hints for consumer UIs (e.g., slider controls). Consumers MAY ignore them.
 
 #### 6.5.4 Uniform Types
 
@@ -407,15 +411,17 @@ Optional uniform members:
 
 #### 6.5.5 Built-in Uniforms
 
-Consumers SHOULD automatically provide these uniforms when present in shader code:
+Consumers SHOULD automatically provide and update these uniforms when present in the shader's uniform definitions:
 
 | Uniform | Type | Description |
 |---------|------|-------------|
-| `time` | float | Elapsed time in seconds |
-| `resolution` | vec2 | Viewport dimensions in pixels |
-| `modelMatrix` | mat4 | Object-to-world transform |
-| `viewMatrix` | mat4 | World-to-camera transform |
-| `projectionMatrix` | mat4 | Camera projection matrix |
+| `time` | float | Elapsed time in seconds (updated per frame when `animated: true`) |
+| `resolution` | vec2 | Viewport dimensions in pixels (updated per frame) |
+| `modelMatrix` | mat4 | Object-to-world transform (provided by Three.js) |
+| `viewMatrix` | mat4 | World-to-camera transform (provided by Three.js) |
+| `projectionMatrix` | mat4 | Camera projection matrix (provided by Three.js) |
+
+> **Implementation note:** For `time`, declare the uniform with `"animated": true` to enable per-frame updates. For `resolution`, declare a vec2 uniform named `resolution` and the consumer will update it with the current viewport size each frame.
 
 #### 6.5.6 Example
 

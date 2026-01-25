@@ -613,22 +613,30 @@ This checklist is phrased as “Definition of Done for `1.0.0-rc.1`”.
 
 **Uniforms**
 
-- [ ] Decide whether `mat3`/`mat4` uniform types are in 1.0 (either implement or remove from spec).
-- [ ] Align uniform value validation:
-  - `color` must be hex
-  - `int` must be integer
-  - `vecN` arrays must be exact length
-- [ ] Decide whether `min/max/step` are part of the 1.0 spec (document or remove).
+- [x] Decide whether `mat3`/`mat4` uniform types are in 1.0 (either implement or remove from spec). → **Decision: Implement for 1.0 RC**
+  - [x] Added to Zod schema with length validation (9 for mat3, 16 for mat4)
+  - [x] Added to TypeScript types
+  - [x] Added to renderer (parseUniformValue)
+- [x] Align uniform value validation:
+  - [x] `color` must be hex → Added regex validation `^#[0-9a-fA-F]{6}$`
+  - [x] `int` must be integer → Added `.int()` validation
+  - [x] `vecN` arrays must be exact length → Added tuple validation
+- [x] Decide whether `min/max/step` are part of the 1.0 spec → **Decision: `min`/`max` specced, `step` removed**
+  - [x] Documented `min`/`max` in spec as UI hints
+  - [x] Removed `step` from schema and types
 
 **Shader built-ins**
 
-- [ ] Decide whether `resolution` is required/recommended; implement if staying “SHOULD”.
+- [x] Decide whether `resolution` is required/recommended; implement if staying "SHOULD". → **Implemented**
+  - [x] Renderer updates `resolution` uniform per-frame when present
+  - [x] Clarified behavior in spec documentation
 
 **Physical material base fields**
 
-- [ ] Decide whether physical base fields are in 1.0 scope:
-  - If yes: add to scene model and renderer, and preserve on import/export.
-  - If no: remove from spec or weaken to “MAY be ignored”.
+- [x] Decide whether physical base fields are in 1.0 scope → **Decision: Yes, add to scene model and renderer**
+  - [x] Added base fields to `PhysicalMaterialProps` type
+  - [x] Updated TSP importer to copy base fields
+  - [x] Updated renderer to apply base fields to `MeshPhysicalMaterial`
 
 **Unknown-member strategy**
 

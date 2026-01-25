@@ -69,6 +69,13 @@ export interface PhysicalMaterialProps {
   metalness: number;
   roughness: number;
 
+  // Base properties (shared with standard material)
+  emissive?: string; // Hex color, default "#000000"
+  emissiveIntensity?: number; // >= 0, default 0
+  opacity?: number; // 0-1, default 1
+  transparent?: boolean; // default false
+  side?: MaterialSide; // default "front"
+
   // Clearcoat channel (car paint, wet surfaces, varnished wood)
   clearcoat?: number; // 0-1
   clearcoatRoughness?: number; // 0-1
@@ -117,15 +124,16 @@ export type ShaderUniformType =
   | "color"
   | "vec2"
   | "vec3"
-  | "vec4";
+  | "vec4"
+  | "mat3"
+  | "mat4";
 
 export interface ShaderUniform {
   type: ShaderUniformType;
   value: number | boolean | string | number[];
-  animated?: boolean; // If true, runtime updates (e.g., time)
+  animated?: boolean; // If true, runtime updates (e.g., time, resolution)
   min?: number; // UI hint for sliders
   max?: number; // UI hint for sliders
-  step?: number; // UI hint for sliders
 }
 
 // Shader material (custom GLSL shaders)

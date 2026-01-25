@@ -265,21 +265,28 @@ On promotion, these are copied to `shaders/` (production).
 | Type | Value Format | Description |
 |------|--------------|-------------|
 | `float` | number | Single float |
-| `int` | number | Integer |
+| `int` | number (integer) | Integer |
 | `bool` | boolean | Boolean |
-| `color` | string | Hex color (converted to vec3) |
+| `color` | string (#RRGGBB) | Hex color (converted to vec3) |
 | `vec2` | [x, y] | 2D vector |
 | `vec3` | [x, y, z] | 3D vector |
 | `vec4` | [x, y, z, w] | 4D vector |
+| `mat3` | array (9 numbers) | 3x3 matrix (column-major) |
+| `mat4` | array (16 numbers) | 4x4 matrix (column-major) |
 
 **Uniform Options:**
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `animated` | boolean? | Auto-update each frame (for `time`) |
-| `min` | number? | UI slider minimum |
-| `max` | number? | UI slider maximum |
-| `step` | number? | UI slider step |
+| `min` | number? | UI slider minimum (hint) |
+| `max` | number? | UI slider maximum (hint) |
+
+**Built-in Uniforms:**
+
+When present in shader code, these uniforms are automatically updated:
+- `time` (float, `animated: true`) - Elapsed time in seconds
+- `resolution` (vec2) - Viewport dimensions in pixels
 
 ## Complex Geometry Data
 

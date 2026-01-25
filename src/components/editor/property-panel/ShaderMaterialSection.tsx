@@ -184,7 +184,7 @@ export function ShaderMaterialSection({
               <ConfirmableNumberInput
                 value={uniform.value as number}
                 onChange={(val) => handleUniformChange(name, "value", val)}
-                step={uniform.step ?? 0.1}
+                step={0.1}
                 width="50px"
               />
             )}

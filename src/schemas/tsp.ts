@@ -18,17 +18,56 @@ export const TSPUniformTypeSchema = z.enum([
   "vec2",
   "vec3",
   "vec4",
+  "mat3",
+  "mat4",
 ]);
 
-// Shader uniform definition
-export const TSPUniformSchema = z.object({
-  type: TSPUniformTypeSchema,
-  value: z.union([z.number(), z.boolean(), z.string(), z.array(z.number())]),
+// Base uniform properties shared across all types
+const TSPUniformBaseSchema = z.object({
   animated: z.boolean().optional(),
-  min: z.number().optional(),
-  max: z.number().optional(),
-  step: z.number().optional(),
+  min: z.number().optional(), // UI hint for sliders
+  max: z.number().optional(), // UI hint for sliders
 });
+
+// Shader uniform definition with type-specific validation
+export const TSPUniformSchema = z.discriminatedUnion("type", [
+  TSPUniformBaseSchema.extend({
+    type: z.literal("float"),
+    value: z.number(),
+  }),
+  TSPUniformBaseSchema.extend({
+    type: z.literal("int"),
+    value: z.number().int(),
+  }),
+  TSPUniformBaseSchema.extend({
+    type: z.literal("bool"),
+    value: z.boolean(),
+  }),
+  TSPUniformBaseSchema.extend({
+    type: z.literal("color"),
+    value: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be hex color #RRGGBB"),
+  }),
+  TSPUniformBaseSchema.extend({
+    type: z.literal("vec2"),
+    value: z.tuple([z.number(), z.number()]),
+  }),
+  TSPUniformBaseSchema.extend({
+    type: z.literal("vec3"),
+    value: z.tuple([z.number(), z.number(), z.number()]),
+  }),
+  TSPUniformBaseSchema.extend({
+    type: z.literal("vec4"),
+    value: z.tuple([z.number(), z.number(), z.number(), z.number()]),
+  }),
+  TSPUniformBaseSchema.extend({
+    type: z.literal("mat3"),
+    value: z.array(z.number()).length(9, "mat3 requires exactly 9 values"),
+  }),
+  TSPUniformBaseSchema.extend({
+    type: z.literal("mat4"),
+    value: z.array(z.number()).length(16, "mat4 requires exactly 16 values"),
+  }),
+]);
 
 // Standard material schema
 export const TSPStandardMaterialSchema = z

@@ -319,6 +319,10 @@ function parseUniformValue(type, value) {
       return new THREE.Vector3(...value);
     case "vec4":
       return new THREE.Vector4(...value);
+    case "mat3":
+      return new THREE.Matrix3().fromArray(value);
+    case "mat4":
+      return new THREE.Matrix4().fromArray(value);
     case "float":
     case "int":
     case "bool":
@@ -412,6 +416,14 @@ export function SceneObject({ id }) {
         roughness: mat.roughness ?? 0.4,
         side: mat?.side ? sideMap[mat.side] : THREE.FrontSide,
 
+        // Base properties (shared with standard material)
+        emissive: mat.emissive
+          ? new THREE.Color(mat.emissive)
+          : new THREE.Color("#000000"),
+        emissiveIntensity: mat.emissiveIntensity ?? 0,
+        opacity: mat.opacity ?? 1,
+        transparent: mat.transparent ?? false,
+
         // Clearcoat channel
         clearcoat: mat.clearcoat ?? 0,
         clearcoatRoughness: mat.clearcoatRoughness ?? 0,
@@ -478,15 +490,21 @@ export function SceneObject({ id }) {
   // Store material ref for animation
   materialRef.current = objectMaterial;
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock, gl }) => {
     // Animate shader material uniforms
     if (obj?.material?.type === "shader" && materialRef.current) {
       const elapsed = clock.getElapsedTime();
       const mat = obj.material;
       for (const [name, def] of Object.entries(mat.uniforms || {})) {
-        if (def.animated && materialRef.current.uniforms?.[name]) {
-          if (name === "time") {
+        if (materialRef.current.uniforms?.[name]) {
+          // Update time uniform if animated
+          if (def.animated && name === "time") {
             materialRef.current.uniforms[name].value = elapsed;
+          }
+          // Update resolution uniform if present (always updated)
+          if (name === "resolution" && def.type === "vec2") {
+            const { width, height } = gl.domElement;
+            materialRef.current.uniforms[name].value.set(width, height);
           }
         }
       }
