@@ -142,7 +142,7 @@ The `metadata` object provides identification and attribution information.
 | `version` | string | TSP format version (semver). MUST match pattern `^\d+\.\d+\.\d+$` |
 | `id` | string | Unique file identifier. MUST be a valid UUID v4 |
 | `created` | string | Creation timestamp. MUST be ISO 8601 format with timezone |
-| `generator` | string | Name of the producing software |
+| `generator` | string | Name of the producing software. MUST be non-empty |
 | `generatorVersion` | string | Version of the producing software (semver) |
 
 ### 5.2 Optional Members
@@ -819,7 +819,7 @@ Revolves a 2D profile curve around the Y axis.
 | Member | Type | Required | Description |
 |--------|------|----------|-------------|
 | `type` | string | REQUIRED | MUST be `"lathe"` |
-| `points` | array | REQUIRED | Array of `[x, y]` coordinate pairs defining the profile |
+| `points` | array | REQUIRED | Non-empty array of `[x, y]` coordinate pairs defining the profile |
 | `args` | array | OPTIONAL | `[segments, phiStart, phiLength]`, defaults `[32, 0, 2π]` |
 
 Example:
@@ -941,8 +941,8 @@ Creates a custom polyhedron from raw vertex and index data.
 | Member | Type | Required | Description |
 |--------|------|----------|-------------|
 | `type` | string | REQUIRED | MUST be `"polyhedron"` |
-| `vertices` | array | REQUIRED | Flat array of vertex coordinates `[x1, y1, z1, x2, y2, z2, ...]` |
-| `indices` | array | REQUIRED | Flat array of face indices (triangles) |
+| `vertices` | array | REQUIRED | Non-empty flat array of vertex coordinates `[x1, y1, z1, x2, y2, z2, ...]` |
+| `indices` | array | REQUIRED | Non-empty flat array of face indices (triangles) |
 | `args` | array | OPTIONAL | `[radius, detail]`, defaults `[1, 0]` |
 
 Example:
@@ -1147,9 +1147,9 @@ Consumers MUST treat animation keys as opaque identifiers.
 
 | Member | Type | Required | Description |
 |--------|------|----------|-------------|
-| `name` | string | REQUIRED | Human-readable clip name |
+| `name` | string | REQUIRED | Human-readable clip name. MUST be non-empty |
 | `duration` | number | OPTIONAL | Clip duration in seconds (> 0). Defaults to max track time |
-| `tracks` | array | REQUIRED | Array of animation tracks |
+| `tracks` | array | REQUIRED | Non-empty array of animation tracks |
 
 ### 10.3 Animation Track Schema
 
