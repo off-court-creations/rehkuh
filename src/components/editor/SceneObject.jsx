@@ -2,6 +2,7 @@ import { useMemo, useRef, useState, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { useSceneStore } from "@/store/sceneStore";
+import { useSettingsStore } from "@/store/settingsStore";
 
 // Bounding box visualization for selected groups
 function GroupBoundingBox({ id }) {
@@ -352,6 +353,7 @@ export function SceneObject({ id }) {
   );
   const select = useSceneStore((state) => state.select);
   const isDragging = useSceneStore((state) => state.isDragging);
+  const wireframe = useSettingsStore((state) => state.wireframe);
 
   const meshRef = useRef();
   const materialRef = useRef();
@@ -498,6 +500,13 @@ export function SceneObject({ id }) {
 
   // Store material ref for animation
   materialRef.current = objectMaterial;
+
+  // Update wireframe mode when setting changes
+  useEffect(() => {
+    if (objectMaterial && "wireframe" in objectMaterial) {
+      objectMaterial.wireframe = wireframe;
+    }
+  }, [objectMaterial, wireframe]);
 
   useFrame(({ clock, gl }) => {
     // Animate shader material uniforms

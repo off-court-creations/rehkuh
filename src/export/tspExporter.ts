@@ -2,6 +2,7 @@ import type {
   SceneObject,
   PrimitiveType,
   MaterialProps,
+  StandardMaterialProps,
   PhysicalMaterialProps,
   TSPFile,
   TSPMaterial,
@@ -44,13 +45,44 @@ const GEOMETRY_ARGS: Partial<Record<PrimitiveType, number[]>> = {
   torusKnot: [0.5, 0.15, 64, 8, 2, 3], // radius, tube, tubeTubularSegments, tubeRadialSegments, p, q
 };
 
-// Simple hash function for physical material properties
+// Simple hash (djb2)
+function djb2Hash(str: string): string {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash * 33) ^ str.charCodeAt(i);
+  }
+  return (hash >>> 0).toString(16).slice(0, 12);
+}
+
+// Hash function for standard material properties
+function hashStandardMaterial(mat: StandardMaterialProps): string {
+  const props = [
+    mat.color,
+    mat.metalness,
+    mat.roughness,
+    mat.emissive,
+    mat.emissiveIntensity,
+    mat.opacity,
+    mat.transparent,
+    mat.side,
+  ]
+    .filter((v) => v !== undefined)
+    .join("_");
+  return djb2Hash(props);
+}
+
+// Hash function for physical material properties
 function hashPhysicalMaterial(mat: PhysicalMaterialProps): string {
   // Create a string of all non-default properties and hash it
   const props = [
     mat.color,
     mat.metalness,
     mat.roughness,
+    mat.emissive,
+    mat.emissiveIntensity,
+    mat.opacity,
+    mat.transparent,
+    mat.side,
     mat.clearcoat,
     mat.clearcoatRoughness,
     mat.sheen,
@@ -75,19 +107,37 @@ function hashPhysicalMaterial(mat: PhysicalMaterialProps): string {
   ]
     .filter((v) => v !== undefined)
     .join("_");
+  return djb2Hash(props);
+}
 
-  // Simple hash (djb2)
-  let hash = 5381;
-  for (let i = 0; i < props.length; i++) {
-    hash = (hash * 33) ^ props.charCodeAt(i);
-  }
-  return (hash >>> 0).toString(16).slice(0, 12);
+// Hash function for shader material properties
+function hashShaderMaterial(mat: {
+  shaderName?: string;
+  vertex?: string;
+  fragment?: string;
+  uniforms: Record<string, { type: string; value: unknown }>;
+}): string {
+  // If shaderName is provided, use it as the base
+  // But still hash uniforms since same shader can have different uniform values
+  const uniformsStr = Object.entries(mat.uniforms)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${k}:${v.type}:${JSON.stringify(v.value)}`)
+    .join("|");
+
+  const props = [
+    mat.shaderName || "",
+    mat.vertex || "",
+    mat.fragment || "",
+    uniformsStr,
+  ].join("_");
+
+  return djb2Hash(props);
 }
 
 function generateMaterialKey(material: MaterialProps): string {
   if (isShaderMaterial(material)) {
-    // For shader materials, use the shader name as the key
-    return `mat_shader_${material.shaderName}`;
+    // For shader materials, hash the shader code AND uniforms
+    return `mat_shader_${hashShaderMaterial(material)}`;
   }
 
   if (isPhysicalMaterial(material)) {
@@ -95,15 +145,8 @@ function generateMaterialKey(material: MaterialProps): string {
     return `mat_physical_${hashPhysicalMaterial(material)}`;
   }
 
-  // Standard material key
-  const colorPart = material.color.replace("#", "").toLowerCase();
-  const metalPart = Math.round(material.metalness * 100)
-    .toString()
-    .padStart(2, "0");
-  const roughPart = Math.round(material.roughness * 100)
-    .toString()
-    .padStart(2, "0");
-  return `mat_${colorPart}_${metalPart}_${roughPart}`;
+  // Standard material key - use hash to include all properties
+  return `mat_${hashStandardMaterial(material)}`;
 }
 
 function convertToTSPMaterial(material: MaterialProps): TSPMaterial {

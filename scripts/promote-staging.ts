@@ -83,7 +83,14 @@ const StandardMaterialPropsSchema = z.object({
   color: HexColorSchema,
   metalness: z.number().min(0).max(1),
   roughness: z.number().min(0).max(1),
+  emissive: HexColorSchema.optional(),
+  emissiveIntensity: z.number().min(0).optional(),
+  opacity: z.number().min(0).max(1).optional(),
+  transparent: z.boolean().optional(),
+  side: TSPMaterialSideSchema.optional(),
 });
+
+const TSPBlendingSchema = z.enum(["normal", "additive", "subtractive", "multiply"]);
 
 const ShaderMaterialPropsSchema = z.object({
   type: z.literal("shader"),
@@ -95,6 +102,7 @@ const ShaderMaterialPropsSchema = z.object({
   side: TSPMaterialSideSchema.optional(),
   depthWrite: z.boolean().optional(),
   depthTest: z.boolean().optional(),
+  blending: TSPBlendingSchema.optional(),
 });
 
 const PhysicalMaterialPropsSchema = z.object({
@@ -102,6 +110,11 @@ const PhysicalMaterialPropsSchema = z.object({
   color: HexColorSchema,
   metalness: z.number().min(0).max(1),
   roughness: z.number().min(0).max(1),
+  emissive: HexColorSchema.optional(),
+  emissiveIntensity: z.number().min(0).optional(),
+  opacity: z.number().min(0).max(1).optional(),
+  transparent: z.boolean().optional(),
+  side: TSPMaterialSideSchema.optional(),
   clearcoat: z.number().min(0).max(1).optional(),
   clearcoatRoughness: z.number().min(0).max(1).optional(),
   sheen: z.number().min(0).max(1).optional(),
@@ -245,11 +258,87 @@ const SceneFileObjectSchema = z.object({
   rotation: Vector3Schema,
   scale: Vector3Schema,
   material: MaterialPropsSchema.optional(),
+  // Render properties
+  renderOrder: z.number().int().optional(),
+  frustumCulled: z.boolean().optional(),
+  // Box geometry
+  boxWidthSegments: z.number().int().min(1).optional(),
+  boxHeightSegments: z.number().int().min(1).optional(),
+  boxDepthSegments: z.number().int().min(1).optional(),
+  // Sphere geometry
+  sphereWidthSegments: z.number().int().min(3).optional(),
+  sphereHeightSegments: z.number().int().min(2).optional(),
+  spherePhiStart: z.number().min(0).optional(),
+  spherePhiLength: z.number().min(0).optional(),
+  sphereThetaStart: z.number().min(0).optional(),
+  sphereThetaLength: z.number().min(0).optional(),
+  // Cylinder geometry
+  cylinderRadiusTop: z.number().min(0).optional(),
+  cylinderRadiusBottom: z.number().min(0).optional(),
+  cylinderRadialSegments: z.number().int().min(3).optional(),
+  cylinderHeightSegments: z.number().int().min(1).optional(),
+  cylinderOpenEnded: z.boolean().optional(),
+  cylinderThetaStart: z.number().min(0).optional(),
+  cylinderThetaLength: z.number().min(0).optional(),
+  // Cone geometry
+  coneRadius: z.number().min(0).optional(),
+  coneRadialSegments: z.number().int().min(3).optional(),
+  coneHeightSegments: z.number().int().min(1).optional(),
+  coneOpenEnded: z.boolean().optional(),
+  coneThetaStart: z.number().min(0).optional(),
+  coneThetaLength: z.number().min(0).optional(),
+  // Torus geometry
+  torusRadius: z.number().min(0).optional(),
+  torusTube: z.number().min(0).optional(),
+  torusRadialSegments: z.number().int().min(3).optional(),
+  torusTubularSegments: z.number().int().min(3).optional(),
+  torusArc: z.number().min(0).optional(),
+  // Plane geometry
+  planeWidthSegments: z.number().int().min(1).optional(),
+  planeHeightSegments: z.number().int().min(1).optional(),
+  // Capsule geometry
+  capsuleRadius: z.number().min(0).optional(),
+  capsuleLength: z.number().min(0).optional(),
+  capsuleCapSegments: z.number().int().min(1).optional(),
+  capsuleRadialSegments: z.number().int().min(3).optional(),
+  // Circle geometry
+  circleRadius: z.number().min(0).optional(),
+  circleSegments: z.number().int().min(3).optional(),
+  circleThetaStart: z.number().min(0).optional(),
+  circleThetaLength: z.number().min(0).optional(),
+  // Ring geometry
+  ringInnerRadius: z.number().min(0).optional(),
+  ringOuterRadius: z.number().min(0).optional(),
+  ringThetaSegments: z.number().int().min(3).optional(),
+  ringPhiSegments: z.number().int().min(1).optional(),
+  ringThetaStart: z.number().min(0).optional(),
+  ringThetaLength: z.number().min(0).optional(),
+  // TorusKnot geometry
+  torusKnotRadius: z.number().min(0).optional(),
+  torusKnotTube: z.number().min(0).optional(),
+  torusKnotTubularSegments: z.number().int().min(3).optional(),
+  torusKnotRadialSegments: z.number().int().min(3).optional(),
+  torusKnotP: z.number().int().min(1).optional(),
+  torusKnotQ: z.number().int().min(1).optional(),
+  // Platonic solids
+  octaRadius: z.number().min(0).optional(),
+  octaDetail: z.number().int().min(0).optional(),
+  dodecaRadius: z.number().min(0).optional(),
+  dodecaDetail: z.number().int().min(0).optional(),
+  icosaRadius: z.number().min(0).optional(),
+  icosaDetail: z.number().int().min(0).optional(),
+  tetraRadius: z.number().min(0).optional(),
+  tetraDetail: z.number().int().min(0).optional(),
+  // Complex geometry data
   points: z.array(z.tuple([z.number(), z.number()])).optional(),
+  args: z.array(z.number()).optional(),
   shape: TSPShapePathSchema.optional(),
   extrudeOptions: TSPExtrudeOptionsSchema.optional(),
   path: TSPCurve3DSchema.optional(),
   tubeRadius: z.number().min(0).optional(),
+  tubeTubularSegments: z.number().int().min(1).optional(),
+  tubeRadialSegments: z.number().int().min(3).optional(),
+  tubeClosed: z.boolean().optional(),
   vertices: z.array(z.number()).optional(),
   indices: z.array(z.number()).optional(),
 });

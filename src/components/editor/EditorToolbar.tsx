@@ -94,6 +94,10 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
   );
   const showGrid = useSettingsStore((state) => state.showGrid);
   const toggleShowGrid = useSettingsStore((state) => state.toggleShowGrid);
+  const wireframe = useSettingsStore((state) => state.wireframe);
+  const toggleWireframe = useSettingsStore((state) => state.toggleWireframe);
+  const showFog = useSettingsStore((state) => state.showFog);
+  const toggleShowFog = useSettingsStore((state) => state.toggleShowFog);
   const addObject = useSceneStore((state) => state.addObject);
   const clearScene = useSceneStore((state) => state.clearScene);
   const serializeSceneAsTSP = useSceneStore(
@@ -325,6 +329,29 @@ export function EditorToolbar({ section }: EditorToolbarProps) {
             icon="mdi:grid"
             onClick={toggleShowGrid}
             aria-label={showGrid ? "Hide Grid" : "Show Grid"}
+          />
+        </Tooltip>
+        <Tooltip placement="bottom" title={showFog ? "Hide Fog" : "Show Fog"}>
+          <IconButton
+            variant={showFog ? "filled" : "outlined"}
+            size="sm"
+            icon="mdi:weather-fog"
+            onClick={toggleShowFog}
+            aria-label={showFog ? "Hide Fog" : "Show Fog"}
+          />
+        </Tooltip>
+        <Tooltip
+          placement="bottom"
+          title={wireframe ? "Solid Mode" : "Wireframe Mode"}
+        >
+          <IconButton
+            variant={wireframe ? "filled" : "outlined"}
+            size="sm"
+            icon="mdi:vector-triangle"
+            onClick={toggleWireframe}
+            aria-label={
+              wireframe ? "Switch to Solid Mode" : "Switch to Wireframe Mode"
+            }
           />
         </Tooltip>
         <Tooltip placement="bottom" title="Settings">

@@ -8,25 +8,25 @@ Test files to validate TSP format implementation. Each file tests specific spec 
 
 ### Simple Geometries (14 types)
 
-- [ ] `geo-box.tsp` - Box with default args + custom segments (boxWidthSegments, boxHeightSegments, boxDepthSegments)
-- [ ] `geo-sphere.tsp` - Sphere with partial params (phiStart, phiLength, thetaStart, thetaLength) - hemisphere, wedge
-- [ ] `geo-cylinder.tsp` - Cylinder variants: tapered, open-ended, partial theta, hexagonal prism
-- [ ] `geo-cone.tsp` - Cone variants: pyramid (radialSegments=4), open-ended, partial
-- [ ] `geo-torus.tsp` - Torus variants: C-shape (arc < 2π), thick blob, square tube
-- [ ] `geo-plane.tsp` - Plane with subdivisions
-- [ ] `geo-capsule.tsp` - Capsule with custom segments
-- [ ] `geo-circle.tsp` - Circle variants: hexagon, pac-man (partial theta)
-- [ ] `geo-ring.tsp` - Ring variants: arc segment, thin halo
-- [ ] `geo-platonic.tsp` - All 4 platonic solids: tetrahedron, octahedron, dodecahedron, icosahedron (with detail levels)
-- [ ] `geo-torusknot.tsp` - TorusKnot with various p/q values (2,3), (3,5), (2,5)
+- [x] `geo-box.tsp` - Box with default args + custom segments (boxWidthSegments, boxHeightSegments, boxDepthSegments)
+- [x] `geo-sphere.tsp` - Sphere with partial params (phiStart, phiLength, thetaStart, thetaLength) - hemisphere, wedge
+- [x] `geo-cylinder.tsp` - Cylinder variants: tapered, open-ended, partial theta, hexagonal prism
+- [x] `geo-cone.tsp` - Cone variants: pyramid (radialSegments=4), open-ended, partial
+- [x] `geo-torus.tsp` - Torus variants: C-shape (arc < 2π), thick blob, square tube
+- [x] `geo-plane.tsp` - Plane with subdivisions
+- [x] `geo-capsule.tsp` - Capsule with custom segments
+- [x] `geo-circle.tsp` - Circle variants: hexagon, pac-man (partial theta)
+- [x] `geo-ring.tsp` - Ring variants: arc segment, thin halo
+- [x] `geo-platonic.tsp` - All 4 platonic solids: tetrahedron, octahedron, dodecahedron, icosahedron (with detail levels)
+- [x] `geo-torusknot.tsp` - TorusKnot with various p/q values (2,3), (3,5), (2,5)
 
 ### Complex Geometries (5 types)
 
-- [ ] `geo-lathe.tsp` - Lathe with various profiles: vase, wine glass, chess piece
-- [ ] `geo-extrude.tsp` - Extrude with bevel options: heart, star, text-like shape
-- [ ] `geo-shape.tsp` - Flat 2D shapes: triangle, custom polygon, shape with holes
-- [ ] `geo-tube.tsp` - Tube along curves: catmullRom, cubicBezier, quadraticBezier, line
-- [ ] `geo-polyhedron.tsp` - Custom polyhedron with raw vertices/indices
+- [x] `geo-lathe.tsp` - Lathe with various profiles: vase, wine glass, chess piece
+- [x] `geo-extrude.tsp` - Extrude with bevel options: heart, star, text-like shape
+- [x] `geo-shape.tsp` - Flat 2D shapes: triangle, custom polygon, shape with holes
+- [x] `geo-tube.tsp` - Tube along curves: catmullRom, cubicBezier, quadraticBezier, line
+- [x] `geo-polyhedron.tsp` - Custom polyhedron with raw vertices/indices
 
 ---
 
@@ -34,30 +34,29 @@ Test files to validate TSP format implementation. Each file tests specific spec 
 
 ### Standard Material
 
-- [ ] `mat-standard-basic.tsp` - color, metalness, roughness only
-- [ ] `mat-standard-emissive.tsp` - emissive color + intensity
-- [ ] `mat-standard-transparent.tsp` - opacity, transparent flag
-- [ ] `mat-standard-sides.tsp` - front, back, double sided rendering
+- [x] `mat-standard-basic.tsp` - color, metalness, roughness only
+- [x] `mat-standard-emissive.tsp` - emissive color + intensity
+- [x] `mat-standard-transparent.tsp` - opacity, transparent flag
+- [x] `mat-standard-sides.tsp` - front, back, double sided rendering
 
 ### Physical Material
 
-- [ ] `mat-physical-clearcoat.tsp` - Car paint effect (clearcoat + clearcoatRoughness)
-- [ ] `mat-physical-sheen.tsp` - Velvet/fabric (sheen, sheenRoughness, sheenColor)
-- [ ] `mat-physical-transmission.tsp` - Glass (transmission, thickness, ior)
-- [ ] `mat-physical-attenuation.tsp` - Colored glass (attenuationColor, attenuationDistance)
-- [ ] `mat-physical-iridescence.tsp` - Soap bubble (iridescence, iridescenceIOR, iridescenceThicknessRange)
-- [ ] `mat-physical-anisotropy.tsp` - Brushed metal (anisotropy, anisotropyRotation)
-- [ ] `mat-physical-dispersion.tsp` - Prism effect (dispersion)
-- [ ] `mat-physical-specular.tsp` - Specular channel (specularIntensity, specularColor, reflectivity)
-- [ ] `mat-physical-combined.tsp` - Diamond: transmission + ior + dispersion
+- [x] `mat-physical-clearcoat.tsp` - Car paint effect (clearcoat + clearcoatRoughness)
+- [x] `mat-physical-sheen.tsp` - Velvet/fabric (sheen, sheenRoughness, sheenColor)
+- [x] `mat-physical-transmission.tsp` - Glass (transmission, thickness, ior)
+- [x] `mat-physical-attenuation.tsp` - Colored glass (attenuationColor, attenuationDistance)
+- [x] `mat-physical-iridescence.tsp` - Soap bubble (iridescence, iridescenceIOR, iridescenceThicknessRange)
+- [x] `mat-physical-anisotropy.tsp` - Brushed metal (anisotropy, anisotropyRotation)
+- [x] `mat-physical-dispersion.tsp` - Prism effect (dispersion)
+- [x] `mat-physical-specular.tsp` - Specular channel (specularIntensity, specularColor, reflectivity)
 
 ### Shader Material
 
-- [ ] `mat-shader-basic.tsp` - Simple color uniform
-- [ ] `mat-shader-animated.tsp` - Time-based animation (time uniform with animated: true)
-- [ ] `mat-shader-uniforms.tsp` - All uniform types: float, int, bool, color, vec2, vec3, vec4, mat3, mat4
-- [ ] `mat-shader-blending.tsp` - All blend modes: normal, additive, subtractive, multiply
-- [ ] `mat-shader-depth.tsp` - depthWrite, depthTest combinations
+- [x] `mat-shader-basic.tsp` - Simple color uniform
+- [x] `mat-shader-animated.tsp` - Time-based animation (time uniform with animated: true)
+- [x] `mat-shader-uniforms.tsp` - All uniform types: float, int, bool, color, vec2, vec3, vec4, mat3, mat4
+- [x] `mat-shader-blending.tsp` - All blend modes: normal, additive, subtractive, multiply
+- [x] `mat-shader-depth.tsp` - depthWrite, depthTest combinations
 
 ---
 
@@ -65,15 +64,15 @@ Test files to validate TSP format implementation. Each file tests specific spec 
 
 ### Basic Animations
 
-- [ ] `anim-position.tsp` - Position keyframes with linear interpolation
-- [ ] `anim-scale.tsp` - Scale keyframes with smooth interpolation
-- [ ] `anim-quaternion.tsp` - Rotation via quaternion (90°, 180°, 360° rotations)
-- [ ] `anim-visible.tsp` - Visibility toggle with discrete interpolation
+- [x] `anim-position.tsp` - Position keyframes with linear interpolation
+- [x] `anim-scale.tsp` - Scale keyframes with smooth interpolation
+- [x] `anim-quaternion.tsp` - Rotation via quaternion (90°, 180°, 360° rotations)
+- [x] `anim-visible.tsp` - Visibility toggle with discrete interpolation
 
 ### Interpolation Modes
 
-- [ ] `anim-interp-linear.tsp` - Linear interpolation (constant speed)
-- [ ] `anim-interp-smooth.tsp` - Smooth/spline interpolation (ease in/out)
+- [x] `anim-interp-linear.tsp` - Linear interpolation (constant speed)
+- [x] `anim-interp-smooth.tsp` - Smooth/spline interpolation (ease in/out)
 - [ ] `anim-interp-discrete.tsp` - Step interpolation (instant jumps)
 
 ### Complex Animations

@@ -56,6 +56,12 @@ export const PhysicalMaterialPropsSchema = z.object({
   color: HexColorSchema,
   metalness: z.number().min(0).max(1),
   roughness: z.number().min(0).max(1),
+  // Base properties (shared with standard)
+  emissive: HexColorSchema.optional(),
+  emissiveIntensity: z.number().min(0).optional(),
+  opacity: z.number().min(0).max(1).optional(),
+  transparent: z.boolean().optional(),
+  side: TSPMaterialSideSchema.optional(),
 
   // Clearcoat channel
   clearcoat: z.number().min(0).max(1).optional(),

@@ -1,38 +1,46 @@
 {
-  "version": "0.9.0",
   "metadata": {
-    "name": "scene",
-    "created": "2026-01-11T01:03:40.140Z",
-    "generator": "rehkuh"
+    "version": "1.0.0",
+    "prerelease": "rc.1",
+    "id": "d5a36ba8-66f0-4298-ab4e-8053d791921a",
+    "created": "2026-01-25T19:33:30.783Z",
+    "generator": "rehkuh",
+    "generatorVersion": "1.0.0",
+    "copyright": "Test 2026",
+    "author": "Ben Chapman",
+    "title": "geo-cone",
+    "description": "Cone geometry test: pyramid (radialSegments=4), open-ended, partial theta"
   },
   "materials": {
-    "mat_4488ff_30_50": {
-      "color": "#4488ff",
+    "mat_4a90d9_30_50": {
+      "color": "#4a90d9",
       "metalness": 0.3,
       "roughness": 0.5
     },
-    "mat_44ff88_30_50": {
-      "color": "#44ff88",
+    "mat_d94a4a_30_50": {
+      "color": "#d94a4a",
       "metalness": 0.3,
       "roughness": 0.5
     },
-    "mat_ff8844_30_50": {
-      "color": "#ff8844",
+    "mat_4ad94a_30_50": {
+      "color": "#4ad94a",
+      "metalness": 0.3,
+      "roughness": 0.5,
+      "side": "double"
+    },
+    "mat_d9d94a_30_50": {
+      "color": "#d9d94a",
+      "metalness": 0.3,
+      "roughness": 0.5,
+      "side": "double"
+    },
+    "mat_9b5de5_30_50": {
+      "color": "#9b5de5",
       "metalness": 0.3,
       "roughness": 0.5
     },
-    "mat_ffaa00_30_50": {
-      "color": "#ffaa00",
-      "metalness": 0.3,
-      "roughness": 0.5
-    },
-    "mat_ff44aa_30_50": {
-      "color": "#ff44aa",
-      "metalness": 0.3,
-      "roughness": 0.5
-    },
-    "mat_aa44ff_30_50": {
-      "color": "#aa44ff",
+    "mat_ff6b35_30_50": {
+      "color": "#ff6b35",
       "metalness": 0.3,
       "roughness": 0.5
     }
@@ -46,16 +54,16 @@
         32
       ]
     },
-    "cone_c2ce8b0a": {
+    "cone_fd572a1c": {
       "type": "cone",
       "args": [
         0.5,
         1,
         32
       ],
-      "coneRadius": 0.8
+      "coneRadialSegments": 4
     },
-    "cone_2ee9462a": {
+    "cone_58a5aec5": {
       "type": "cone",
       "args": [
         0.5,
@@ -64,39 +72,29 @@
       ],
       "coneOpenEnded": true
     },
-    "cone_6d96d210": {
+    "cone_d39ee57d": {
       "type": "cone",
       "args": [
         0.5,
         1,
         32
       ],
-      "coneThetaLength": 3.142
+      "coneThetaLength": 4.7124
     },
-    "cone_cd80390a": {
+    "cone_6ce20e77": {
       "type": "cone",
       "args": [
         0.5,
         1,
         32
       ],
-      "coneOpenEnded": true,
-      "coneThetaLength": 1.571
-    },
-    "cone_cd3da63f": {
-      "type": "cone",
-      "args": [
-        0.5,
-        1,
-        32
-      ],
-      "coneRadialSegments": 6
+      "coneRadialSegments": 3
     }
   },
   "objects": [
     {
-      "id": "9fa41a78-b9e1-4a18-be0e-9e3ba9f7cc33",
-      "name": "Full Cone",
+      "id": "eb20f9cb-f35f-430e-81b4-611bc7855bda",
+      "name": "cone_default",
       "type": "cone",
       "position": [
         -4,
@@ -116,11 +114,11 @@
       "parent": null,
       "visible": true,
       "geometry": "cone",
-      "material": "mat_4488ff_30_50"
+      "material": "mat_4a90d9_30_50"
     },
     {
-      "id": "c2ce8b0a-27e3-4678-8794-a9bef1ec666f",
-      "name": "Wide Cone",
+      "id": "fd572a1c-b1a9-4662-9216-c06c9a243505",
+      "name": "cone_pyramid",
       "type": "cone",
       "position": [
         -2,
@@ -139,12 +137,12 @@
       ],
       "parent": null,
       "visible": true,
-      "geometry": "cone_c2ce8b0a",
-      "material": "mat_44ff88_30_50"
+      "geometry": "cone_fd572a1c",
+      "material": "mat_d94a4a_30_50"
     },
     {
-      "id": "2ee9462a-3e18-4bc9-9745-bb4d4d9c3bda",
-      "name": "Hollow Cone",
+      "id": "58a5aec5-48a5-4595-ac9c-3fbd77418d1b",
+      "name": "cone_open",
       "type": "cone",
       "position": [
         0,
@@ -163,12 +161,12 @@
       ],
       "parent": null,
       "visible": true,
-      "geometry": "cone_2ee9462a",
-      "material": "mat_ff8844_30_50"
+      "geometry": "cone_58a5aec5",
+      "material": "mat_4ad94a_30_50"
     },
     {
-      "id": "6d96d210-324b-4982-a4c9-dc7bacc6e4cc",
-      "name": "Half Cone",
+      "id": "d39ee57d-e477-43b9-b4c7-3a53e7ad5869",
+      "name": "cone_partial",
       "type": "cone",
       "position": [
         2,
@@ -187,12 +185,12 @@
       ],
       "parent": null,
       "visible": true,
-      "geometry": "cone_6d96d210",
-      "material": "mat_ffaa00_30_50"
+      "geometry": "cone_d39ee57d",
+      "material": "mat_d9d94a_30_50"
     },
     {
-      "id": "cd80390a-dd5b-4d8c-80e6-2ecc97df10a7",
-      "name": "Quarter Cone",
+      "id": "6ce20e77-b6da-4795-92fa-73349549b99a",
+      "name": "cone_triprism",
       "type": "cone",
       "position": [
         4,
@@ -211,16 +209,16 @@
       ],
       "parent": null,
       "visible": true,
-      "geometry": "cone_cd80390a",
-      "material": "mat_ff44aa_30_50"
+      "geometry": "cone_6ce20e77",
+      "material": "mat_9b5de5_30_50"
     },
     {
-      "id": "cd3da63f-6811-41ef-b997-c2948a8f91e9",
-      "name": "Low Poly Cone",
+      "id": "da31d4f9-780a-48fe-8a67-d62b69e9a215",
+      "name": "cone_tall",
       "type": "cone",
       "position": [
-        6,
         0,
+        2.5,
         0
       ],
       "rotation": [
@@ -229,22 +227,22 @@
         0
       ],
       "scale": [
-        1,
-        1,
-        1
+        0.5,
+        2,
+        0.5
       ],
       "parent": null,
       "visible": true,
-      "geometry": "cone_cd3da63f",
-      "material": "mat_aa44ff_30_50"
+      "geometry": "cone",
+      "material": "mat_ff6b35_30_50"
     }
   ],
   "roots": [
-    "9fa41a78-b9e1-4a18-be0e-9e3ba9f7cc33",
-    "c2ce8b0a-27e3-4678-8794-a9bef1ec666f",
-    "2ee9462a-3e18-4bc9-9745-bb4d4d9c3bda",
-    "6d96d210-324b-4982-a4c9-dc7bacc6e4cc",
-    "cd80390a-dd5b-4d8c-80e6-2ecc97df10a7",
-    "cd3da63f-6811-41ef-b997-c2948a8f91e9"
+    "eb20f9cb-f35f-430e-81b4-611bc7855bda",
+    "fd572a1c-b1a9-4662-9216-c06c9a243505",
+    "58a5aec5-48a5-4595-ac9c-3fbd77418d1b",
+    "d39ee57d-e477-43b9-b4c7-3a53e7ad5869",
+    "6ce20e77-b6da-4795-92fa-73349549b99a",
+    "da31d4f9-780a-48fe-8a67-d62b69e9a215"
   ]
 }

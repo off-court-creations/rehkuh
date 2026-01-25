@@ -180,7 +180,7 @@ const defaultMaterial: MaterialProps = {
 function toMaterialProps(mat: MaterialProps | undefined): MaterialProps {
   if (!mat) return { ...defaultMaterial };
 
-  // Handle shader material
+  // Handle shader material - preserve all properties
   if (mat.type === "shader") {
     return mat;
   }
@@ -190,13 +190,9 @@ function toMaterialProps(mat: MaterialProps | undefined): MaterialProps {
     return mat;
   }
 
-  // Handle standard material - strip undefined type
-  const result: MaterialProps = {
-    color: mat.color,
-    metalness: mat.metalness,
-    roughness: mat.roughness,
-  };
-  return result;
+  // Handle standard material - preserve all properties including extended ones
+  // (emissive, emissiveIntensity, opacity, transparent, side)
+  return mat;
 }
 
 const HISTORY_LIMIT = 50;

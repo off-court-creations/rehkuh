@@ -301,6 +301,7 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
   const commitTransaction = useSceneStore((state) => state.commitTransaction);
   const setIsDragging = useSceneStore((state) => state.setIsDragging);
   const showGrid = useSettingsStore((state) => state.showGrid);
+  const showFog = useSettingsStore((state) => state.showFog);
 
   const rootObjects = objectList.filter((o) => o.parentId === null);
 
@@ -333,7 +334,7 @@ function Scene({ orbitEnabled, setOrbitEnabled, isDraggingRef }) {
   return (
     <>
       <color attach="background" args={["#1a1a2e"]} />
-      {showGrid && <fog attach="fog" args={["#1a1a2e", 20, 60]} />}
+      {showFog && <fog attach="fog" args={["#1a1a2e", 20, 60]} />}
 
       <Suspense fallback={null}>
         <Environment preset="apartment" />

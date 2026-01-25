@@ -8,6 +8,8 @@ interface SettingsState {
   description: string;
   previewMode: boolean;
   showGrid: boolean;
+  showFog: boolean;
+  wireframe: boolean;
   projectPath: string;
   setAuthor: (author: string) => void;
   setCopyright: (copyright: string) => void;
@@ -16,6 +18,8 @@ interface SettingsState {
   setPreviewMode: (previewMode: boolean) => void;
   togglePreviewMode: () => void;
   toggleShowGrid: () => void;
+  toggleShowFog: () => void;
+  toggleWireframe: () => void;
   setProjectPath: (path: string) => void;
 }
 
@@ -28,6 +32,8 @@ export const useSettingsStore = create<SettingsState>()(
       description: "",
       previewMode: false,
       showGrid: true,
+      showFog: true,
+      wireframe: false,
       projectPath: "",
       setAuthor: (author) => set({ author }),
       setCopyright: (copyright) => set({ copyright }),
@@ -37,6 +43,8 @@ export const useSettingsStore = create<SettingsState>()(
       togglePreviewMode: () =>
         set((state) => ({ previewMode: !state.previewMode })),
       toggleShowGrid: () => set((state) => ({ showGrid: !state.showGrid })),
+      toggleShowFog: () => set((state) => ({ showFog: !state.showFog })),
+      toggleWireframe: () => set((state) => ({ wireframe: !state.wireframe })),
       setProjectPath: (path) => set({ projectPath: path }),
     }),
     {
