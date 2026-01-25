@@ -1,381 +1,119 @@
 # JSON Scene Format Specification
 
-The JSON scene format is rehkuh's internal format for the staging workflow. This is the format used by `staging-scene.json` and `scene.json`.
+**Status:** Stable
+**Last Updated:** 2026-01-25
 
-Unlike TSP (the export format), the JSON scene format:
-- Uses a flat `objects` array (no `materials`, `geometries` sections)
-- References parents by **name** instead of UUID
-- Supports inline materials per object
-- Includes optional `title` and `description` metadata
-- Is designed for editing, not export
+---
 
-## File Structure
+## Abstract
+
+The JSON Scene Format is rehkuh's internal format for scene editing and staging. It provides a simplified structure optimized for human and AI editing, with flat object arrays and name-based references. This document defines the structure, semantics, and validation requirements.
+
+For the portable export format, see [TSP File Format Specification](./tsp-format.md).
+
+---
+
+## Table of Contents
+
+1. [Terminology](#1-terminology)
+2. [File Format Basics](#2-file-format-basics)
+3. [Document Structure](#3-document-structure)
+4. [Object Schema](#4-object-schema)
+5. [Geometry Types](#5-geometry-types)
+6. [Materials](#6-materials)
+7. [Animations](#7-animations)
+8. [Validation Rules](#8-validation-rules)
+9. [Differences from TSP](#9-differences-from-tsp)
+10. [References](#10-references)
+
+---
+
+## 1. Terminology
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119][rfc2119].
+
+### Definitions
+
+- **Scene file**: A file conforming to this specification (`scene.json` or `staging-scene.json`).
+- **Object**: A scene entity with transform properties.
+- **Root object**: An object with no parent.
+- **Staging file**: The editable scene file (`staging-scene.json`) used in the editing workflow.
+- **Live file**: The active scene file (`scene.json`) rendered in the viewport.
+
+---
+
+## 2. File Format Basics
+
+### 2.1 File Names
+
+| File | Purpose |
+|------|---------|
+| `scene/staging-scene.json` | Editable staging scene |
+| `scene/scene.json` | Live scene (viewport renders this) |
+| `scene/scene.backup.json` | Auto-backup before promotions |
+
+### 2.2 Character Encoding
+
+Scene files MUST be encoded in UTF-8 without a byte order mark (BOM).
+
+### 2.3 JSON Conformance
+
+Scene files MUST be valid JSON as defined by [RFC 8259][rfc8259].
+
+### 2.4 Numeric Precision
+
+Position values SHOULD be serialized with no more than 3 decimal digits. Consumers MUST accept any valid JSON number representation.
+
+---
+
+## 3. Document Structure
+
+A scene file MUST be a JSON object containing the following top-level members:
+
+| Member | Type | Required | Description |
+|--------|------|----------|-------------|
+| `objects` | array | REQUIRED | Array of scene objects |
+| `title` | string | OPTIONAL | Human-readable scene title |
+| `description` | string | OPTIONAL | Scene description |
+| `animations` | array | OPTIONAL | Array of animation clips |
+
+Consumers MUST ignore unrecognized top-level members.
+
+### 3.1 Example
 
 ```json
 {
   "title": "My Scene",
   "description": "A description of this scene",
-  "objects": [
-    {
-      "name": "uniqueName",
-      "type": "box",
-      "parent": "parentName",
-      "position": [0, 1, 0],
-      "rotation": [0, 0, 0],
-      "scale": [1, 1, 1],
-      "material": {
-        "color": "#ff0000",
-        "metalness": 0.5,
-        "roughness": 0.3
-      }
-    }
-  ]
+  "objects": [],
+  "animations": []
 }
 ```
 
-### Top-Level Fields
+---
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `objects` | array | Yes | Array of scene objects |
-| `title` | string | No | Human-readable scene title (included in TSP exports) |
-| `description` | string | No | Scene description (included in TSP exports) |
-| `animations` | array | No | Array of animation clips (see Animations section) |
+## 4. Object Schema
 
-## Object Schema
+### 4.1 Required Members
 
-### Required Fields
+| Member | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `name` | string | Non-empty, unique | Object identifier (used for parent references) |
+| `type` | string | Valid geometry type | Geometry type or `"group"` |
+| `position` | array | `[x, y, z]` | Local position |
+| `rotation` | array | `[x, y, z]` | Euler rotation in radians (XYZ order) |
+| `scale` | array | `[x, y, z]` | Scale multipliers |
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `name` | string | Unique identifier for the object (used for parent references) |
-| `type` | string | Geometry type (see Geometry Types below) |
-| `position` | [x, y, z] | World position as 3-number array |
-| `rotation` | [x, y, z] | Euler rotation in radians as 3-number array |
-| `scale` | [x, y, z] | Scale as 3-number array |
+### 4.2 Optional Members
 
-### Optional Fields
+| Member | Type | Default | Description |
+|--------|------|---------|-------------|
+| `parent` | string | `null` | Name of parent object |
+| `material` | object | — | Inline material definition |
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `parent` | string | Name of parent object (for hierarchy) |
-| `material` | object | Material definition (see Materials below) |
+### 4.3 Parent References
 
-## Geometry Types
-
-### Simple Geometries
-
-These use default unit dimensions and scale:
-
-| Type | Description | Default Args |
-|------|-------------|--------------|
-| `box` | Box/cube | 1x1x1 (optional subdivision via `boxWidthSegments`, `boxHeightSegments`, `boxDepthSegments`) |
-| `sphere` | Sphere | radius 0.5, 32x32 segments (optional params for segments and partial spheres) |
-| `cylinder` | Cylinder | radius 0.5, height 1, 32 segments |
-| `cone` | Cone | radius 0.5, height 1, 32 segments |
-| `torus` | Torus (donut) | radius 0.5, tube 0.2 |
-| `plane` | Flat plane | 1x1 |
-| `capsule` | Capsule | radius 0.5, length 1 |
-| `circle` | Flat circle | radius 0.5, 32 segments |
-| `ring` | Flat ring | inner 0.25, outer 0.5 |
-| `dodecahedron` | 12-sided | radius 0.5 |
-| `icosahedron` | 20-sided | radius 0.5 |
-| `octahedron` | 8-sided | radius 0.5 |
-| `tetrahedron` | 4-sided | radius 0.5 |
-| `torusKnot` | Knot shape | radius 0.5 |
-
-### Special Types
-
-| Type | Description |
-|------|-------------|
-| `group` | Container with no geometry (for hierarchy) |
-
-### Box Geometry Options
-
-Boxes support optional subdivision segments for smoother lighting and displacement:
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `boxWidthSegments` | number? | 1 | Segments along X axis |
-| `boxHeightSegments` | number? | 1 | Segments along Y axis |
-| `boxDepthSegments` | number? | 1 | Segments along Z axis |
-
-Example with subdivision:
-
-```json
-{
-  "name": "subdividedBox",
-  "type": "box",
-  "position": [0, 0.5, 0],
-  "rotation": [0, 0, 0],
-  "scale": [2, 1, 1],
-  "boxWidthSegments": 4,
-  "boxHeightSegments": 2,
-  "boxDepthSegments": 2,
-  "material": { "color": "#ff0000", "metalness": 0.5, "roughness": 0.5 }
-}
-```
-
-### Sphere Geometry Options
-
-Spheres support subdivision and partial sphere parameters:
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `sphereWidthSegments` | number? | 32 | Horizontal segments (min 3) |
-| `sphereHeightSegments` | number? | 32 | Vertical segments (min 2) |
-| `spherePhiStart` | number? | 0 | Horizontal start angle (radians) |
-| `spherePhiLength` | number? | 2π | Horizontal sweep angle (radians) |
-| `sphereThetaStart` | number? | 0 | Vertical start angle (radians) |
-| `sphereThetaLength` | number? | π | Vertical sweep angle (radians) |
-
-**Common recipes:**
-
-| Shape | Parameters |
-|-------|------------|
-| Dome (top half) | `sphereThetaLength: 1.571` |
-| Bowl (bottom half) | `sphereThetaStart: 1.571, sphereThetaLength: 1.571` |
-| Half sphere (vertical cut) | `spherePhiLength: 3.142` |
-| Quarter sphere | `spherePhiLength: 1.571, sphereThetaLength: 1.571` |
-| Low-poly sphere | `sphereWidthSegments: 8, sphereHeightSegments: 6` |
-
-Example dome:
-
-```json
-{
-  "name": "dome",
-  "type": "sphere",
-  "position": [0, 0, 0],
-  "rotation": [0, 0, 0],
-  "scale": [1, 1, 1],
-  "sphereThetaLength": 1.571,
-  "material": { "color": "#44ff88", "metalness": 0.3, "roughness": 0.5 }
-}
-```
-
-### Complex Geometries
-
-These require additional data fields:
-
-| Type | Required Fields | Description |
-|------|-----------------|-------------|
-| `lathe` | `points` | Revolved 2D profile |
-| `extrude` | `shape`, `extrudeOptions` | Extruded 2D shape |
-| `shape` | `shape` | Flat 2D shape |
-| `tube` | `path`, `tubeRadius`, `tubeTubularSegments`, `tubeRadialSegments`, `tubeClosed` | 3D tube along a curve |
-| `polyhedron` | `vertices`, `indices` | Custom mesh |
-
-## Materials
-
-Three material types are supported:
-
-### Standard Material (default)
-
-Basic PBR material:
-
-```json
-{
-  "color": "#4bd0d2",
-  "metalness": 0.2,
-  "roughness": 0.4
-}
-```
-
-| Field | Type | Range | Description |
-|-------|------|-------|-------------|
-| `type` | "standard"? | - | Optional, omit for backwards compat |
-| `color` | string | hex | Color in "#rrggbb" format |
-| `metalness` | number | 0-1 | Metal-like reflections |
-| `roughness` | number | 0-1 | Surface roughness |
-| `emissive` | string? | hex | Emissive color |
-| `emissiveIntensity` | number? | 0+ | Emissive brightness |
-| `opacity` | number? | 0-1 | Transparency |
-| `transparent` | boolean? | - | Enable transparency |
-| `side` | string? | - | "front", "back", or "double" |
-
-### Physical Material
-
-Advanced PBR with clearcoat, sheen, transmission, etc:
-
-```json
-{
-  "type": "physical",
-  "color": "#ffffff",
-  "metalness": 0.0,
-  "roughness": 0.1,
-  "transmission": 1.0,
-  "thickness": 0.5,
-  "ior": 1.5
-}
-```
-
-All standard fields plus:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `clearcoat` | number? | Clearcoat layer intensity (0-1) |
-| `clearcoatRoughness` | number? | Clearcoat roughness (0-1) |
-| `sheen` | number? | Sheen intensity (0-1) |
-| `sheenRoughness` | number? | Sheen roughness (0-1) |
-| `sheenColor` | string? | Sheen color (hex) |
-| `transmission` | number? | Glass-like transparency (0-1) |
-| `thickness` | number? | Refraction thickness |
-| `ior` | number? | Index of refraction (1-2.333) |
-| `iridescence` | number? | Rainbow effect (0-1) |
-| `anisotropy` | number? | Brushed metal effect (0-1) |
-| `dispersion` | number? | Prismatic dispersion (0+) |
-
-### Shader Material
-
-Custom GLSL shaders:
-
-```json
-{
-  "type": "shader",
-  "shaderName": "myShader",
-  "uniforms": {
-    "baseColor": { "type": "color", "value": "#00ffff" },
-    "time": { "type": "float", "value": 0, "animated": true }
-  }
-}
-```
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `type` | "shader" | Required discriminator |
-| `shaderName` | string? | Reference to external shader files |
-| `vertex` | string? | Inline vertex shader GLSL |
-| `fragment` | string? | Inline fragment shader GLSL |
-| `uniforms` | object | Uniform definitions (see below) |
-| `transparent` | boolean? | Enable transparency |
-| `side` | string? | "front", "back", or "double" |
-| `depthWrite` | boolean? | Write to depth buffer |
-| `depthTest` | boolean? | Test against depth buffer |
-
-**Using `shaderName` (recommended for staging):**
-
-When you use `shaderName`, the shader files are read from `shaders/staging/`:
-- `shaders/staging/{shaderName}.vert` - Vertex shader
-- `shaders/staging/{shaderName}.frag` - Fragment shader
-
-On promotion, these are copied to `shaders/` (production).
-
-**Uniform Types:**
-
-| Type | Value Format | Description |
-|------|--------------|-------------|
-| `float` | number | Single float |
-| `int` | number (integer) | Integer |
-| `bool` | boolean | Boolean |
-| `color` | string (#RRGGBB) | Hex color (converted to vec3) |
-| `vec2` | [x, y] | 2D vector |
-| `vec3` | [x, y, z] | 3D vector |
-| `vec4` | [x, y, z, w] | 4D vector |
-| `mat3` | array (9 numbers) | 3x3 matrix (column-major) |
-| `mat4` | array (16 numbers) | 4x4 matrix (column-major) |
-
-**Uniform Options:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `animated` | boolean? | Auto-update each frame (for `time`) |
-| `min` | number? | UI slider minimum (hint) |
-| `max` | number? | UI slider maximum (hint) |
-
-**Built-in Uniforms:**
-
-When present in shader code, these uniforms are automatically updated:
-- `time` (float, `animated: true`) - Elapsed time in seconds
-- `resolution` (vec2) - Viewport dimensions in pixels
-
-## Complex Geometry Data
-
-### Lathe Geometry
-
-```json
-{
-  "type": "lathe",
-  "points": [[0, 0], [0.5, 0.2], [0.3, 1.0], [0, 1.0]]
-}
-```
-
-`points` is an array of [x, y] coordinates defining the profile to revolve.
-
-### Extrude Geometry
-
-```json
-{
-  "type": "extrude",
-  "shape": {
-    "commands": [
-      { "op": "moveTo", "x": 0, "y": 0 },
-      { "op": "lineTo", "x": 1, "y": 0 },
-      { "op": "lineTo", "x": 0.5, "y": 1 },
-      { "op": "lineTo", "x": 0, "y": 0 }
-    ]
-  },
-  "extrudeOptions": {
-    "depth": 0.5,
-    "bevelEnabled": true,
-    "bevelThickness": 0.1
-  }
-}
-```
-
-### Shape Commands
-
-| Command | Fields | Description |
-|---------|--------|-------------|
-| `moveTo` | x, y | Move pen position |
-| `lineTo` | x, y | Line to point |
-| `bezierCurveTo` | cp1x, cp1y, cp2x, cp2y, x, y | Cubic bezier |
-| `quadraticCurveTo` | cpx, cpy, x, y | Quadratic bezier |
-| `arc` | x, y, radius, startAngle, endAngle, clockwise? | Arc |
-| `absarc` | x, y, radius, startAngle, endAngle, clockwise? | Absolute arc |
-| `ellipse` | x, y, xRadius, yRadius, startAngle, endAngle, clockwise?, rotation? | Ellipse |
-
-### Tube Geometry
-
-```json
-{
-  "type": "tube",
-  "path": {
-    "curveType": "catmullRom",
-    "points": [[0, 0, 0], [1, 1, 0], [2, 0, 0]],
-    "closed": false,
-    "tension": 0.5
-  },
-  "tubeRadius": 0.1,
-  "tubeTubularSegments": 64,
-  "tubeRadialSegments": 8,
-  "tubeClosed": false
-}
-```
-
-### Curve Types
-
-| Type | Fields | Description |
-|------|--------|-------------|
-| `catmullRom` | points, closed?, tension? | Smooth curve through points |
-| `cubicBezier` | v0, v1, v2, v3 | Cubic bezier in 3D |
-| `quadraticBezier` | v0, v1, v2 | Quadratic bezier in 3D |
-| `line` | v1, v2 | Straight line segment |
-
-### Polyhedron Geometry
-
-```json
-{
-  "type": "polyhedron",
-  "vertices": [0, 1, 0, 1, -1, 0, -1, -1, 0, 0, -1, 1],
-  "indices": [0, 1, 2, 0, 2, 3]
-}
-```
-
-`vertices` is a flat array of xyz coordinates. `indices` defines triangles.
-
-## Parent Hierarchy
-
-Objects reference parents by **name** (not UUID):
+Objects reference parents by **name** (not UUID). Child positions are relative to parent.
 
 ```json
 {
@@ -400,274 +138,242 @@ Objects reference parents by **name** (not UUID):
 }
 ```
 
-Child positions are relative to parent.
+---
 
-## Validation Rules
+## 5. Geometry Types
 
-1. All `name` values must be unique
-2. All `parent` references must point to existing object names
-3. `position`, `rotation`, `scale` must be 3-number arrays
-4. `color` must be hex format: `"#rrggbb"`
-5. `metalness`, `roughness` must be 0-1
-6. Shader materials with `shaderName` must have corresponding files in `shaders/staging/`
+### 5.1 Simple Geometries
 
-## Examples
+| Type | Description |
+|------|-------------|
+| `box` | Box/cube (1x1x1 default) |
+| `sphere` | Sphere (radius 0.5, 32x32 segments) |
+| `cylinder` | Cylinder (radius 0.5, height 1) |
+| `cone` | Cone (radius 0.5, height 1) |
+| `torus` | Torus (radius 0.5, tube 0.2) |
+| `plane` | Flat plane (1x1) |
+| `capsule` | Capsule (radius 0.5, length 1) |
+| `circle` | Flat circle (radius 0.5) |
+| `ring` | Flat ring (inner 0.25, outer 0.5) |
+| `dodecahedron` | 12-sided polyhedron |
+| `icosahedron` | 20-sided polyhedron |
+| `octahedron` | 8-sided polyhedron |
+| `tetrahedron` | 4-sided polyhedron |
+| `torusKnot` | Knot shape |
+| `group` | Container with no geometry |
 
-### Simple Object
+### 5.2 Geometry-Specific Options
 
-```json
-{
-  "objects": [
-    {
-      "name": "redCube",
-      "type": "box",
-      "position": [0, 0.5, 0],
-      "rotation": [0, 0.785, 0],
-      "scale": [1, 1, 1],
-      "material": {
-        "color": "#ff0000",
-        "metalness": 0.3,
-        "roughness": 0.7
-      }
-    }
-  ]
-}
-```
+#### Box
 
-### Hierarchy with Group
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `boxWidthSegments` | number | 1 | Segments along X axis |
+| `boxHeightSegments` | number | 1 | Segments along Y axis |
+| `boxDepthSegments` | number | 1 | Segments along Z axis |
 
-```json
-{
-  "title": "Table",
-  "objects": [
-    {
-      "name": "table",
-      "type": "group",
-      "position": [0, 0, 0],
-      "rotation": [0, 0, 0],
-      "scale": [1, 1, 1]
-    },
-    {
-      "name": "tabletop",
-      "type": "box",
-      "parent": "table",
-      "position": [0, 1, 0],
-      "rotation": [0, 0, 0],
-      "scale": [2, 0.1, 1],
-      "material": { "color": "#8b4513", "metalness": 0, "roughness": 0.9 }
-    },
-    {
-      "name": "leg1",
-      "type": "cylinder",
-      "parent": "table",
-      "position": [-0.9, 0.5, -0.4],
-      "rotation": [0, 0, 0],
-      "scale": [0.1, 1, 0.1],
-      "material": { "color": "#8b4513", "metalness": 0, "roughness": 0.9 }
-    }
-  ]
-}
-```
+#### Sphere
 
-### Glass Material
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `sphereWidthSegments` | number | 32 | Horizontal segments (min 3) |
+| `sphereHeightSegments` | number | 32 | Vertical segments (min 2) |
+| `spherePhiStart` | number | 0 | Horizontal start angle (radians) |
+| `spherePhiLength` | number | 2π | Horizontal sweep angle (radians) |
+| `sphereThetaStart` | number | 0 | Vertical start angle (radians) |
+| `sphereThetaLength` | number | π | Vertical sweep angle (radians) |
 
-```json
-{
-  "name": "glassOrb",
-  "type": "sphere",
-  "position": [0, 1, 0],
-  "rotation": [0, 0, 0],
-  "scale": [1, 1, 1],
-  "material": {
-    "type": "physical",
-    "color": "#ffffff",
-    "metalness": 0,
-    "roughness": 0,
-    "transmission": 1.0,
-    "thickness": 0.5,
-    "ior": 1.5
-  }
-}
-```
+### 5.3 Complex Geometries
 
-### Shader Material with External Files
+| Type | Required Fields | Description |
+|------|-----------------|-------------|
+| `lathe` | `points` | Revolved 2D profile |
+| `extrude` | `shape`, `extrudeOptions` | Extruded 2D shape |
+| `shape` | `shape` | Flat 2D shape |
+| `tube` | `path`, `tubeRadius`, `tubeTubularSegments`, `tubeRadialSegments`, `tubeClosed` | 3D tube along curve |
+| `polyhedron` | `vertices`, `indices` | Custom mesh |
 
-```json
-{
-  "name": "glowingSphere",
-  "type": "sphere",
-  "position": [0, 1, 0],
-  "rotation": [0, 0, 0],
-  "scale": [1, 1, 1],
-  "material": {
-    "type": "shader",
-    "shaderName": "glow",
-    "uniforms": {
-      "baseColor": { "type": "color", "value": "#00ffff" },
-      "time": { "type": "float", "value": 0, "animated": true }
-    }
-  }
-}
-```
+For full geometry specifications, see [TSP Format: Geometries](./tsp-format.md#7-geometries-object).
 
-Requires `shaders/staging/glow.vert` and `shaders/staging/glow.frag` to exist.
+---
 
-### Shader Material with Inline GLSL
+## 6. Materials
 
-```json
-{
-  "name": "proceduralBox",
-  "type": "box",
-  "position": [0, 0.5, 0],
-  "rotation": [0, 0, 0],
-  "scale": [1, 1, 1],
-  "material": {
-    "type": "shader",
-    "vertex": "varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
-    "fragment": "uniform vec3 baseColor; varying vec2 vUv; void main() { gl_FragColor = vec4(baseColor * vUv.x, 1.0); }",
-    "uniforms": {
-      "baseColor": { "type": "color", "value": "#ff00ff" }
-    }
-  }
-}
-```
+### 6.1 Material Type Discrimination
 
-## Animations
+Materials are distinguished by the `type` member:
 
-Animation clips define keyframe animations for scene objects. Animations target objects by **name** (not UUID), consistent with parent references in the JSON scene format.
+| `type` Value | Material Type |
+|--------------|---------------|
+| `undefined` or `"standard"` | Standard Material |
+| `"physical"` | Physical Material |
+| `"shader"` | Shader Material |
 
-**Important:** The viewport plays **one animation clip at a time**. To animate multiple objects simultaneously, use multiple tracks within a single clip rather than creating separate clips. Only create separate clips when they should be played independently (e.g., user-selectable animations).
+### 6.2 Standard Material
 
-### Animation Clip Schema
+| Member | Type | Required | Constraints | Description |
+|--------|------|----------|-------------|-------------|
+| `color` | string | REQUIRED | `#RRGGBB` | Base color |
+| `metalness` | number | REQUIRED | 0.0 to 1.0 | Metallic factor |
+| `roughness` | number | REQUIRED | 0.0 to 1.0 | Roughness factor |
+| `emissive` | string | OPTIONAL | `#RRGGBB` | Emissive color |
+| `emissiveIntensity` | number | OPTIONAL | >= 0 | Emissive brightness |
+| `opacity` | number | OPTIONAL | 0.0 to 1.0 | Transparency |
+| `transparent` | boolean | OPTIONAL | — | Enable transparency |
+| `side` | string | OPTIONAL | `"front"`, `"back"`, `"double"` | Render side |
 
-```json
-{
-  "animations": [
-    {
-      "name": "bounce",
-      "duration": 2.0,
-      "tracks": [...]
-    }
-  ]
-}
-```
+### 6.3 Physical Material
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | string | Yes | Unique name for this animation clip |
-| `duration` | number | No | Clip duration in seconds (defaults to max track time) |
-| `tracks` | array | Yes | Array of animation tracks |
+Extends Standard Material with advanced PBR properties.
 
-### Animation Track Schema
+| Member | Type | Description |
+|--------|------|-------------|
+| `clearcoat` | number | Clearcoat layer intensity (0-1) |
+| `clearcoatRoughness` | number | Clearcoat roughness (0-1) |
+| `sheen` | number | Sheen intensity (0-1) |
+| `sheenRoughness` | number | Sheen roughness (0-1) |
+| `sheenColor` | string | Sheen color (hex) |
+| `transmission` | number | Glass-like transparency (0-1) |
+| `thickness` | number | Refraction thickness |
+| `ior` | number | Index of refraction (1-2.333) |
+| `iridescence` | number | Rainbow effect (0-1) |
+| `anisotropy` | number | Brushed metal effect (0-1) |
+| `dispersion` | number | Prismatic dispersion (0+) |
 
-```json
-{
-  "target": "myCube",
-  "path": "position",
-  "interpolation": "smooth",
-  "times": [0, 0.5, 1.0],
-  "values": [0, 0, 0, 0, 1, 0, 0, 0, 0]
-}
-```
+For full physical material specification, see [TSP Format: Physical Material](./tsp-format.md#64-physical-material).
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `target` | string | Yes | Object name to animate (must exist in objects array) |
-| `path` | string | Yes | Property to animate: `"position"`, `"scale"`, `"quaternion"`, `"visible"` |
-| `interpolation` | string | Yes | Interpolation mode: `"linear"`, `"smooth"`, `"discrete"` |
-| `times` | number[] | Yes | Keyframe times in seconds (must be strictly increasing) |
-| `values` | array | Yes | Keyframe values (flat array, see below) |
+### 6.4 Shader Material
 
-### Path Types and Value Formats
+| Member | Type | Required | Description |
+|--------|------|----------|-------------|
+| `type` | `"shader"` | REQUIRED | Type discriminator |
+| `shaderName` | string | CONDITIONAL | Reference to external shader files |
+| `vertex` | string | CONDITIONAL | Inline vertex shader GLSL |
+| `fragment` | string | CONDITIONAL | Inline fragment shader GLSL |
+| `uniforms` | object | REQUIRED | Uniform definitions |
 
-| Path | Components | Value Format | Example |
-|------|------------|--------------|---------|
-| `position` | 3 (vec3) | `[x, y, z, x, y, z, ...]` | `[0, 0, 0, 0, 1, 0]` for 2 keyframes |
-| `scale` | 3 (vec3) | `[x, y, z, x, y, z, ...]` | `[1, 1, 1, 2, 2, 2]` for 2 keyframes |
-| `quaternion` | 4 (quat) | `[x, y, z, w, x, y, z, w, ...]` | `[0, 0, 0, 1, 0, 0.707, 0, 0.707]` |
-| `visible` | 1 (bool) | `[true, false, ...]` | `[true, false, true]` for 3 keyframes |
+Either `shaderName` OR both `vertex` and `fragment` MUST be provided.
 
-**Note:** `values.length` must equal `times.length * components`.
+#### External Shaders
 
-### Interpolation Modes
+When using `shaderName`, shader files are read from:
+- `shaders/staging/{shaderName}.vert` (staging)
+- `shaders/staging/{shaderName}.frag` (staging)
 
-| Mode | Three.js Equivalent | Description |
-|------|---------------------|-------------|
-| `linear` | `InterpolateLinear` | Linear interpolation between keyframes |
-| `smooth` | `InterpolateSmooth` | Smooth/spline interpolation |
-| `discrete` | `InterpolateDiscrete` | Step/hold (instant jumps) |
+On promotion, files are copied to `shaders/` (production).
 
-### Example: Bouncing Cube
+#### Uniform Types
 
-```json
-{
-  "title": "Bouncing Cube",
-  "objects": [
-    {
-      "name": "cube",
-      "type": "box",
-      "position": [0, 0.5, 0],
-      "rotation": [0, 0, 0],
-      "scale": [1, 1, 1],
-      "material": { "color": "#ff0000", "metalness": 0.5, "roughness": 0.5 }
-    }
-  ],
-  "animations": [
-    {
-      "name": "bounce",
-      "tracks": [
-        {
-          "target": "cube",
-          "path": "position",
-          "interpolation": "smooth",
-          "times": [0, 0.5, 1.0],
-          "values": [0, 0.5, 0, 0, 2, 0, 0, 0.5, 0]
-        }
-      ]
-    }
-  ]
-}
-```
+| Type | JSON Value | GLSL Type |
+|------|------------|-----------|
+| `float` | number | `float` |
+| `int` | integer | `int` |
+| `bool` | boolean | `bool` |
+| `color` | `#RRGGBB` | `vec3` |
+| `vec2` | `[x, y]` | `vec2` |
+| `vec3` | `[x, y, z]` | `vec3` |
+| `vec4` | `[x, y, z, w]` | `vec4` |
+| `mat3` | array (9) | `mat3` |
+| `mat4` | array (16) | `mat4` |
 
-### Example: Rotating with Quaternion
+For full shader material specification, see [TSP Format: Shader Material](./tsp-format.md#65-shader-material).
 
-```json
-{
-  "name": "spin",
-  "tracks": [
-    {
-      "target": "cube",
-      "path": "quaternion",
-      "interpolation": "linear",
-      "times": [0, 1, 2],
-      "values": [
-        0, 0, 0, 1,
-        0, 0.707, 0, 0.707,
-        0, 1, 0, 0
-      ]
-    }
-  ]
-}
-```
+---
 
-### Validation Rules
+## 7. Animations
 
-1. All `target` values must reference existing object names
-2. `times` must be strictly increasing
-3. `values.length` must equal `times.length * components`
-4. Quaternion values SHOULD be normalized (the loader will normalize them)
+Animation clips define keyframe animations. Animations target objects by **name** (not UUID).
 
-## Differences from TSP Format
+### 7.1 Animation Clip Schema
+
+| Member | Type | Required | Description |
+|--------|------|----------|-------------|
+| `name` | string | REQUIRED | Unique clip name |
+| `duration` | number | OPTIONAL | Duration in seconds |
+| `tracks` | array | REQUIRED | Array of animation tracks |
+
+### 7.2 Animation Track Schema
+
+| Member | Type | Required | Description |
+|--------|------|----------|-------------|
+| `target` | string | REQUIRED | Object name to animate |
+| `path` | string | REQUIRED | Property: `"position"`, `"scale"`, `"quaternion"`, `"visible"` |
+| `interpolation` | string | REQUIRED | `"linear"`, `"smooth"`, `"discrete"` |
+| `times` | array | REQUIRED | Keyframe times in seconds |
+| `values` | array | REQUIRED | Keyframe values (flat array) |
+
+### 7.3 Value Formats
+
+| Path | Components | Format |
+|------|------------|--------|
+| `position` | 3 | `[x, y, z, ...]` |
+| `scale` | 3 | `[x, y, z, ...]` |
+| `quaternion` | 4 | `[x, y, z, w, ...]` |
+| `visible` | 1 | `[true/false, ...]` |
+
+`values.length` MUST equal `times.length * components`.
+
+For full animation specification, see [TSP Format: Animations](./tsp-format.md#10-animations-object).
+
+---
+
+## 8. Validation Rules
+
+### 8.1 Required Validations
+
+1. All `name` values MUST be unique within the objects array.
+2. All `parent` references MUST point to existing object names.
+3. The parent-child graph MUST NOT contain cycles.
+4. `position`, `rotation`, `scale` MUST be 3-number arrays.
+5. `color` MUST be hex format: `#RRGGBB`.
+6. `metalness`, `roughness` MUST be in range 0-1.
+7. Shader materials with `shaderName` MUST have corresponding files in `shaders/staging/`.
+8. Animation `target` values MUST reference existing object names.
+9. Animation `times` MUST be strictly increasing.
+10. Animation `values.length` MUST equal `times.length * components`.
+
+### 8.2 Error Handling
+
+Validation failures SHOULD report:
+- The JSON path to the invalid value
+- The expected constraint
+- The actual value
+
+---
+
+## 9. Differences from TSP
 
 | Aspect | JSON Scene | TSP |
 |--------|-----------|-----|
 | Purpose | Editing/staging | Export/import |
-| Structure | Flat array | Nested sections |
+| Structure | Flat `objects` array | Nested sections with dictionaries |
 | Parent refs | By name | By UUID |
 | Materials | Inline per object | Deduplicated dictionary |
-| Geometries | Implicit | Deduplicated dictionary |
+| Geometries | Implicit from type | Deduplicated dictionary |
 | Shaders | External or inline | Always inline |
-| Metadata | None | version, created, generator |
+| Object IDs | Not required | Required (UUID v4) |
+| Metadata | `title`, `description` only | Full metadata object |
 | Animations | Target by name | Target by UUID |
 
-The JSON scene format is simpler for editing. TSP is more portable for sharing/loading.
+The JSON scene format is optimized for editing simplicity. TSP is optimized for portability and deduplication.
+
+---
+
+## 10. References
+
+### Normative References
+
+- **[RFC 2119]** Bradner, S., "Key words for use in RFCs to Indicate Requirement Levels". https://www.rfc-editor.org/rfc/rfc2119
+
+- **[RFC 8259]** Bray, T., "The JavaScript Object Notation (JSON) Data Interchange Format". https://www.rfc-editor.org/rfc/rfc8259
+
+### Related Documents
+
+- **[TSP File Format Specification](./tsp-format.md)** - The portable export format with full geometry and material specifications.
+
+- **[AI Scene Editing Guide](./ai-scene-editing.md)** - Practical guide for editing scenes, including workflows, recipes, and best practices.
+
+---
+
+[rfc2119]: https://www.rfc-editor.org/rfc/rfc2119
+[rfc8259]: https://www.rfc-editor.org/rfc/rfc8259
