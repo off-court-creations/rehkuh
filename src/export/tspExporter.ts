@@ -123,6 +123,7 @@ function convertToTSPMaterial(material: MaterialProps): TSPMaterial {
     if (material.depthWrite !== undefined)
       tspMat.depthWrite = material.depthWrite;
     if (material.depthTest !== undefined) tspMat.depthTest = material.depthTest;
+    if (material.blending !== undefined) tspMat.blending = material.blending;
 
     return tspMat;
   }
@@ -695,11 +696,13 @@ export function exportToTSP(
     .map((obj) => obj.id);
 
   const metadata: TSPFile["metadata"] = {
-    version: "0.10.0",
+    version: "1.0.0",
+    prerelease: "rc.1",
     id: crypto.randomUUID(),
     created: new Date().toISOString(),
     generator: "rehkuh",
-    generatorVersion: "0.1.0",
+    generatorVersion: "1.0.0",
+    copyright: `Off Court Creations ${new Date().getFullYear()}`,
   };
 
   if (options.prerelease) {
@@ -709,7 +712,7 @@ export function exportToTSP(
     metadata.author = options.author;
   }
   if (options.copyright) {
-    metadata.copyright = options.copyright;
+    metadata.copyright = `${options.copyright} ${new Date().getFullYear()}`;
   }
   if (options.title) {
     metadata.title = options.title;

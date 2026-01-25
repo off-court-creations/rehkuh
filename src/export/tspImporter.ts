@@ -76,6 +76,7 @@ function convertTSPMaterial(
     if (tspMat.depthWrite !== undefined)
       shaderMat.depthWrite = tspMat.depthWrite;
     if (tspMat.depthTest !== undefined) shaderMat.depthTest = tspMat.depthTest;
+    if (tspMat.blending !== undefined) shaderMat.blending = tspMat.blending;
 
     return shaderMat;
   }

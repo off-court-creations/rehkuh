@@ -116,6 +116,9 @@ export interface PhysicalMaterialProps {
   flatShading?: boolean;
 }
 
+// Shader blending modes (maps to THREE.*Blending constants)
+export type ShaderBlending = "normal" | "additive" | "subtractive" | "multiply";
+
 // Uniform types for shader materials
 export type ShaderUniformType =
   | "float"
@@ -148,6 +151,7 @@ export interface ShaderMaterialProps {
   side?: "front" | "back" | "double";
   depthWrite?: boolean;
   depthTest?: boolean;
+  blending?: ShaderBlending;
 }
 
 // Union type for all materials
@@ -306,6 +310,7 @@ export interface TSPShaderMaterial {
   side?: TSPMaterialSide;
   depthWrite?: boolean;
   depthTest?: boolean;
+  blending?: ShaderBlending;
 }
 
 // Physical PBR material for TSP (MeshPhysicalMaterial)

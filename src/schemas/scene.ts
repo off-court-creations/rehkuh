@@ -5,6 +5,7 @@ import {
   TSPExtrudeOptionsSchema,
   TSPUniformSchema,
   TSPMaterialSideSchema,
+  TSPBlendingSchema,
 } from "./tsp";
 import {
   HexColorSchema,
@@ -46,6 +47,7 @@ export const ShaderMaterialPropsSchema = z.object({
   side: TSPMaterialSideSchema.optional(),
   depthWrite: z.boolean().optional(),
   depthTest: z.boolean().optional(),
+  blending: TSPBlendingSchema.optional(),
 });
 
 // Physical material schema for scene files (MeshPhysicalMaterial)

@@ -9,6 +9,14 @@ import {
 
 export const TSPMaterialSideSchema = z.enum(["front", "back", "double"]);
 
+// Shader blending modes (maps to THREE.*Blending constants)
+export const TSPBlendingSchema = z.enum([
+  "normal",
+  "additive",
+  "subtractive",
+  "multiply",
+]);
+
 // Shader uniform types
 export const TSPUniformTypeSchema = z.enum([
   "float",
@@ -96,6 +104,7 @@ export const TSPShaderMaterialSchema = z
     side: TSPMaterialSideSchema.optional(),
     depthWrite: z.boolean().optional(),
     depthTest: z.boolean().optional(),
+    blending: TSPBlendingSchema.optional(),
   })
   .passthrough(); // Preserve unknown fields for forward compatibility
 

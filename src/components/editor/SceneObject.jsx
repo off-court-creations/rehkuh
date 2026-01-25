@@ -308,6 +308,14 @@ const sideMap = {
   double: THREE.DoubleSide,
 };
 
+// Blending map for shader materials
+const blendingMap = {
+  normal: THREE.NormalBlending,
+  additive: THREE.AdditiveBlending,
+  subtractive: THREE.SubtractiveBlending,
+  multiply: THREE.MultiplyBlending,
+};
+
 // Parse uniform value based on type
 function parseUniformValue(type, value) {
   switch (type) {
@@ -401,6 +409,7 @@ export function SceneObject({ id }) {
           side: sideMap[mat.side] ?? THREE.FrontSide,
           depthWrite: mat.depthWrite ?? true,
           depthTest: mat.depthTest ?? true,
+          blending: blendingMap[mat.blending] ?? THREE.NormalBlending,
         });
       } catch (e) {
         console.error("Shader compilation failed:", e);
