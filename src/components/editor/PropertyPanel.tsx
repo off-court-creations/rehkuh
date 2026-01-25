@@ -44,7 +44,7 @@ const DEFAULT_SHADER_MATERIAL: ShaderMaterialProps = {
     time: { type: "float", value: 0, animated: true },
   },
   transparent: false,
-  side: "double",
+  side: "front",
 };
 
 export function PropertyPanel() {

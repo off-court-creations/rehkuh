@@ -239,7 +239,7 @@ export function StandardMaterialSection({
         </Typography>
         <Select
           size="xs"
-          value={material.side ?? "double"}
+          value={material.side ?? "front"}
           onValueChange={(value) =>
             updateStandardProp("side", value as "front" | "back" | "double")
           }

@@ -21,7 +21,6 @@ Before creating any scene content, read these files:
 1. **`docs/ai-scene-editing.md`** - How to edit scenes (staging workflow, API reference, examples)
 2. **`docs/json-scene-format.md`** - Complete JSON scene format specification (geometry types, materials, properties)
 3. **`docs/tsp-format.md`** - TSP export format (for understanding exports, not for editing)
-4. **`public/tsp/animatedHeart.tsp`** - Example of shader materials and complex geometry
 
 #### The Staging Workflow
 

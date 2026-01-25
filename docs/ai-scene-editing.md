@@ -173,8 +173,6 @@ curl http://localhost:5173/__scene
 
 For full format details, see `docs/tsp-format.md`.
 
-For shader material examples, see `public/tsp/animatedHeart.tsp`.
-
 ## External Shader Files
 
 For shader materials, you can write vertex and fragment shaders as separate files instead of inlining them in JSON. This makes shaders easier to write and maintain.

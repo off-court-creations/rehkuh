@@ -394,7 +394,7 @@ export function SceneObject({ id }) {
           fragmentShader: mat.fragment || "",
           uniforms,
           transparent: mat.transparent ?? false,
-          side: sideMap[mat.side] ?? THREE.DoubleSide,
+          side: sideMap[mat.side] ?? THREE.FrontSide,
           depthWrite: mat.depthWrite ?? true,
           depthTest: mat.depthTest ?? true,
         });
@@ -410,7 +410,7 @@ export function SceneObject({ id }) {
         color: mat.color ?? "#4bd0d2",
         metalness: mat.metalness ?? 0.2,
         roughness: mat.roughness ?? 0.4,
-        side: THREE.DoubleSide,
+        side: mat?.side ? sideMap[mat.side] : THREE.FrontSide,
 
         // Clearcoat channel
         clearcoat: mat.clearcoat ?? 0,
@@ -470,7 +470,7 @@ export function SceneObject({ id }) {
       emissiveIntensity: mat?.emissiveIntensity ?? 0,
       opacity: mat?.opacity ?? 1,
       transparent: mat?.transparent ?? false,
-      side: mat?.side ? sideMap[mat.side] : THREE.DoubleSide,
+      side: mat?.side ? sideMap[mat.side] : THREE.FrontSide,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only recreate material when material props change
   }, [obj?.material]);
@@ -616,14 +616,20 @@ export function SceneObject({ id }) {
         );
 
       // Complex geometries
-      case "lathe":
+      case "lathe": {
         if (!obj.points) return new THREE.BoxGeometry(1, 1, 1);
+        // args: [segments, phiStart, phiLength] with defaults [32, 0, 2π]
+        const latheArgs = obj.args ?? [];
+        const latheSegments = latheArgs[0] ?? 32;
+        const lathePhiStart = latheArgs[1] ?? 0;
+        const lathePhiLength = latheArgs[2] ?? Math.PI * 2;
         return new THREE.LatheGeometry(
           obj.points.map(([x, y]) => new THREE.Vector2(x, y)),
-          12,
-          0,
-          Math.PI * 2,
+          latheSegments,
+          lathePhiStart,
+          lathePhiLength,
         );
+      }
 
       case "shape":
         if (!obj.shape) return new THREE.BoxGeometry(1, 1, 1);
@@ -654,10 +660,20 @@ export function SceneObject({ id }) {
           tubeClosed,
         );
 
-      case "polyhedron":
+      case "polyhedron": {
         if (!obj.vertices || !obj.indices)
           return new THREE.BoxGeometry(1, 1, 1);
-        return new THREE.PolyhedronGeometry(obj.vertices, obj.indices, 1, 0);
+        // args: [radius, detail] with defaults [1, 0]
+        const polyArgs = obj.args ?? [];
+        const polyRadius = polyArgs[0] ?? 1;
+        const polyDetail = polyArgs[1] ?? 0;
+        return new THREE.PolyhedronGeometry(
+          obj.vertices,
+          obj.indices,
+          polyRadius,
+          polyDetail,
+        );
+      }
 
       default:
         return null;
@@ -665,6 +681,7 @@ export function SceneObject({ id }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only recreate geometry when geometry-related props change
   }, [
     obj?.type,
+    obj?.args, // For lathe segments/phi and polyhedron radius/detail
     obj?.boxWidthSegments,
     obj?.boxHeightSegments,
     obj?.boxDepthSegments,

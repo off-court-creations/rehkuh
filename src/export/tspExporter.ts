@@ -119,7 +119,7 @@ function convertToTSPMaterial(material: MaterialProps): TSPMaterial {
 
     if (material.transparent !== undefined)
       tspMat.transparent = material.transparent;
-    if (material.side) tspMat.side = material.side;
+    if (material.side !== undefined) tspMat.side = material.side;
     if (material.depthWrite !== undefined)
       tspMat.depthWrite = material.depthWrite;
     if (material.depthTest !== undefined) tspMat.depthTest = material.depthTest;
@@ -215,6 +215,7 @@ function convertToTSPMaterial(material: MaterialProps): TSPMaterial {
 }
 
 export interface ExportOptions {
+  prerelease?: string; // e.g., "rc.1", "beta.2"
   author?: string;
   copyright?: string;
   title?: string;
@@ -701,6 +702,9 @@ export function exportToTSP(
     generatorVersion: "0.1.0",
   };
 
+  if (options.prerelease) {
+    metadata.prerelease = options.prerelease;
+  }
   if (options.author) {
     metadata.author = options.author;
   }

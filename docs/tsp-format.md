@@ -139,6 +139,7 @@ The `metadata` object provides identification and attribution information.
 
 | Member | Type | Default | Description |
 |--------|------|---------|-------------|
+| `prerelease` | string | `null` | Prerelease tag (e.g., `"rc.1"`, `"beta.2"`). Indicates a non-stable spec version |
 | `author` | string | `null` | Author or creator name |
 | `copyright` | string | `null` | Copyright notice or license identifier (e.g., "CC BY 4.0") |
 | `title` | string | `null` | Human-readable title for the scene |
@@ -1039,7 +1040,7 @@ For mesh objects (type is not `"group"`):
 
 | Member | Type | Default | Description |
 |--------|------|---------|-------------|
-| `castShadow` | boolean | `true` | Mesh casts shadows |
+| `castShadow` | boolean | `false` | Mesh casts shadows |
 | `receiveShadow` | boolean | `true` | Mesh receives shadows |
 | `userData` | object | `{}` | Arbitrary custom data |
 | `renderOrder` | number | `0` | Explicit render ordering |
@@ -1171,12 +1172,12 @@ Consumers MUST treat animation keys as opaque identifiers.
 To enable Three.js's `PropertyBinding` system to target objects, consumers SHOULD assign deterministic names derived from TSP object IDs:
 
 ```javascript
-// Recommended naming pattern
-object.name = "tsp:" + tspObject.id;
+// Recommended naming pattern (underscore, not colon - PropertyBinding requires \w chars)
+object.name = "tsp_" + tspObject.id;
 
 // Track name pattern for PropertyBinding
 trackName = object.name + "." + path;
-// e.g., "tsp:550e8400-e29b-41d4-a716-446655440001.position"
+// e.g., "tsp_550e8400-e29b-41d4-a716-446655440001.position"
 ```
 
 ### 10.8 Example

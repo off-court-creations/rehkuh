@@ -571,11 +571,12 @@ export interface TSPObject {
 }
 
 export interface TSPMetadata {
-  version: string; // TSP format version
+  version: string; // TSP format version (semver X.Y.Z)
   id: string; // UUID v4 - users can use this how they please
   created: string; // ISO 8601 timestamp
   generator: string;
   generatorVersion: string; // semver of the generator (e.g. rehkuh version)
+  prerelease?: string; // e.g., "rc.1", "beta.2"
   author?: string;
   copyright?: string;
   title?: string;
