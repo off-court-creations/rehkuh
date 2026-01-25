@@ -1,8 +1,8 @@
 # TSP File Format Specification
 
-**Version:** 0.10.0
-**Status:** Draft
-**Last Updated:** 2026-01-14
+**Version:** 1.0.0
+**Status:** Release Candidate
+**Last Updated:** 2026-01-25
 **Maintainer:** 0xbenc
 
 ---
@@ -41,7 +41,7 @@ This document defines the structure, semantics, and validation requirements for 
 
 ## 1. Status of This Document
 
-This specification is currently in **Draft** status. The format is stable for production use, but minor additions and clarifications may occur before reaching version 1.0.
+This specification is currently in **Release Candidate** status. The format is feature-complete and stable for production use. No breaking changes are expected before the final 1.0.0 release.
 
 Implementers SHOULD expect backward-compatible additions in minor version increments. Breaking changes will only occur in major version increments and will be documented in the [Revision History](#revision-history).
 
@@ -89,6 +89,16 @@ Floating-point values SHOULD be serialized with no more than 6 significant decim
 ### 3.6 File Size
 
 This specification does not impose file size limits. Producers and consumers MAY impose implementation-specific limits and SHOULD document them.
+
+### 3.7 Coordinate System
+
+TSP files use a **Y-up, right-handed** coordinate system, consistent with Three.js conventions:
+
+- **+X** points right
+- **+Y** points up
+- **+Z** points toward the viewer (out of screen)
+
+Rotation values are Euler angles in **radians**, applied in **XYZ order**.
 
 ---
 
@@ -471,6 +481,8 @@ All geometry definitions MAY include:
 |--------|------|-------------|
 | `args` | array | Positional constructor arguments |
 
+> **Note on zero values:** Many geometry parameters allow `0` as a valid value. However, zero values for radius, length, or sweep angle parameters will produce **degenerate geometry** (no visible mesh). Producers SHOULD avoid emitting zero values for these parameters. Consumers MUST handle zero values gracefully.
+
 ---
 
 ### 7.3 Simple Geometries
@@ -533,9 +545,9 @@ Simple geometries are parameterized primitives with optional customization.
 | `sphereWidthSegments` | number | `32` | >= 3, integer | Horizontal segments |
 | `sphereHeightSegments` | number | `32` | >= 2, integer | Vertical segments |
 | `spherePhiStart` | number | `0` | >= 0 | Horizontal start angle (radians) |
-| `spherePhiLength` | number | `2π` | > 0 | Horizontal sweep angle (radians) |
+| `spherePhiLength` | number | `2π` | >= 0 | Horizontal sweep angle (radians) |
 | `sphereThetaStart` | number | `0` | >= 0 | Vertical start angle (radians) |
-| `sphereThetaLength` | number | `π` | > 0 | Vertical sweep angle (radians) |
+| `sphereThetaLength` | number | `π` | >= 0 | Vertical sweep angle (radians) |
 
 #### 7.5.2 Example
 
@@ -563,7 +575,7 @@ Simple geometries are parameterized primitives with optional customization.
 | `cylinderHeightSegments` | number | `1` | >= 1, integer | Height segments |
 | `cylinderOpenEnded` | boolean | `false` | — | Remove end caps |
 | `cylinderThetaStart` | number | `0` | >= 0 | Start angle (radians) |
-| `cylinderThetaLength` | number | `2π` | > 0 | Sweep angle (radians) |
+| `cylinderThetaLength` | number | `2π` | >= 0 | Sweep angle (radians) |
 
 #### 7.6.2 Example
 
@@ -590,7 +602,7 @@ Simple geometries are parameterized primitives with optional customization.
 | `coneHeightSegments` | number | `1` | >= 1, integer | Height segments |
 | `coneOpenEnded` | boolean | `false` | — | Remove base cap |
 | `coneThetaStart` | number | `0` | >= 0 | Start angle (radians) |
-| `coneThetaLength` | number | `2π` | > 0 | Sweep angle (radians) |
+| `coneThetaLength` | number | `2π` | >= 0 | Sweep angle (radians) |
 
 #### 7.7.2 Example
 
@@ -612,11 +624,11 @@ Simple geometries are parameterized primitives with optional customization.
 
 | Member | Type | Default | Constraints | Description |
 |--------|------|---------|-------------|-------------|
-| `torusRadius` | number | `0.5` | > 0 | Ring radius (center to tube center) |
-| `torusTube` | number | `0.2` | > 0 | Tube radius |
+| `torusRadius` | number | `0.5` | >= 0 | Ring radius (center to tube center) |
+| `torusTube` | number | `0.2` | >= 0 | Tube radius |
 | `torusRadialSegments` | number | `16` | >= 3, integer | Tube cross-section segments |
 | `torusTubularSegments` | number | `32` | >= 3, integer | Ring segments |
-| `torusArc` | number | `2π` | > 0 | Arc angle (radians) |
+| `torusArc` | number | `2π` | >= 0 | Arc angle (radians) |
 
 #### 7.8.2 Example
 
@@ -662,7 +674,7 @@ Simple geometries are parameterized primitives with optional customization.
 
 | Member | Type | Default | Constraints | Description |
 |--------|------|---------|-------------|-------------|
-| `capsuleRadius` | number | `0.5` | > 0 | Capsule radius |
+| `capsuleRadius` | number | `0.5` | >= 0 | Capsule radius |
 | `capsuleLength` | number | `1` | >= 0 | Cylindrical section length |
 | `capsuleCapSegments` | number | `4` | >= 1, integer | Cap hemisphere segments |
 | `capsuleRadialSegments` | number | `8` | >= 3, integer | Circumference segments |
@@ -688,10 +700,10 @@ Simple geometries are parameterized primitives with optional customization.
 
 | Member | Type | Default | Constraints | Description |
 |--------|------|---------|-------------|-------------|
-| `circleRadius` | number | `0.5` | > 0 | Circle radius |
+| `circleRadius` | number | `0.5` | >= 0 | Circle radius |
 | `circleSegments` | number | `32` | >= 3, integer | Number of segments |
 | `circleThetaStart` | number | `0` | >= 0 | Start angle (radians) |
-| `circleThetaLength` | number | `2π` | > 0 | Arc angle (radians) |
+| `circleThetaLength` | number | `2π` | >= 0 | Arc angle (radians) |
 
 #### 7.11.2 Example
 
@@ -714,11 +726,11 @@ Simple geometries are parameterized primitives with optional customization.
 | Member | Type | Default | Constraints | Description |
 |--------|------|---------|-------------|-------------|
 | `ringInnerRadius` | number | `0.25` | >= 0 | Inner radius |
-| `ringOuterRadius` | number | `0.5` | > innerRadius | Outer radius |
+| `ringOuterRadius` | number | `0.5` | >= 0 | Outer radius |
 | `ringThetaSegments` | number | `32` | >= 3, integer | Circumference segments |
 | `ringPhiSegments` | number | `1` | >= 1, integer | Radial segments |
 | `ringThetaStart` | number | `0` | >= 0 | Start angle (radians) |
-| `ringThetaLength` | number | `2π` | > 0 | Arc angle (radians) |
+| `ringThetaLength` | number | `2π` | >= 0 | Arc angle (radians) |
 
 #### 7.12.2 Example
 
@@ -742,28 +754,28 @@ The following geometries share the same parameter structure.
 
 | Member | Type | Default | Constraints | Description |
 |--------|------|---------|-------------|-------------|
-| `dodecaRadius` | number | `0.5` | > 0 | Circumscribed sphere radius |
+| `dodecaRadius` | number | `0.5` | >= 0 | Circumscribed sphere radius |
 | `dodecaDetail` | number | `0` | >= 0, integer | Subdivision level |
 
 #### 7.13.2 Icosahedron
 
 | Member | Type | Default | Constraints | Description |
 |--------|------|---------|-------------|-------------|
-| `icosaRadius` | number | `0.5` | > 0 | Circumscribed sphere radius |
+| `icosaRadius` | number | `0.5` | >= 0 | Circumscribed sphere radius |
 | `icosaDetail` | number | `0` | >= 0, integer | Subdivision level |
 
 #### 7.13.3 Octahedron
 
 | Member | Type | Default | Constraints | Description |
 |--------|------|---------|-------------|-------------|
-| `octaRadius` | number | `0.5` | > 0 | Circumscribed sphere radius |
+| `octaRadius` | number | `0.5` | >= 0 | Circumscribed sphere radius |
 | `octaDetail` | number | `0` | >= 0, integer | Subdivision level |
 
 #### 7.13.4 Tetrahedron
 
 | Member | Type | Default | Constraints | Description |
 |--------|------|---------|-------------|-------------|
-| `tetraRadius` | number | `0.5` | > 0 | Circumscribed sphere radius |
+| `tetraRadius` | number | `0.5` | >= 0 | Circumscribed sphere radius |
 | `tetraDetail` | number | `0` | >= 0, integer | Subdivision level |
 
 ---
@@ -774,12 +786,12 @@ The following geometries share the same parameter structure.
 
 | Member | Type | Default | Constraints | Description |
 |--------|------|---------|-------------|-------------|
-| `torusKnotRadius` | number | `0.5` | > 0 | Overall radius |
-| `torusKnotTube` | number | `0.15` | > 0 | Tube radius |
+| `torusKnotRadius` | number | `0.5` | >= 0 | Overall radius |
+| `torusKnotTube` | number | `0.15` | >= 0 | Tube radius |
 | `torusKnotTubularSegments` | number | `64` | >= 3, integer | Segments along tube |
 | `torusKnotRadialSegments` | number | `8` | >= 3, integer | Tube cross-section segments |
-| `torusKnotP` | number | `2` | integer | Winds around rotational axis |
-| `torusKnotQ` | number | `3` | integer | Winds around interior circle |
+| `torusKnotP` | number | `2` | >= 1, integer | Winds around rotational axis |
+| `torusKnotQ` | number | `3` | >= 1, integer | Winds around interior circle |
 
 #### 7.14.2 Example
 
@@ -1699,6 +1711,7 @@ Multiple properties animated together:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.0.0 | 2026-01-25 | Release Candidate 1. Format frozen for 1.0 stability. No breaking changes from 0.10.0. |
 | 0.10.0 | 2026-01-14 | Added optional `animations` object for keyframe-based animations (Section 10). |
 | 0.9.2 | 2026-01-14 | Added optional `title` and `description` metadata fields. |
 | 0.9.1 | 2026-01-14 | Document reformatted as formal specification. Added security considerations, versioning policy, validation requirements, and appendices. No format changes. |

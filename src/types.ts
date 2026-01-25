@@ -193,6 +193,9 @@ export interface SceneObject {
   // Shadow properties (optional, default true for meshes)
   castShadow?: boolean;
   receiveShadow?: boolean;
+  // Render properties
+  renderOrder?: number; // Explicit render ordering (default 0)
+  frustumCulled?: boolean; // Enable frustum culling (default true)
   // Custom properties
   userData?: Record<string, unknown>;
   // Box geometry subdivision
@@ -578,8 +581,10 @@ export interface TSPObject {
   parent: string | null; // id of parent object
   visible: boolean;
   // Optional extended properties
-  castShadow?: boolean; // default true for meshes
-  receiveShadow?: boolean; // default true for meshes
+  castShadow?: boolean; // default false
+  receiveShadow?: boolean; // default true
+  renderOrder?: number; // default 0
+  frustumCulled?: boolean; // default true
   userData?: Record<string, unknown>; // custom properties
 }
 

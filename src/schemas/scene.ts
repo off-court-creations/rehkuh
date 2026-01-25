@@ -112,6 +112,9 @@ export const SceneFileObjectSchema = z.object({
   rotation: Vector3Schema,
   scale: Vector3Schema,
   material: MaterialPropsSchema.optional(),
+  // Render properties
+  renderOrder: z.number().int().optional(),
+  frustumCulled: z.boolean().optional(),
   // Box geometry subdivision
   boxWidthSegments: z.number().int().min(1).optional(),
   boxHeightSegments: z.number().int().min(1).optional(),

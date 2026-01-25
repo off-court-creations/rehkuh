@@ -402,6 +402,10 @@ export function importFromTSP(tspData: TSPFile): TSPImportResult {
       sceneObj.castShadow = tspObj.castShadow;
     if (tspObj.receiveShadow !== undefined)
       sceneObj.receiveShadow = tspObj.receiveShadow;
+    if (tspObj.renderOrder !== undefined)
+      sceneObj.renderOrder = tspObj.renderOrder;
+    if (tspObj.frustumCulled !== undefined)
+      sceneObj.frustumCulled = tspObj.frustumCulled;
     if (tspObj.userData !== undefined) sceneObj.userData = tspObj.userData;
 
     objects[tspObj.id] = sceneObj;

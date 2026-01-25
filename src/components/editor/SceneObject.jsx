@@ -803,6 +803,8 @@ export function SceneObject({ id }) {
               userData={{ objectId: id }}
               castShadow={obj.castShadow ?? false}
               receiveShadow={obj.receiveShadow ?? true}
+              renderOrder={obj.renderOrder ?? 0}
+              frustumCulled={obj.frustumCulled ?? true}
               geometry={geometry}
               material={objectMaterial}
             />

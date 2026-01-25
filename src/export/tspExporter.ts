@@ -683,6 +683,8 @@ export function exportToTSP(
     // Optional extended properties
     if (obj.castShadow !== undefined) base.castShadow = obj.castShadow;
     if (obj.receiveShadow !== undefined) base.receiveShadow = obj.receiveShadow;
+    if (obj.renderOrder !== undefined) base.renderOrder = obj.renderOrder;
+    if (obj.frustumCulled !== undefined) base.frustumCulled = obj.frustumCulled;
     if (obj.userData !== undefined && Object.keys(obj.userData).length > 0) {
       base.userData = obj.userData;
     }

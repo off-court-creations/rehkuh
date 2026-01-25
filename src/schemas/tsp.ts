@@ -362,7 +362,7 @@ export const TSPGeometrySchema = z
     // TubeGeometry (3D curve path)
     path: TSPCurve3DSchema.optional(),
     // TubeGeometry radius
-    tubeRadius: z.number().optional(),
+    tubeRadius: z.number().min(0).optional(),
     // TubeGeometry tubular segments
     tubeTubularSegments: z.number().int().min(1).optional(),
     // TubeGeometry radial segments
@@ -390,6 +390,8 @@ export const TSPObjectSchema = z
     // Optional extended properties
     castShadow: z.boolean().optional(),
     receiveShadow: z.boolean().optional(),
+    renderOrder: z.number().int().optional(),
+    frustumCulled: z.boolean().optional(),
     userData: z.record(z.string(), z.unknown()).optional(),
   })
   .passthrough(); // Preserve unknown fields for forward compatibility
