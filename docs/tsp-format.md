@@ -908,14 +908,14 @@ Example:
 
 Creates a tube along a 3D curve.
 
-| Member | Type | Required | Description |
-|--------|------|----------|-------------|
-| `type` | string | REQUIRED | MUST be `"tube"` |
-| `path` | object | REQUIRED | 3D curve definition (see [7.17](#717-3d-curve-definitions)) |
-| `tubeRadius` | number | OPTIONAL | Tube radius (default: `0.1`) |
-| `tubeTubularSegments` | number | OPTIONAL | Length segments (default: `64`) |
-| `tubeRadialSegments` | number | OPTIONAL | Cross-section segments (default: `8`) |
-| `tubeClosed` | boolean | OPTIONAL | Close the tube loop (default: `false`) |
+| Member | Type | Required | Constraints | Description |
+|--------|------|----------|-------------|-------------|
+| `type` | string | REQUIRED | `"tube"` | Type discriminator |
+| `path` | object | REQUIRED | — | 3D curve definition (see [7.17](#717-3d-curve-definitions)) |
+| `tubeRadius` | number | OPTIONAL | >= 0 | Tube radius (default: `0.1`) |
+| `tubeTubularSegments` | number | OPTIONAL | >= 1, integer | Length segments (default: `64`) |
+| `tubeRadialSegments` | number | OPTIONAL | >= 3, integer | Cross-section segments (default: `8`) |
+| `tubeClosed` | boolean | OPTIONAL | — | Close the tube loop (default: `false`) |
 
 Example:
 ```json
