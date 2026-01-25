@@ -110,6 +110,8 @@ Consumers MUST ignore unrecognized top-level members.
 |--------|------|---------|-------------|
 | `parent` | string | `null` | Name of parent object |
 | `material` | object | — | Inline material definition |
+| `renderOrder` | integer | `0` | Explicit render ordering |
+| `frustumCulled` | boolean | `true` | Enable frustum culling |
 
 ### 4.3 Parent References
 

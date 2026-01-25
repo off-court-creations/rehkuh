@@ -30,7 +30,7 @@ export const StandardMaterialPropsSchema = z.object({
   roughness: z.number().min(0).max(1),
   // Extended properties
   emissive: HexColorSchema.optional(),
-  emissiveIntensity: z.number().min(0).max(1).optional(),
+  emissiveIntensity: z.number().min(0).optional(), // No max - allows >1 for HDR
   opacity: z.number().min(0).max(1).optional(),
   transparent: z.boolean().optional(),
   side: TSPMaterialSideSchema.optional(),
