@@ -273,8 +273,8 @@ export const TSPExtrudeOptionsSchema = z.object({
   bevelThickness: z.number().optional(),
   bevelSize: z.number().optional(),
   bevelOffset: z.number().optional(),
-  bevelSegments: z.number().optional(),
-  steps: z.number().optional(),
+  bevelSegments: z.number().int().min(1).optional(),
+  steps: z.number().int().min(1).optional(),
   extrudePath: TSPCurve3DSchema.optional(),
 });
 

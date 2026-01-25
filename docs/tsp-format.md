@@ -323,7 +323,7 @@ Simulates thin-film interference (soap bubbles, oil slicks, beetle shells).
 |--------|------|---------|-------------|-------------|
 | `iridescence` | number | `0` | 0.0 to 1.0 | Iridescence intensity |
 | `iridescenceIOR` | number | `1.3` | 1.0 to 2.333 | Thin film IOR |
-| `iridescenceThicknessRange` | array | `[100, 400]` | [min, max], values >= 0 | Film thickness in nanometers |
+| `iridescenceThicknessRange` | array | `[100, 400]` | [min, max] | Film thickness in nanometers |
 
 #### 6.4.9 Anisotropy Channel
 
@@ -852,8 +852,9 @@ Extrude options:
 | `bevelThickness` | number | `0.2` | Bevel depth |
 | `bevelSize` | number | `0.1` | Bevel extent from shape |
 | `bevelOffset` | number | `0` | Bevel offset from shape |
-| `bevelSegments` | number | `3` | Bevel curve segments |
-| `steps` | number | `1` | Extrusion segments |
+| `bevelSegments` | number | `3` | >= 1, integer. Bevel curve segments |
+| `steps` | number | `1` | >= 1, integer. Extrusion segments |
+| `extrudePath` | object | — | 3D curve to extrude along (see [7.17](#717-3d-curve-definitions)) |
 
 Example:
 ```json
@@ -967,7 +968,7 @@ Shape definitions describe 2D paths for ShapeGeometry and ExtrudeGeometry.
 | Member | Type | Required | Description |
 |--------|------|----------|-------------|
 | `commands` | array | REQUIRED | Array of path commands |
-| `holes` | array | OPTIONAL | Array of shape definitions for cutouts |
+| `holes` | array | OPTIONAL | Array of path command arrays defining cutouts |
 
 #### 7.16.2 Path Commands
 
@@ -1061,7 +1062,7 @@ For mesh objects (type is not `"group"`):
 | `castShadow` | boolean | `false` | Mesh casts shadows |
 | `receiveShadow` | boolean | `true` | Mesh receives shadows |
 | `userData` | object | `{}` | Arbitrary custom data |
-| `renderOrder` | number | `0` | Explicit render ordering |
+| `renderOrder` | integer | `0` | Explicit render ordering |
 | `frustumCulled` | boolean | `true` | Enable frustum culling |
 
 ### 8.4 Validation Rules
@@ -1147,7 +1148,7 @@ Consumers MUST treat animation keys as opaque identifiers.
 | Member | Type | Required | Description |
 |--------|------|----------|-------------|
 | `name` | string | REQUIRED | Human-readable clip name |
-| `duration` | number | OPTIONAL | Clip duration in seconds. Defaults to max track time |
+| `duration` | number | OPTIONAL | Clip duration in seconds (> 0). Defaults to max track time |
 | `tracks` | array | REQUIRED | Array of animation tracks |
 
 ### 10.3 Animation Track Schema
